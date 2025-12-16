@@ -1,0 +1,478 @@
+/* Tax Compliance Calendar Styles */
+
+.tax-compliance-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.compliance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.header-left h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-left p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Status Summary */
+.status-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.status-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-left: 5px solid #ccc;
+}
+
+.status-card.done {
+  border-left-color: #10b981;
+}
+
+.status-card.upcoming {
+  border-left-color: #3b82f6;
+}
+
+.status-card.due_soon {
+  border-left-color: #f59e0b;
+}
+
+.status-card.overdue {
+  border-left-color: #ef4444;
+}
+
+.status-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #1f2937;
+}
+
+.status-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* List View */
+.compliance-list-view {
+  margin-bottom: 30px;
+}
+
+.country-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.country-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.country-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.obligation-count {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+/* Obligations Table */
+.obligations-table {
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 150px 120px 100px;
+  gap: 10px;
+  background: #f3f4f6;
+  padding: 12px 15px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 150px 120px 100px;
+  gap: 10px;
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background: #f9fafb;
+}
+
+.col-type {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.col-entity {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.col-due {
+  color: #374151;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.col-action {
+  text-align: right;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+/* Calendar View */
+.compliance-calendar-view {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.calendar-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.calendar-header button {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+}
+
+.calendar-header button:hover {
+  background: #e5e7eb;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day-header {
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.calendar-day {
+  min-height: 100px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 8px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-day.other-month {
+  background: #f9fafb;
+  color: #d1d5db;
+}
+
+.day-number {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 5px;
+}
+
+.day-event {
+  font-size: 0.75rem;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin-bottom: 3px;
+  text-align: center;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Country Status Section */
+.country-status-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.country-status-section h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+.country-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.country-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 15px;
+  background: #f9fafb;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.status-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status-light.green {
+  background: #10b981;
+}
+
+.status-light.amber {
+  background: #f59e0b;
+}
+
+.status-light.red {
+  background: #ef4444;
+}
+
+.card-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.stat-value.green {
+  color: #10b981;
+}
+
+.stat-value.amber {
+  color: #f59e0b;
+}
+
+.stat-value.red {
+  color: #ef4444;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .compliance-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr 100px 80px;
+  }
+
+  .col-entity,
+  .col-action {
+    display: none;
+  }
+
+  .country-cards {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .status-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .calendar-grid {
+    gap: 2px;
+  }
+
+  .calendar-day {
+    min-height: 60px;
+    font-size: 0.85rem;
+  }
+
+  .country-cards {
+    grid-template-columns: 1fr;
+  }
+}

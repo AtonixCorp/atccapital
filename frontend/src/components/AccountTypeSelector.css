@@ -1,0 +1,203 @@
+.account-type-selector-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.selector-content {
+  background: white;
+  border-radius: 20px;
+  padding: 60px 40px;
+  max-width: 1100px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selector-title {
+  font-size: 2.5rem;
+  color: #1f2937;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.selector-subtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.account-type-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .account-type-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .selector-title {
+    font-size: 1.8rem;
+  }
+
+  .selector-content {
+    padding: 40px 20px;
+  }
+}
+
+.account-type-card {
+  position: relative;
+  padding: 40px;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background: #f9fafb;
+}
+
+.account-type-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+.account-type-card.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.account-type-card.selected h3,
+.account-type-card.selected .description,
+.account-type-card.selected .cta-text {
+  color: white;
+}
+
+.account-type-card.selected .features li {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.personal-icon {
+  background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%);
+  color: white;
+}
+
+.enterprise-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.account-type-card.selected .icon-container {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.account-type-card h3 {
+  font-size: 1.5rem;
+  margin: 15px 0 10px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.account-type-card .description {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
+.features li {
+  color: #4b5563;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+}
+
+.features li:before {
+  content: "✓";
+  margin-right: 10px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.account-type-card.selected .features li:before {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cta-text {
+  display: inline-block;
+  background: #667eea;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+.account-type-card:hover .cta-text {
+  background: #5a67d8;
+}
+
+.account-type-card.selected .cta-text {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.selector-note {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #92400e;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.selector-note p {
+  margin: 0;
+}
+
+.selector-note strong {
+  color: #b45309;
+}
