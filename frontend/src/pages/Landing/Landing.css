@@ -147,6 +147,29 @@
   animation-delay: 2s;
 }
 
+.card-4 {
+  /* Smaller, offset to avoid touching card-1 */
+  top: 6%;
+  right: 320px;
+  transform: none;
+  width: 140px;
+  padding: 12px;
+  animation-delay: 0.5s;
+  z-index: 6;
+}
+
+.card-4 .card-icon {
+  font-size: 1.6rem;
+}
+
+@media (max-width: 1100px) {
+  .card-4 { right: 220px; }
+}
+
+@media (max-width: 900px) {
+  .card-4 { display: none; }
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0);

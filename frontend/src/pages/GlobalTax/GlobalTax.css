@@ -1,0 +1,17 @@
+/* Basic styling for Global Tax page */
+.global-tax-page{padding:28px}
+.page-header h1{margin:0}
+.tax-controls{display:flex;gap:12px;margin:16px 0}
+.tax-country-select{min-width:220px;padding:8px;border:1px solid #e1e1e1;border-radius:6px}
+.tax-search-input{flex:1;padding:8px;border:1px solid #e1e1e1;border-radius:6px}
+.tax-region-select{padding:8px;border:1px solid #e1e1e1;border-radius:6px}
+.tax-grid{display:flex;gap:20px}
+.tax-list{width:320px;border:1px solid #f1f1f1;border-radius:6px;padding:8px;max-height:600px;overflow:auto}
+.tax-list-item{padding:10px;border-bottom:1px solid #f5f5f5;cursor:pointer;display:flex;justify-content:space-between}
+.tax-list-item.active{background:#eef7ff}
+.tax-panel{flex:1;border:1px solid #f1f1f1;border-radius:6px;padding:16px}
+.detail-row{margin:8px 0}
+.links ul, .references ul{padding-left:16px}
+.tasks-row{display:flex;gap:8px;flex-wrap:wrap}
+.task-btn{background:#2d9cdb;color:#fff;padding:8px 12px;border-radius:6px;border:0;text-decoration:none}
+.empty-panel{color:#777}

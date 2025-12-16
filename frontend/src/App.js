@@ -17,6 +17,7 @@ import FinancialDNA from './pages/FinancialDNA/FinancialDNA';
 import SecurityVaults from './pages/SecurityVaults/SecurityVaults';
 import Achievements from './pages/Achievements/Achievements';
 import TaxCalculator from './pages/TaxCalculator/TaxCalculator';
+import GlobalTax from './pages/GlobalTax/GlobalTax';
 import FinancialSettings from './pages/FinancialSettings/FinancialSettings';
 import './App.css';
 
@@ -82,6 +83,7 @@ function App() {
                 <Layout><TaxCalculator /></Layout>
               </ProtectedRoute>
             } />
+            <Route path="/global-tax" element={<GlobalTax />} />
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Layout><FinancialSettings /></Layout>

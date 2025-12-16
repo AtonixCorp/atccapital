@@ -1,0 +1,79 @@
+[
+  {
+    "code": "US",
+    "name": "United States",
+    "region": "Americas",
+    "tax_authority": {
+      "name": "Internal Revenue Service (IRS)",
+      "website": "https://www.irs.gov",
+      "payment_portal": "https://www.irs.gov/payments",
+      "contact": "https://www.irs.gov/help/contact-your-local-irs-office"
+    },
+    "links": {
+      "official_tax_legislation": null,
+      "corporate_tax_summary": "https://taxsummaries.pwc.com/united-states",
+      "personal_income_tax_summary": "https://taxsummaries.pwc.com/united-states/individuals",
+      "vat_or_indirect_tax_summary": null,
+      "global_references": [
+        { "label": "EY Global Tax Guide", "url": "https://www.ey.com/en_gl/tax-guides" },
+        { "label": "Deloitte Tax Guide", "url": "https://dits.deloitte.com/#TaxGuides" }
+      ]
+    },
+    "supported_tasks": [
+      "basic_tax_estimator",
+      "country_comparison",
+      "open_tax_payment_portal"
+    ]
+  },
+  {
+    "code": "ZA",
+    "name": "South Africa",
+    "region": "Africa",
+    "tax_authority": {
+      "name": "South African Revenue Service (SARS)",
+      "website": "https://www.sars.gov.za",
+      "payment_portal": "https://secure.sarsefiling.co.za",
+      "contact": null
+    },
+    "links": {
+      "official_tax_legislation": null,
+      "corporate_tax_summary": "https://taxsummaries.pwc.com/south-africa",
+      "personal_income_tax_summary": "https://taxsummaries.pwc.com/south-africa/individuals",
+      "vat_or_indirect_tax_summary": "https://taxsummaries.pwc.com/south-africa/corporate/other-taxes",
+      "global_references": [
+        { "label": "EY Global Tax Guide", "url": "https://www.ey.com/en_gl/tax-guides" },
+        { "label": "Deloitte Tax Guide", "url": "https://dits.deloitte.com/#TaxGuides" }
+      ]
+    },
+    "supported_tasks": [
+      "basic_tax_estimator",
+      "corporate_vs_personal_compare",
+      "country_comparison",
+      "open_tax_payment_portal"
+    ]
+  },
+  {
+    "code": "NG",
+    "name": "Nigeria",
+    "region": "Africa",
+    "tax_authority": {
+      "name": "Federal Inland Revenue Service (FIRS)",
+      "website": "https://www.firs.gov.ng",
+      "payment_portal": "https://taxpromax.firs.gov.ng",
+      "contact": null
+    },
+    "links": {
+      "corporate_tax_summary": "https://taxsummaries.pwc.com/nigeria",
+      "personal_income_tax_summary": "https://taxsummaries.pwc.com/nigeria/individuals",
+      "vat_or_indirect_tax_summary": "https://taxsummaries.pwc.com/nigeria/corporate/other-taxes",
+      "global_references": [
+        { "label": "EY Global Tax Guide", "url": "https://www.ey.com/en_gl/tax-guides" }
+      ]
+    },
+    "supported_tasks": [
+      "basic_tax_estimator",
+      "open_tax_payment_portal",
+      "country_comparison"
+    ]
+  }
+]

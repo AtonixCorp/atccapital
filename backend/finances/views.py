@@ -4,6 +4,21 @@ from rest_framework.response import Response
 from django.db.models import Sum
 from .models import Expense, Income, Budget
 from .serializers import ExpenseSerializer, IncomeSerializer, BudgetSerializer
+from rest_framework.decorators import api_view
+from django.http import JsonResponse, Http404
+import json
+import os
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'tax')
+COUNTRIES_FILE = os.path.join(DATA_DIR, 'countries.json')
+
+
+def _load_countries():
+    try:
+        with open(COUNTRIES_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
@@ -86,3 +101,21 @@ class BudgetViewSet(viewsets.ModelViewSet):
             'total_remaining': total_limit - total_spent,
             'count': budgets.count()
         })
+
+
+@api_view(['GET'])
+def list_countries(request):
+    """Return list of tax countries from data file"""
+    countries = _load_countries()
+    return JsonResponse(countries, safe=False)
+
+
+@api_view(['GET'])
+def get_country(request, code):
+    """Return single country by code (ISO alpha-2)"""
+    countries = _load_countries()
+    code_upper = code.upper()
+    for c in countries:
+        if c.get('code', '').upper() == code_upper:
+            return JsonResponse(c, safe=False)
+    raise Http404('Country not found')

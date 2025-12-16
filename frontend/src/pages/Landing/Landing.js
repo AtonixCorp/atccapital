@@ -34,29 +34,37 @@ const Landing = () => {
               Sign In
             </Link>
           </div>
+          
         </div>
         <div className="hero-image">
-          <div className="hero-card card-1">
+          <Link to="/dashboard" className="hero-card card-1" style={{ textDecoration: 'none' }}>
             <div className="card-icon">📊</div>
             <div className="card-content">
               <h4>Dashboard</h4>
               <p>Real-time overview</p>
             </div>
-          </div>
-          <div className="hero-card card-2">
+          </Link>
+          <Link to="/expenses" className="hero-card card-2" style={{ textDecoration: 'none' }}>
             <div className="card-icon">💸</div>
             <div className="card-content">
               <h4>Expenses</h4>
               <p>Track spending</p>
             </div>
-          </div>
-          <div className="hero-card card-3">
+          </Link>
+          <Link to="/budget" className="hero-card card-3" style={{ textDecoration: 'none' }}>
             <div className="card-icon">📈</div>
             <div className="card-content">
               <h4>Budgets</h4>
               <p>Set limits</p>
             </div>
-          </div>
+          </Link>
+          <Link to="/global-tax" className="hero-card card-4" style={{ textDecoration: 'none' }}>
+            <div className="card-icon">🌐</div>
+            <div className="card-content">
+              <h4>Global Tax</h4>
+              <p>Directory & payment portals</p>
+            </div>
+          </Link>
         </div>
       </section>
 

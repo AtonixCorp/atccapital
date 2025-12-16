@@ -40,4 +40,10 @@ export const budgetsAPI = {
   getSummary: () => api.get('/budgets/summary/'),
 };
 
+// Tax countries API
+export const taxAPI = {
+  list: () => api.get('/tax/countries/'),
+  get: (code) => api.get(`/tax/countries/${code}/`),
+};
+
 export default api;
