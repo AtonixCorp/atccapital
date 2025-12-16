@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FaChartBar, FaSearch } from 'react-icons/fa';
 import { taxAPI } from '../../services/api';
 import './GlobalTax.css';
 import localCountries from '../../data/tax/countries.json';
@@ -43,12 +44,15 @@ const GlobalTax = () => {
       {/* Search & Filter Section */}
       <div className="tax-search-section">
         <div className="tax-search-container">
-          <input
-            className="tax-search-input"
-            placeholder="🔍 Search by country name or code (e.g., United States, US)"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <div className="search-input-wrapper">
+            <FaSearch className="search-icon" />
+            <input
+              className="tax-search-input"
+              placeholder="Search by country name or code (e.g., United States, US)"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
           <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} className="tax-region-select">
             <option value="">All Regions</option>
             {regions.map(r => (
@@ -136,7 +140,7 @@ const GlobalTax = () => {
 
                   {/* Tax Summaries */}
                   <div className="section-card summaries-card">
-                    <h4 className="section-title">📊 Tax Summaries</h4>
+                    <h4 className="section-title"><FaChartBar /> Tax Summaries</h4>
                     <div className="summaries-grid">
                       {selected.links?.corporate_tax_summary && (
                         <a href={selected.links.corporate_tax_summary} target="_blank" rel="noreferrer" className="summary-link">

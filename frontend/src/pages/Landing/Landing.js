@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaWallet, FaChartBar, FaChartLine, FaGlobe, FaLightbulb, FaShieldAlt, FaRocket, FaCheckCircle } from 'react-icons/fa';
 import './Landing.css';
 
 const Landing = () => {
@@ -7,7 +8,7 @@ const Landing = () => {
     <div className="landing-page">
       <nav className="landing-nav">
         <div className="landing-nav-content">
-          <h1 className="landing-logo">💰 Atonix Capital</h1>
+          <h1 className="landing-logo"><FaWallet className="nav-icon" /> Atonix Capital</h1>
           <div className="landing-nav-links">
             <Link to="/login" className="btn-outline">Login</Link>
             <Link to="/register" className="btn-primary">Get Started</Link>
@@ -38,28 +39,28 @@ const Landing = () => {
         </div>
         <div className="hero-image">
           <Link to="/dashboard" className="hero-card card-1" style={{ textDecoration: 'none' }}>
-            <div className="card-icon">📊</div>
+            <div className="card-icon"><FaChartBar /></div>
             <div className="card-content">
               <h4>Dashboard</h4>
               <p>Real-time overview</p>
             </div>
           </Link>
           <Link to="/expenses" className="hero-card card-2" style={{ textDecoration: 'none' }}>
-            <div className="card-icon">💸</div>
+            <div className="card-icon"><FaChartLine /></div>
             <div className="card-content">
               <h4>Expenses</h4>
               <p>Track spending</p>
             </div>
           </Link>
           <Link to="/budget" className="hero-card card-3" style={{ textDecoration: 'none' }}>
-            <div className="card-icon">📈</div>
+            <div className="card-icon"><FaChartBar /></div>
             <div className="card-content">
               <h4>Budgets</h4>
               <p>Set limits</p>
             </div>
           </Link>
           <Link to="/global-tax" className="hero-card card-4" style={{ textDecoration: 'none' }}>
-            <div className="card-icon">🌐</div>
+            <div className="card-icon"><FaGlobe /></div>
             <div className="card-content">
               <h4>Global Tax</h4>
               <p>Directory & payment portals</p>
@@ -117,22 +118,22 @@ const Landing = () => {
             <p>Seamlessly manage fiat, crypto, stablecoins, and tokenized assets in one unified platform</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">🔐</div>
+            <div className="feature-icon"><FaShieldAlt /></div>
             <h3>Sovereign-Grade Security</h3>
             <p>Military-grade protection with geo-locks, time-locks, and multi-signature authorization</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">💎</div>
+            <div className="feature-icon"><FaLightbulb /></div>
             <h3>Smart Investment Vaults</h3>
             <p>Diversified, automated wealth growth through intelligent portfolio management</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">🏢</div>
+            <div className="feature-icon"><FaCheckCircle /></div>
             <h3>Business-Ready Tools</h3>
             <p>Professional-grade invoicing, payroll automation, and corporate finance management</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">⚡</div>
+            <div className="feature-icon"><FaRocket /></div>
             <h3>Borderless Network</h3>
             <p>Global payment infrastructure built for speed, reliability, and zero-friction transactions</p>
           </div>
