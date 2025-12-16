@@ -22,6 +22,7 @@ import GlobalTax from './pages/GlobalTax/GlobalTax';
 import FinancialSettings from './pages/FinancialSettings/FinancialSettings';
 import EnterpriseOrgOverview from './pages/Enterprise/EnterpriseOrgOverview';
 import EnterpriseEntities from './pages/Enterprise/EnterpriseEntities';
+import EntityDashboard from './pages/Enterprise/EntityDashboard';
 import EnterpriseTaxCompliance from './pages/Enterprise/EnterpriseTaxCompliance';
 import EnterpriseCashflow from './pages/Enterprise/EnterpriseCashflow';
 import EnterpriseRiskExposure from './pages/Enterprise/EnterpriseRiskExposure';
@@ -158,6 +159,13 @@ function App() {
               <ProtectedRoute>
                 <AccountTypeRoute requiredType="enterprise">
                   <Layout><EnterpriseEntities /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/app/enterprise/entities/:entityId/dashboard" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><EntityDashboard /></Layout>
                 </AccountTypeRoute>
               </ProtectedRoute>
             } />

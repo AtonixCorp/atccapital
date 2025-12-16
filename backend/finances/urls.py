@@ -17,9 +17,9 @@ from .enterprise_views import (
 router = DefaultRouter()
 
 # Personal finance endpoints
-router.register(r'expenses', ExpenseViewSet)
-router.register(r'income', IncomeViewSet)
-router.register(r'budgets', BudgetViewSet)
+router.register(r'expenses', ExpenseViewSet, basename='expense')
+router.register(r'income', IncomeViewSet, basename='income')
+router.register(r'budgets', BudgetViewSet, basename='budget')
 
 # Enterprise endpoints
 router.register(r'organizations', OrganizationViewSet, basename='organization')

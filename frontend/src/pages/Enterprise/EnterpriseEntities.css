@@ -445,3 +445,15 @@
 .row-wind_down {
   background-color: #fffbeb;
 }
+
+/* Readonly input styling */
+.readonly-input {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.readonly-input:focus {
+  outline: none;
+  box-shadow: none;
+}

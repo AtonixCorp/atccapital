@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
               <li>
                 <NavLink to="/income" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                   <span className="nav-icon"><FaHandHoldingUsd /></span>
-                  My Countries
+                  My Income
                 </NavLink>
               </li>
               <li>

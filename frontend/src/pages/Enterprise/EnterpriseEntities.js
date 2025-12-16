@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { countries, getBanksByCountryCode } from '../../utils/countries';
 import './EnterpriseEntities.css';
-import { FaPlus, FaEdit, FaTrash, FaGlobe, FaBuilding, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaGlobe, FaBuilding, FaCheckCircle, FaTimesCircle, FaChartBar } from 'react-icons/fa';
 
 const EnterpriseEntities = () => {
+  const navigate = useNavigate();
   const { 
     currentOrganization, 
     entities, 
@@ -17,6 +20,7 @@ const EnterpriseEntities = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [editingEntity, setEditingEntity] = useState(null);
+  const [availableBanks, setAvailableBanks] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     country: '',
@@ -43,6 +47,9 @@ const EnterpriseEntities = () => {
     if (entity) {
       setFormData(entity);
       setEditingEntity(entity.id);
+      // Set available banks for existing entity
+      const banks = getBanksByCountryCode(entity.country);
+      setAvailableBanks(banks);
     } else {
       setFormData({
         name: '',
@@ -56,6 +63,7 @@ const EnterpriseEntities = () => {
         next_filing_date: '',
       });
       setEditingEntity(null);
+      setAvailableBanks([]);
     }
     setShowModal(true);
   };
@@ -68,6 +76,22 @@ const EnterpriseEntities = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Auto-populate currency and banks when country is selected
+    if (name === 'country' && value) {
+      const selectedCountry = countries.find(country => country.name === value);
+      if (selectedCountry) {
+        const currency = selectedCountry.currency;
+        const banks = selectedCountry.banks || [];
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          local_currency: currency,
+          main_bank: banks.length > 0 ? banks[0] : '' // Set first bank as default
+        }));
+        setAvailableBanks(banks);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -209,6 +233,13 @@ const EnterpriseEntities = () => {
                       {entity.next_filing_date ? new Date(entity.next_filing_date).toLocaleDateString() : '-'}
                     </td>
                     <td className="cell-actions">
+                      <button 
+                        className="btn-sm btn-view" 
+                        onClick={() => navigate(`/app/enterprise/entities/${entity.id}/dashboard`)}
+                        title="View entity dashboard"
+                      >
+                        <FaChartBar />
+                      </button>
                       {hasPermission(PERMISSIONS.EDIT_ENTITY) && (
                         <button 
                           className="btn-sm btn-edit" 
@@ -265,14 +296,19 @@ const EnterpriseEntities = () => {
 
                 <div className="form-group">
                   <label>Country *</label>
-                  <input
-                    type="text"
+                  <select
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
                     required
-                    placeholder="e.g., United States"
-                  />
+                  >
+                    <option value="">Select a country</option>
+                    {countries.map(country => (
+                      <option key={country.code} value={country.name}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">
@@ -318,18 +354,25 @@ const EnterpriseEntities = () => {
                     onChange={handleInputChange}
                     maxLength="3"
                     placeholder="USD"
+                    readOnly
+                    className="readonly-input"
                   />
                 </div>
 
                 <div className="form-group">
                   <label>Main Bank</label>
-                  <input
-                    type="text"
+                  <select
                     name="main_bank"
                     value={formData.main_bank}
                     onChange={handleInputChange}
-                    placeholder="e.g., Bank of America"
-                  />
+                  >
+                    <option value="">Select a bank</option>
+                    {availableBanks.map((bank, index) => (
+                      <option key={index} value={bank}>
+                        {bank}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">

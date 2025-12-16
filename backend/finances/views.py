@@ -2,11 +2,11 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Sum
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import (
     Expense, Income, Budget, ModelTemplate, FinancialModel, Scenario,
     SensitivityAnalysis, AIInsight, CustomKPI, KPICalculation, Report,
-    Consolidation, ConsolidationEntity, TaxCalculation
+    Consolidation, ConsolidationEntity, TaxCalculation, Entity
 )
 from .serializers import (
     ExpenseSerializer, IncomeSerializer, BudgetSerializer,
@@ -36,15 +36,40 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing expenses
     """
-    queryset = Expense.objects.all()
     serializer_class = ExpenseSerializer
 
+    def get_queryset(self):
+        """Filter expenses by entity if entity_id is provided"""
+        queryset = Expense.objects.all()
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            queryset = queryset.filter(entity_id=entity_id)
+        else:
+            # If no entity specified, return user's personal expenses
+            queryset = queryset.filter(user=self.request.user, entity__isnull=True)
+        return queryset
+
     def perform_create(self, serializer):
-        """Update budget spent amount when creating expense"""
-        expense = serializer.save()
-        # Update budget if category matches
+        """Create expense and associate with entity or user"""
+        entity_id = self.request.data.get('entity_id')
+        if entity_id:
+            # Associate with entity
+            entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+            expense = serializer.save(entity=entity)
+        else:
+            # Associate with user (personal expense)
+            expense = serializer.save(user=self.request.user)
+        
+        # Update budget if category matches (entity-specific or personal)
         try:
-            budget = Budget.objects.get(category=expense.category)
+            budget_filter = {'category': expense.category}
+            if expense.entity:
+                budget_filter['entity'] = expense.entity
+            else:
+                budget_filter['user'] = expense.user
+                budget_filter['entity__isnull'] = True
+            
+            budget = Budget.objects.get(**budget_filter)
             budget.spent += expense.amount
             budget.save()
         except Budget.DoesNotExist:
@@ -83,22 +108,58 @@ class IncomeViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing income
     """
-    queryset = Income.objects.all()
     serializer_class = IncomeSerializer
 
-    @action(detail=False, methods=['get'])
-    def total(self, request):
-        """Get total income"""
-        total = self.queryset.aggregate(Sum('amount'))['amount__sum'] or 0
-        return Response({'total': total})
+    def get_queryset(self):
+        """Filter income by entity if entity_id is provided"""
+        queryset = Income.objects.all()
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            queryset = queryset.filter(entity_id=entity_id)
+        else:
+            # If no entity specified, return user's personal income
+            queryset = queryset.filter(user=self.request.user, entity__isnull=True)
+        return queryset
+
+    def perform_create(self, serializer):
+        """Create income and associate with entity or user"""
+        entity_id = self.request.data.get('entity_id')
+        if entity_id:
+            # Associate with entity
+            entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+            serializer.save(entity=entity)
+        else:
+            # Associate with user (personal income)
+            serializer.save(user=self.request.user)
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing budgets
     """
-    queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
+
+    def get_queryset(self):
+        """Filter budgets by entity if entity_id is provided"""
+        queryset = Budget.objects.all()
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            queryset = queryset.filter(entity_id=entity_id)
+        else:
+            # If no entity specified, return user's personal budgets
+            queryset = queryset.filter(user=self.request.user, entity__isnull=True)
+        return queryset
+
+    def perform_create(self, serializer):
+        """Create budget and associate with entity or user"""
+        entity_id = self.request.data.get('entity_id')
+        if entity_id:
+            # Associate with entity
+            entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+            serializer.save(entity=entity)
+        else:
+            # Associate with user (personal budget)
+            serializer.save(user=self.request.user)
 
     @action(detail=False, methods=['get'])
     def summary(self, request):

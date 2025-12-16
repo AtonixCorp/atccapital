@@ -568,6 +568,151 @@ export const EnterpriseProvider = ({ children }) => {
     }
   }, [teamMembers]);
 
+  /**
+   * Entity-specific financial operations
+   */
+  
+  /**
+   * Fetch entity-specific expenses
+   */
+  const fetchEntityExpenses = useCallback(async (entityId) => {
+    if (!entityId) return [];
+    try {
+      const response = await fetch(`/api/expenses/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return Array.isArray(data) ? data : data.results || [];
+      }
+    } catch (err) {
+      console.error('Failed to fetch entity expenses:', err);
+    }
+    return [];
+  }, []);
+
+  /**
+   * Fetch entity-specific income
+   */
+  const fetchEntityIncome = useCallback(async (entityId) => {
+    if (!entityId) return [];
+    try {
+      const response = await fetch(`/api/income/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return Array.isArray(data) ? data : data.results || [];
+      }
+    } catch (err) {
+      console.error('Failed to fetch entity income:', err);
+    }
+    return [];
+  }, []);
+
+  /**
+   * Fetch entity-specific budgets
+   */
+  const fetchEntityBudgets = useCallback(async (entityId) => {
+    if (!entityId) return [];
+    try {
+      const response = await fetch(`/api/budgets/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return Array.isArray(data) ? data : data.results || [];
+      }
+    } catch (err) {
+      console.error('Failed to fetch entity budgets:', err);
+    }
+    return [];
+  }, []);
+
+  /**
+   * Create entity-specific expense
+   */
+  const createEntityExpense = useCallback(async (entityId, expenseData) => {
+    try {
+      const response = await fetch('/api/expenses/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...expenseData, entity_id: entityId }),
+      });
+
+      if (response.ok) {
+        const newExpense = await response.json();
+        return newExpense;
+      } else {
+        throw new Error('Failed to create entity expense');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+  }, []);
+
+  /**
+   * Create entity-specific income
+   */
+  const createEntityIncome = useCallback(async (entityId, incomeData) => {
+    try {
+      const response = await fetch('/api/income/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...incomeData, entity_id: entityId }),
+      });
+
+      if (response.ok) {
+        const newIncome = await response.json();
+        return newIncome;
+      } else {
+        throw new Error('Failed to create entity income');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+  }, []);
+
+  /**
+   * Create entity-specific budget
+   */
+  const createEntityBudget = useCallback(async (entityId, budgetData) => {
+    try {
+      const response = await fetch('/api/budgets/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...budgetData, entity_id: entityId }),
+      });
+
+      if (response.ok) {
+        const newBudget = await response.json();
+        return newBudget;
+      } else {
+        throw new Error('Failed to create entity budget');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+  }, []);
+
   const value = {
     // State
     organizations,
@@ -603,6 +748,14 @@ export const EnterpriseProvider = ({ children }) => {
     createOrganization,
     createEntity,
     addTeamMember,
+    
+    // Entity-specific financial methods
+    fetchEntityExpenses,
+    fetchEntityIncome,
+    fetchEntityBudgets,
+    createEntityExpense,
+    createEntityIncome,
+    createEntityBudget,
 
     // Setters
     setCurrentOrganization,
