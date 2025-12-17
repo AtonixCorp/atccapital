@@ -8,8 +8,11 @@ import './EntityDashboard.css';
 const EntityDashboard = () => {
   const { entityId } = useParams();
   const navigate = useNavigate();
+  const enterpriseContext = useEnterprise();
+  
+  // Safely destructure with fallbacks
   const {
-    entities,
+    entities = [],
     fetchEntityExpenses,
     fetchEntityIncome,
     fetchEntityBudgets,
@@ -21,7 +24,7 @@ const EntityDashboard = () => {
     fetchEntityComplianceDocuments,
     hasPermission,
     PERMISSIONS
-  } = useEnterprise();
+  } = enterpriseContext || {};
 
   const [entity, setEntity] = useState(null);
   const [expenses, setExpenses] = useState([]);
@@ -38,47 +41,88 @@ const EntityDashboard = () => {
 
   useEffect(() => {
     const loadEntityData = async () => {
-      if (!entityId) return;
+      try {
+        if (!entityId) {
+          setLoading(false);
+          return;
+        }
 
-      // Find entity
-      const foundEntity = entities.find(e => e.id.toString() === entityId);
-      if (foundEntity) {
+        // Find entity
+        const foundEntity = entities.find(e => e.id.toString() === entityId);
+        if (!foundEntity) {
+          setLoading(false);
+          return;
+        }
+
         setEntity(foundEntity);
+        setLoading(false);
 
-        // Load entity-specific financial data
-        const [entityExpenses, entityIncome, entityBudgets] = await Promise.all([
-          fetchEntityExpenses(entityId),
-          fetchEntityIncome(entityId),
-          fetchEntityBudgets(entityId)
-        ]);
+        // Load data asynchronously without blocking render
+        setTimeout(async () => {
+          try {
+            // Load entity-specific financial data with timeout
+            const financialPromise = Promise.race([
+              Promise.all([
+                fetchEntityExpenses(entityId),
+                fetchEntityIncome(entityId),
+                fetchEntityBudgets(entityId)
+              ]),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
 
-        setExpenses(entityExpenses);
-        setIncome(entityIncome);
-        setBudgets(entityBudgets);
+            const [entityExpenses, entityIncome, entityBudgets] = await financialPromise;
+            setExpenses(entityExpenses || []);
+            setIncome(entityIncome || []);
+            setBudgets(entityBudgets || []);
 
-        // Load entity management data
-        const [entityDepartments, entityRoles, entityStaff, entityBankAccounts, entityWallets, entityComplianceDocs] = await Promise.all([
-          fetchEntityDepartments(entityId),
-          fetchEntityRoles(entityId),
-          fetchEntityStaff(entityId),
-          fetchEntityBankAccounts(entityId),
-          fetchEntityWallets(entityId),
-          fetchEntityComplianceDocuments(entityId)
-        ]);
+            // Load entity management data with timeout
+            const managementPromise = Promise.race([
+              Promise.all([
+                fetchEntityDepartments(entityId),
+                fetchEntityRoles(entityId),
+                fetchEntityStaff(entityId),
+                fetchEntityBankAccounts(entityId),
+                fetchEntityWallets(entityId),
+                fetchEntityComplianceDocuments(entityId)
+              ]),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+            ]);
 
-        setDepartments(entityDepartments);
-        setRoles(entityRoles);
-        setStaff(entityStaff);
-        setBankAccounts(entityBankAccounts);
-        setWallets(entityWallets);
-        setComplianceDocuments(entityComplianceDocs);
+            const [entityDepartments, entityRoles, entityStaff, entityBankAccounts, entityWallets, entityComplianceDocs] = await managementPromise;
+            setDepartments(entityDepartments || []);
+            setRoles(entityRoles || []);
+            setStaff(entityStaff || []);
+            setBankAccounts(entityBankAccounts || []);
+            setWallets(entityWallets || []);
+            setComplianceDocuments(entityComplianceDocs || []);
+          } catch (err) {
+            console.error('Failed to load entity data:', err);
+            // Set empty arrays as fallback
+            setExpenses([]);
+            setIncome([]);
+            setBudgets([]);
+            setDepartments([]);
+            setRoles([]);
+            setStaff([]);
+            setBankAccounts([]);
+            setWallets([]);
+            setComplianceDocuments([]);
+          }
+        }, 0);
+      } catch (err) {
+        console.error('Error in loadEntityData:', err);
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     loadEntityData();
-  }, [entityId, entities, fetchEntityExpenses, fetchEntityIncome, fetchEntityBudgets, fetchEntityDepartments, fetchEntityRoles, fetchEntityStaff, fetchEntityBankAccounts, fetchEntityWallets, fetchEntityComplianceDocuments]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId]);
+
+  // Check if context is loaded
+  if (!hasPermission || !PERMISSIONS) {
+    return <div className="loading">Loading...</div>;
+  }
 
   if (!hasPermission(PERMISSIONS.VIEW_ENTITIES)) {
     return <div className="permission-denied">You don't have permission to view entity dashboards.</div>;
@@ -184,11 +228,60 @@ const EntityDashboard = () => {
         >
           Financial Tracking
         </button>
+        <button
+          className={`tab-btn ${activeTab === 'bookkeeping' ? 'active' : ''}`}
+          onClick={() => setActiveTab('bookkeeping')}
+        >
+          📚 Bookkeeping
+        </button>
       </div>
 
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div className="tab-content">
+          {/* Quick Access Cards */}
+          <div className="quick-access-section">
+            <h3>Quick Access</h3>
+            <div className="quick-access-grid">
+              <div className="quick-access-card" onClick={() => navigate(`/enterprise/entity/${entityId}/expenses`)}>
+                <div className="card-icon expenses">💸</div>
+                <h4>Expenses</h4>
+                <p>{expenses.length} transactions</p>
+                <span className="card-arrow">→</span>
+              </div>
+              <div className="quick-access-card" onClick={() => navigate(`/enterprise/entity/${entityId}/income`)}>
+                <div className="card-icon income">💰</div>
+                <h4>Income</h4>
+                <p>{income.length} records</p>
+                <span className="card-arrow">→</span>
+              </div>
+              <div className="quick-access-card" onClick={() => navigate(`/enterprise/entity/${entityId}/budgets`)}>
+                <div className="card-icon budgets">📊</div>
+                <h4>Budgets</h4>
+                <p>{budgets.length} budgets</p>
+                <span className="card-arrow">→</span>
+              </div>
+              <div className="quick-access-card" onClick={() => navigate(`/enterprise/entity/${entityId}/bookkeeping`)}>
+                <div className="card-icon bookkeeping">📚</div>
+                <h4>Bookkeeping</h4>
+                <p>Full accounting</p>
+                <span className="card-arrow">→</span>
+              </div>
+              <div className="quick-access-card" onClick={() => setActiveTab('staff')}>
+                <div className="card-icon staff">👥</div>
+                <h4>Staff & HR</h4>
+                <p>{staff.length} members</p>
+                <span className="card-arrow">→</span>
+              </div>
+              <div className="quick-access-card" onClick={() => setActiveTab('structure')}>
+                <div className="card-icon structure">🏢</div>
+                <h4>Structure</h4>
+                <p>Accounts & docs</p>
+                <span className="card-arrow">→</span>
+              </div>
+            </div>
+          </div>
+
           {/* Financial Summary Cards */}
           <div className="summary-cards">
             <div className="summary-card income">
@@ -263,6 +356,19 @@ const EntityDashboard = () => {
       {/* Expenses Tab */}
       {activeTab === 'expenses' && (
         <div className="tab-content">
+          <div className="management-nav-section">
+            <div className="section-header">
+              <h3>Expense Management</h3>
+              <p>Track and manage all business expenses with detailed categorization</p>
+            </div>
+            <button 
+              className="manage-btn"
+              onClick={() => navigate(`/enterprise/entity/${entityId}/expenses`)}
+            >
+              Open Expense Manager
+            </button>
+          </div>
+          
           <div className="data-table">
             <table>
               <thead>
@@ -274,7 +380,7 @@ const EntityDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {expenses.map(expense => (
+                {expenses.slice(0, 10).map(expense => (
                   <tr key={expense.id}>
                     <td>{new Date(expense.date).toLocaleDateString()}</td>
                     <td>{expense.description}</td>
@@ -285,6 +391,11 @@ const EntityDashboard = () => {
               </tbody>
             </table>
             {expenses.length === 0 && <p className="no-data">No expenses recorded for this entity</p>}
+            {expenses.length > 10 && (
+              <div className="table-footer">
+                <p>Showing 10 of {expenses.length} expenses. <a onClick={() => navigate(`/enterprise/entity/${entityId}/expenses`)}>View all →</a></p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -292,6 +403,19 @@ const EntityDashboard = () => {
       {/* Income Tab */}
       {activeTab === 'income' && (
         <div className="tab-content">
+          <div className="management-nav-section">
+            <div className="section-header">
+              <h3>Income Management</h3>
+              <p>Track revenue streams and analyze income sources</p>
+            </div>
+            <button 
+              className="manage-btn"
+              onClick={() => navigate(`/enterprise/entity/${entityId}/income`)}
+            >
+              Open Income Manager
+            </button>
+          </div>
+
           <div className="data-table">
             <table>
               <thead>
@@ -303,7 +427,7 @@ const EntityDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {income.map(inc => (
+                {income.slice(0, 10).map(inc => (
                   <tr key={inc.id}>
                     <td>{new Date(inc.date).toLocaleDateString()}</td>
                     <td>{inc.source}</td>
@@ -314,6 +438,11 @@ const EntityDashboard = () => {
               </tbody>
             </table>
             {income.length === 0 && <p className="no-data">No income recorded for this entity</p>}
+            {income.length > 10 && (
+              <div className="table-footer">
+                <p>Showing 10 of {income.length} income records. <a onClick={() => navigate(`/enterprise/entity/${entityId}/income`)}>View all →</a></p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -321,6 +450,19 @@ const EntityDashboard = () => {
       {/* Budgets Tab */}
       {activeTab === 'budgets' && (
         <div className="tab-content">
+          <div className="management-nav-section">
+            <div className="section-header">
+              <h3>Budget Management</h3>
+              <p>Set spending limits and monitor budget utilization across categories</p>
+            </div>
+            <button 
+              className="manage-btn"
+              onClick={() => navigate(`/enterprise/entity/${entityId}/budgets`)}
+            >
+              Open Budget Manager
+            </button>
+          </div>
+
           <div className="data-table">
             <table>
               <thead>
@@ -587,6 +729,43 @@ const EntityDashboard = () => {
                     ${staff.filter(s => s.status === 'active').reduce((sum, s) => sum + (parseFloat(s.salary) || 0), 0).toFixed(2)}
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bookkeeping Tab */}
+      {activeTab === 'bookkeeping' && (
+        <div className="tab-content">
+          <div className="bookkeeping-section">
+            <div className="section-info">
+              <h3>📚 Bookkeeping Module</h3>
+              <p>Track all financial transactions, manage accounts, categories, and generate reports.</p>
+              <button 
+                className="setup-btn"
+                onClick={() => navigate(`/enterprise/entity/${entityId}/bookkeeping`)}
+              >
+                Open Bookkeeping Dashboard
+              </button>
+            </div>
+            
+            <div className="features-grid">
+              <div className="feature-card">
+                <h4>💰 Transaction Management</h4>
+                <p>Record income and expenses with detailed categorization</p>
+              </div>
+              <div className="feature-card">
+                <h4>📊 Financial Reports</h4>
+                <p>P&L statements, cashflow, and category breakdowns</p>
+              </div>
+              <div className="feature-card">
+                <h4>🏦 Account Tracking</h4>
+                <p>Monitor bank accounts, wallets, and cash balances</p>
+              </div>
+              <div className="feature-card">
+                <h4>📝 Audit Logs</h4>
+                <p>Complete history of all bookkeeping activities</p>
               </div>
             </div>
           </div>

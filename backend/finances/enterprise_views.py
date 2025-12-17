@@ -12,7 +12,8 @@ from datetime import datetime, timedelta
 from .models import (
     Organization, Entity, TeamMember, Role, Permission, TaxExposure,
     ComplianceDeadline, CashflowForecast, AuditLog, EntityDepartment,
-    EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument
+    EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
+    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog
 )
 from .serializers import (
     OrganizationSerializer, EntitySerializer, EntityDetailSerializer,
@@ -20,7 +21,8 @@ from .serializers import (
     TaxExposureSerializer, ComplianceDeadlineSerializer,
     CashflowForecastSerializer, AuditLogSerializer, OrgOverviewSerializer,
     EntityDepartmentSerializer, EntityRoleSerializer, EntityStaffSerializer,
-    BankAccountSerializer, WalletSerializer, ComplianceDocumentSerializer
+    BankAccountSerializer, WalletSerializer, ComplianceDocumentSerializer,
+    BookkeepingCategorySerializer, BookkeepingAccountSerializer, TransactionSerializer, BookkeepingAuditLogSerializer
 )
 from .permissions import PermissionChecker
 
@@ -396,3 +398,242 @@ class ComplianceDocumentViewSet(viewsets.ModelViewSet):
         expiring_soon = [doc for doc in documents if doc.is_expiring_soon]
         serializer = self.get_serializer(expiring_soon, many=True)
         return Response(serializer.data)
+
+
+# ============================================================================
+# BOOKKEEPING VIEWSETS
+# ============================================================================
+
+class BookkeepingCategoryViewSet(viewsets.ModelViewSet):
+    """ViewSet for bookkeeping categories"""
+    serializer_class = BookkeepingCategorySerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+    
+    def get_queryset(self):
+        """Return categories for specific entity"""
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            return BookkeepingCategory.objects.filter(entity_id=entity_id)
+        return BookkeepingCategory.objects.all()
+    
+    @action(detail=False, methods=['post'])
+    def create_defaults(self, request):
+        """Create default categories for an entity"""
+        entity_id = request.data.get('entity_id')
+        entity = get_object_or_404(Entity, id=entity_id)
+        
+        # Default income categories
+        income_categories = [
+            'Sales Revenue', 'Service Fees', 'Retainers', 'Investment Income',
+            'Loan Repayments', 'Miscellaneous Income'
+        ]
+        
+        # Default expense categories
+        expense_categories = [
+            'Staff Salaries', 'Contractor Payments', 'Rent', 'Utilities',
+            'Car/Vehicle Expenses', 'Shipments & Logistics', 'Software Subscriptions',
+            'Taxes', 'Insurance', 'Legal Fees', 'Marketing', 'Asset Purchases'
+        ]
+        
+        created_categories = []
+        
+        for name in income_categories:
+            cat, created = BookkeepingCategory.objects.get_or_create(
+                entity=entity,
+                name=name,
+                type='income',
+                defaults={'is_default': True}
+            )
+            if created:
+                created_categories.append(cat)
+        
+        for name in expense_categories:
+            cat, created = BookkeepingCategory.objects.get_or_create(
+                entity=entity,
+                name=name,
+                type='expense',
+                defaults={'is_default': True}
+            )
+            if created:
+                created_categories.append(cat)
+        
+        serializer = self.get_serializer(created_categories, many=True)
+        return Response({'created': len(created_categories), 'categories': serializer.data})
+
+
+class BookkeepingAccountViewSet(viewsets.ModelViewSet):
+    """ViewSet for bookkeeping accounts"""
+    serializer_class = BookkeepingAccountSerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+    
+    def get_queryset(self):
+        """Return accounts for specific entity"""
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            return BookkeepingAccount.objects.filter(entity_id=entity_id)
+        return BookkeepingAccount.objects.all()
+
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    """ViewSet for transactions with calculations"""
+    serializer_class = TransactionSerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+    
+    def get_queryset(self):
+        """Return transactions for specific entity with filters"""
+        entity_id = self.request.query_params.get('entity_id')
+        queryset = Transaction.objects.all()
+        
+        if entity_id:
+            queryset = queryset.filter(entity_id=entity_id)
+        
+        # Filters
+        transaction_type = self.request.query_params.get('type')
+        if transaction_type:
+            queryset = queryset.filter(type=transaction_type)
+        
+        category_id = self.request.query_params.get('category_id')
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        
+        account_id = self.request.query_params.get('account_id')
+        if account_id:
+            queryset = queryset.filter(account_id=account_id)
+        
+        start_date = self.request.query_params.get('start_date')
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+        
+        end_date = self.request.query_params.get('end_date')
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+        
+        return queryset
+    
+    def perform_create(self, serializer):
+        """Create transaction and log action"""
+        transaction = serializer.save(created_by=self.request.user if hasattr(self.request, 'user') and self.request.user.is_authenticated else None)
+        
+        # Log action
+        BookkeepingAuditLog.objects.create(
+            entity=transaction.entity,
+            action='create_transaction',
+            user=transaction.created_by,
+            new_value={
+                'id': transaction.id,
+                'type': transaction.type,
+                'amount': str(transaction.amount),
+                'description': transaction.description
+            }
+        )
+    
+    def perform_update(self, serializer):
+        """Update transaction and log action"""
+        old_transaction = self.get_object()
+        old_value = {
+            'amount': str(old_transaction.amount),
+            'type': old_transaction.type,
+            'category': old_transaction.category.name,
+            'account': old_transaction.account.name
+        }
+        
+        transaction = serializer.save()
+        
+        # Log action
+        BookkeepingAuditLog.objects.create(
+            entity=transaction.entity,
+            action='edit_transaction',
+            user=self.request.user if hasattr(self.request, 'user') and self.request.user.is_authenticated else None,
+            old_value=old_value,
+            new_value={
+                'amount': str(transaction.amount),
+                'type': transaction.type,
+                'category': transaction.category.name,
+                'account': transaction.account.name
+            }
+        )
+    
+    def perform_destroy(self, instance):
+        """Delete transaction and log action"""
+        BookkeepingAuditLog.objects.create(
+            entity=instance.entity,
+            action='delete_transaction',
+            user=self.request.user if hasattr(self.request, 'user') and self.request.user.is_authenticated else None,
+            old_value={
+                'id': instance.id,
+                'type': instance.type,
+                'amount': str(instance.amount),
+                'description': instance.description
+            }
+        )
+        instance.delete()
+    
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        """Get financial summary for entity"""
+        from django.db.models import Sum, Count
+        from datetime import datetime, timedelta
+        
+        entity_id = request.query_params.get('entity_id')
+        if not entity_id:
+            return Response({'error': 'entity_id required'}, status=400)
+        
+        # Date filters
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+        
+        queryset = Transaction.objects.filter(entity_id=entity_id)
+        
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+        
+        # Calculate totals
+        income_total = queryset.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0
+        expense_total = queryset.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0
+        
+        # Payroll total (staff salaries)
+        payroll_total = queryset.filter(
+            type='expense',
+            category__name__icontains='salary'
+        ).aggregate(total=Sum('amount'))['total'] or 0
+        
+        # Category breakdown
+        category_breakdown = queryset.values(
+            'category__name', 'category__type'
+        ).annotate(
+            total=Sum('amount'),
+            count=Count('id')
+        ).order_by('-total')[:10]
+        
+        # Monthly trend (last 6 months)
+        six_months_ago = datetime.now().date() - timedelta(days=180)
+        monthly_data = queryset.filter(date__gte=six_months_ago).extra(
+            select={'month': "strftime('%%Y-%%m', date)"}
+        ).values('month', 'type').annotate(
+            total=Sum('amount')
+        ).order_by('month')
+        
+        return Response({
+            'total_income': float(income_total),
+            'total_expense': float(expense_total),
+            'net_profit': float(income_total - expense_total),
+            'payroll_total': float(payroll_total),
+            'transaction_count': queryset.count(),
+            'category_breakdown': list(category_breakdown),
+            'monthly_trend': list(monthly_data)
+        })
+
+
+class BookkeepingAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for bookkeeping audit logs (read-only)"""
+    serializer_class = BookkeepingAuditLogSerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+    
+    def get_queryset(self):
+        """Return audit logs for specific entity"""
+        entity_id = self.request.query_params.get('entity_id')
+        if entity_id:
+            return BookkeepingAuditLog.objects.filter(entity_id=entity_id)
+        return BookkeepingAuditLog.objects.all()

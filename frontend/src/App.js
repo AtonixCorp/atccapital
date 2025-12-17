@@ -23,6 +23,13 @@ import FinancialSettings from './pages/FinancialSettings/FinancialSettings';
 import EnterpriseOrgOverview from './pages/Enterprise/EnterpriseOrgOverview';
 import EnterpriseEntities from './pages/Enterprise/EnterpriseEntities';
 import EntityDashboard from './pages/Enterprise/EntityDashboard';
+import BookkeepingDashboard from './pages/Enterprise/Bookkeeping/BookkeepingDashboard';
+import TransactionList from './pages/Enterprise/Bookkeeping/TransactionList';
+import CategoryManager from './pages/Enterprise/Bookkeeping/CategoryManager';
+import AccountManager from './pages/Enterprise/Bookkeeping/AccountManager';
+import ExpensesManager from './pages/Enterprise/Management/ExpensesManager';
+import IncomeManager from './pages/Enterprise/Management/IncomeManager';
+import BudgetsManager from './pages/Enterprise/Management/BudgetsManager';
 import EnterpriseTaxCompliance from './pages/Enterprise/EnterpriseTaxCompliance';
 import EnterpriseCashflow from './pages/Enterprise/EnterpriseCashflow';
 import EnterpriseRiskExposure from './pages/Enterprise/EnterpriseRiskExposure';
@@ -185,6 +192,55 @@ function App() {
               <ProtectedRoute>
                 <AccountTypeRoute requiredType="enterprise">
                   <Layout><EntityDashboard /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/bookkeeping" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><BookkeepingDashboard /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/bookkeeping/transactions" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><TransactionList /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/bookkeeping/categories" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><CategoryManager /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/bookkeeping/accounts" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><AccountManager /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/expenses" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><ExpensesManager /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/income" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><IncomeManager /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/budgets" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><BudgetsManager /></Layout>
                 </AccountTypeRoute>
               </ProtectedRoute>
             } />

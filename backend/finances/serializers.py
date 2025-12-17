@@ -6,7 +6,8 @@ from .models import (
     ModelTemplate, FinancialModel, Scenario, SensitivityAnalysis, AIInsight,
     CustomKPI, KPICalculation, Report, Consolidation, ConsolidationEntity,
     TaxCalculation, ACCOUNT_TYPE_PERSONAL, ACCOUNT_TYPE_ENTERPRISE,
-    EntityDepartment, EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument
+    EntityDepartment, EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
+    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog
 )
 
 
@@ -412,3 +413,67 @@ class ComplianceDocumentSerializer(serializers.ModelSerializer):
         model = ComplianceDocument
         fields = ['id', 'entity', 'document_type', 'title', 'document_number', 'issuing_authority', 'issue_date', 'expiry_date', 'renewal_date', 'status', 'file_path', 'notes', 'reminder_days', 'responsible_user', 'responsible_user_name', 'days_until_expiry', 'is_expiring_soon', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
+
+
+# ============================================================================
+# BOOKKEEPING SERIALIZERS
+# ============================================================================
+
+class BookkeepingCategorySerializer(serializers.ModelSerializer):
+    transaction_count = serializers.SerializerMethodField()
+    total_amount = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookkeepingCategory
+        fields = ['id', 'entity', 'name', 'type', 'description', 'is_default', 'transaction_count', 'total_amount', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+    
+    def get_transaction_count(self, obj):
+        return obj.transactions.count()
+    
+    def get_total_amount(self, obj):
+        from django.db.models import Sum
+        total = obj.transactions.aggregate(total=Sum('amount'))['total']
+        return float(total) if total else 0.0
+
+
+class BookkeepingAccountSerializer(serializers.ModelSerializer):
+    transaction_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookkeepingAccount
+        fields = ['id', 'entity', 'name', 'type', 'balance', 'currency', 'account_number', 'description', 'is_active', 'transaction_count', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+    
+    def get_transaction_count(self, obj):
+        return obj.transactions.count()
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    category_name = serializers.ReadOnlyField(source='category.name')
+    account_name = serializers.ReadOnlyField(source='account.name')
+    staff_member_name = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Transaction
+        fields = ['id', 'entity', 'type', 'category', 'category_name', 'account', 'account_name', 'amount', 'currency', 'payment_method', 'description', 'reference_number', 'date', 'attachment_url', 'staff_member', 'staff_member_name', 'created_by', 'created_by_name', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+    
+    def get_staff_member_name(self, obj):
+        return obj.staff_member.full_name if obj.staff_member else None
+    
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None
+
+
+class BookkeepingAuditLogSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = BookkeepingAuditLog
+        fields = ['id', 'entity', 'action', 'user', 'user_name', 'old_value', 'new_value', 'timestamp', 'ip_address']
+        read_only_fields = ['timestamp']
+    
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() if obj.user else 'System'

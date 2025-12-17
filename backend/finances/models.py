@@ -193,11 +193,52 @@ class Entity(models.Model):
                 }
             )
 
+        # Create default bookkeeping categories
+        default_income_categories = [
+            'Sales Revenue', 'Service Fees', 'Retainers', 'Investment Income',
+            'Loan Repayments', 'Miscellaneous Income'
+        ]
+        
+        default_expense_categories_bookkeeping = [
+            'Staff Salaries', 'Contractor Payments', 'Rent', 'Utilities',
+            'Car/Vehicle Expenses', 'Shipments & Logistics', 'Software Subscriptions',
+            'Taxes', 'Insurance', 'Legal Fees', 'Marketing', 'Asset Purchases'
+        ]
+        
+        for cat_name in default_income_categories:
+            BookkeepingCategory.objects.get_or_create(
+                entity=self,
+                name=cat_name,
+                type='income',
+                defaults={'is_default': True}
+            )
+        
+        for cat_name in default_expense_categories_bookkeeping:
+            BookkeepingCategory.objects.get_or_create(
+                entity=self,
+                name=cat_name,
+                type='expense',
+                defaults={'is_default': True}
+            )
+        
+        # Create default bookkeeping account
+        BookkeepingAccount.objects.get_or_create(
+            entity=self,
+            name=f"{self.main_bank or 'Main Account'}",
+            defaults={
+                'type': 'bank',
+                'balance': 0,
+                'currency': self.local_currency,
+                'is_active': True
+            }
+        )
+
         return {
             'departments': departments,
             'roles': roles,
             'expense_categories': default_expense_categories,
-            'income_sources': default_income_sources
+            'income_sources': default_income_sources,
+            'bookkeeping_setup': True
         }
 
 
@@ -1099,3 +1140,180 @@ class TaxCalculation(models.Model):
 
     def __str__(self):
         return f"{self.calculation_type} - {self.entity.name} ({self.tax_year})"
+
+
+# ============================================================================
+# BOOKKEEPING MODULE MODELS
+# ============================================================================
+
+class BookkeepingCategory(models.Model):
+    """Transaction categories for income and expenses"""
+    CATEGORY_TYPE_CHOICES = [
+        ('income', 'Income'),
+        ('expense', 'Expense'),
+    ]
+    
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='bookkeeping_categories')
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=20, choices=CATEGORY_TYPE_CHOICES)
+    description = models.TextField(blank=True)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['type', 'name']
+        unique_together = ('entity', 'name', 'type')
+        verbose_name_plural = 'Bookkeeping Categories'
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_type_display()})"
+
+
+class BookkeepingAccount(models.Model):
+    """Financial accounts for tracking balances"""
+    ACCOUNT_TYPE_CHOICES = [
+        ('bank', 'Bank Account'),
+        ('wallet', 'Wallet'),
+        ('cash', 'Cash'),
+    ]
+    
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='bookkeeping_accounts')
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=20, choices=ACCOUNT_TYPE_CHOICES)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    currency = models.CharField(max_length=3, default='USD')
+    account_number = models.CharField(max_length=100, blank=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-is_active', 'type', 'name']
+        unique_together = ('entity', 'name')
+    
+    def __str__(self):
+        return f"{self.name} - {self.currency} {self.balance:,.2f}"
+
+
+class Transaction(models.Model):
+    """Core transaction model for bookkeeping"""
+    TRANSACTION_TYPE_CHOICES = [
+        ('income', 'Income'),
+        ('expense', 'Expense'),
+    ]
+    
+    PAYMENT_METHOD_CHOICES = [
+        ('bank', 'Bank Transfer'),
+        ('wallet', 'Wallet'),
+        ('cash', 'Cash'),
+        ('card', 'Card Payment'),
+        ('cheque', 'Cheque'),
+        ('other', 'Other'),
+    ]
+    
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='transactions')
+    type = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES)
+    category = models.ForeignKey(BookkeepingCategory, on_delete=models.PROTECT, related_name='transactions')
+    account = models.ForeignKey(BookkeepingAccount, on_delete=models.PROTECT, related_name='transactions')
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    currency = models.CharField(max_length=3, default='USD')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+    description = models.TextField()
+    reference_number = models.CharField(max_length=100, blank=True)
+    date = models.DateField()
+    attachment_url = models.URLField(blank=True)
+    
+    # Staff payroll tracking
+    staff_member = models.ForeignKey(EntityStaff, on_delete=models.SET_NULL, null=True, blank=True, related_name='transactions')
+    
+    # Metadata
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='transactions_created')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-date', '-created_at']
+        indexes = [
+            models.Index(fields=['entity', 'date']),
+            models.Index(fields=['entity', 'type']),
+            models.Index(fields=['category']),
+        ]
+    
+    def __str__(self):
+        return f"{self.get_type_display()} - {self.currency} {self.amount:,.2f} - {self.description[:50]}"
+    
+    def save(self, *args, **kwargs):
+        """Update account balance on transaction save"""
+        is_new = self.pk is None
+        old_transaction = None
+        
+        if not is_new:
+            old_transaction = Transaction.objects.get(pk=self.pk)
+        
+        super().save(*args, **kwargs)
+        
+        # Update account balance
+        if is_new:
+            if self.type == 'income':
+                self.account.balance += self.amount
+            else:  # expense
+                self.account.balance -= self.amount
+            self.account.save()
+        elif old_transaction:
+            # Reverse old transaction
+            if old_transaction.type == 'income':
+                old_transaction.account.balance -= old_transaction.amount
+            else:
+                old_transaction.account.balance += old_transaction.amount
+            old_transaction.account.save()
+            
+            # Apply new transaction
+            if self.type == 'income':
+                self.account.balance += self.amount
+            else:
+                self.account.balance -= self.amount
+            self.account.save()
+    
+    def delete(self, *args, **kwargs):
+        """Reverse account balance on transaction delete"""
+        if self.type == 'income':
+            self.account.balance -= self.amount
+        else:
+            self.account.balance += self.amount
+        self.account.save()
+        super().delete(*args, **kwargs)
+
+
+class BookkeepingAuditLog(models.Model):
+    """Audit log for all bookkeeping actions"""
+    ACTION_CHOICES = [
+        ('create_transaction', 'Created Transaction'),
+        ('edit_transaction', 'Edited Transaction'),
+        ('delete_transaction', 'Deleted Transaction'),
+        ('create_category', 'Created Category'),
+        ('edit_category', 'Edited Category'),
+        ('delete_category', 'Deleted Category'),
+        ('create_account', 'Created Account'),
+        ('edit_account', 'Edited Account'),
+        ('delete_account', 'Deleted Account'),
+    ]
+    
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='bookkeeping_audit_logs')
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    old_value = models.JSONField(null=True, blank=True)
+    new_value = models.JSONField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['entity', 'timestamp']),
+            models.Index(fields=['action']),
+        ]
+    
+    def __str__(self):
+        return f"{self.get_action_display()} - {self.user} - {self.timestamp}"

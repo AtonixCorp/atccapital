@@ -13,5 +13,15 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      // Suppress benign ResizeObserver errors from Recharts
+      window.addEventListener('error', (e) => {
+        if (e.message === 'ResizeObserver loop completed with undelivered notifications.' || 
+            e.message === 'ResizeObserver loop limit exceeded') {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
 </html>

@@ -273,6 +273,80 @@
   margin: 2rem;
 }
 
+/* Bookkeeping Section */
+.bookkeeping-section {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-info {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.section-info h3 {
+  font-size: 32px;
+  margin: 0 0 15px 0;
+}
+
+.section-info p {
+  font-size: 16px;
+  opacity: 0.95;
+  margin-bottom: 25px;
+}
+
+.setup-btn {
+  background: white;
+  color: #667eea;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.setup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card h4 {
+  font-size: 18px;
+  margin: 0 0 10px 0;
+  color: #1a202c;
+}
+
+.feature-card p {
+  color: #718096;
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .entity-dashboard {
@@ -564,3 +638,176 @@
   background: #d1ecf1;
   color: #0c5460;
 }
+/* Management Navigation Section */
+.management-nav-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.management-nav-section .section-header h3 {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+.management-nav-section .section-header p {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.manage-btn {
+  padding: 12px 24px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.manage-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.table-footer {
+  padding: 15px;
+  text-align: center;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.table-footer p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.table-footer a {
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.table-footer a:hover {
+  text-decoration: underline;
+}
+
+
+/* Quick Access Section */
+.quick-access-section {
+  margin-bottom: 30px;
+}
+
+.quick-access-section h3 {
+  font-size: 20px;
+  color: #1a202c;
+  margin: 0 0 20px 0;
+}
+
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.quick-access-card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 25px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-access-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.quick-access-card:hover::before {
+  left: 100%;
+}
+
+.quick-access-card:hover {
+  border-color: #667eea;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.card-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.card-icon.expenses {
+  filter: hue-rotate(340deg);
+}
+
+.card-icon.income {
+  filter: hue-rotate(90deg);
+}
+
+.card-icon.budgets {
+  filter: hue-rotate(200deg);
+}
+
+.card-icon.bookkeeping {
+  filter: hue-rotate(270deg);
+}
+
+.card-icon.staff {
+  filter: hue-rotate(180deg);
+}
+
+.card-icon.structure {
+  filter: hue-rotate(30deg);
+}
+
+.quick-access-card h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 5px 0;
+}
+
+.quick-access-card p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.card-arrow {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 18px;
+  color: #cbd5e0;
+  transition: all 0.3s;
+}
+
+.quick-access-card:hover .card-arrow {
+  color: #667eea;
+  transform: translateX(4px);
+}
+

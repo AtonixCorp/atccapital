@@ -75,22 +75,29 @@ const EnterpriseEntities = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-
+    
     // Auto-populate currency and banks when country is selected
     if (name === 'country' && value) {
       const selectedCountry = countries.find(country => country.name === value);
       if (selectedCountry) {
-        const currency = selectedCountry.currency;
+        // Extract currency code from currency object
+        const currencyCode = selectedCountry.currency?.code || selectedCountry.currency || 'USD';
         const banks = selectedCountry.banks || [];
         
+        console.log('Selected country:', selectedCountry.name, 'Currency:', currencyCode);
+        
         setFormData(prev => ({ 
-          ...prev, 
-          local_currency: currency,
-          main_bank: banks.length > 0 ? banks[0] : '' // Set first bank as default
+          ...prev,
+          [name]: value,
+          local_currency: currencyCode,
+          main_bank: '' // Reset bank selection
         }));
         setAvailableBanks(banks);
+      } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
       }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 

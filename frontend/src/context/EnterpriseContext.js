@@ -519,7 +519,7 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const createEntity = useCallback(async (entityData) => {
     try {
-      const response = await fetch('/api/entities/', {
+      const response = await fetch('http://localhost:8000/api/entities/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -533,8 +533,14 @@ export const EnterpriseProvider = ({ children }) => {
         setEntities([...entities, newEntity]);
         return newEntity;
       } else {
-        const errorData = await response.json();
-        const errorMessage = errorData.detail || errorData.message || 'Failed to create entity';
+        // Try to parse error response
+        let errorMessage = 'Failed to create entity';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorData.message || JSON.stringify(errorData);
+        } catch {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
         throw new Error(errorMessage);
       }
     } catch (err) {
@@ -1000,6 +1006,284 @@ export const EnterpriseProvider = ({ children }) => {
     }
   }, []);
 
+  // ============================================================================
+  // BOOKKEEPING FUNCTIONS
+  // ============================================================================
+
+  /**
+   * Fetch bookkeeping categories for entity
+   */
+  const fetchBookkeepingCategories = useCallback(async (entityId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/bookkeeping-categories/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to fetch categories');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      return [];
+    }
+  }, []);
+
+  /**
+   * Create default bookkeeping categories for entity
+   */
+  const createDefaultCategories = useCallback(async (entityId) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/bookkeeping-categories/create_defaults/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ entity_id: entityId }),
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to create default categories');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+  }, []);
+
+  /**
+   * Create custom category
+   */
+  const createBookkeepingCategory = useCallback(async (categoryData) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/bookkeeping-categories/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(categoryData),
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create category');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Fetch bookkeeping accounts for entity
+   */
+  const fetchBookkeepingAccounts = useCallback(async (entityId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/bookkeeping-accounts/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to fetch accounts');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      return [];
+    }
+  }, []);
+
+  /**
+   * Create bookkeeping account
+   */
+  const createBookkeepingAccount = useCallback(async (accountData) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/bookkeeping-accounts/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(accountData),
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create account');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Fetch transactions for entity with filters
+   */
+  const fetchTransactions = useCallback(async (entityId, filters = {}) => {
+    try {
+      const params = new URLSearchParams({ entity_id: entityId, ...filters });
+      const response = await fetch(`http://localhost:8000/api/transactions/?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to fetch transactions');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      return [];
+    }
+  }, []);
+
+  /**
+   * Create transaction
+   */
+  const createTransaction = useCallback(async (transactionData) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/transactions/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create transaction');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Update transaction
+   */
+  const updateTransaction = useCallback(async (transactionId, transactionData) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/transactions/${transactionId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to update transaction');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Delete transaction
+   */
+  const deleteTransaction = useCallback(async (transactionId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/transactions/${transactionId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return true;
+      } else {
+        throw new Error('Failed to delete transaction');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, []);
+
+  /**
+   * Fetch bookkeeping summary for entity
+   */
+  const fetchBookkeepingSummary = useCallback(async (entityId, filters = {}) => {
+    try {
+      const params = new URLSearchParams({ entity_id: entityId, ...filters });
+      const response = await fetch(`http://localhost:8000/api/transactions/summary/?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to fetch summary');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      return null;
+    }
+  }, []);
+
+  /**
+   * Fetch audit logs for entity
+   */
+  const fetchBookkeepingAuditLogs = useCallback(async (entityId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/bookkeeping-audit-logs/?entity_id=${entityId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (response.ok) {
+        return await response.json();
+      } else {
+        throw new Error('Failed to fetch audit logs');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      return [];
+    }
+  }, []);
+
   const value = {
     // State
     organizations,
@@ -1057,6 +1341,19 @@ export const EnterpriseProvider = ({ children }) => {
     createBankAccount,
     createWallet,
     createComplianceDocument,
+
+    // Bookkeeping functions
+    fetchBookkeepingCategories,
+    createDefaultCategories,
+    createBookkeepingCategory,
+    fetchBookkeepingAccounts,
+    createBookkeepingAccount,
+    fetchTransactions,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
+    fetchBookkeepingSummary,
+    fetchBookkeepingAuditLogs,
 
     // Setters
     setCurrentOrganization,
