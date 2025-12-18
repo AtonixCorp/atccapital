@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useEnterprise } from '../../context/EnterpriseContext';
 import { FaHome, FaMoneyBillWave, FaHandHoldingUsd, FaChartLine, FaChartBar, FaBrain, FaDna, FaShieldAlt, FaTrophy, FaCalculator, FaSignOutAlt, FaMoneyBill, FaBuilding, FaCheckCircle, FaFileExport, FaUsers, FaCog, FaExclamationTriangle, FaSync, FaBars, FaTimes } from 'react-icons/fa';
 import './Layout.css';
 
@@ -8,6 +9,9 @@ const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isEnterprise = user?.account_type === 'enterprise';
+  const { entities } = useEnterprise();
+  const firstEntity = (entities && entities.length > 0) ? entities[0] : null;
+  const bookkeepingPath = firstEntity ? `/enterprise/entity/${firstEntity.id}/bookkeeping` : '/app/enterprise/entities';
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
 
   const handleLogout = () => {
@@ -41,6 +45,12 @@ const Layout = ({ children }) => {
                   {!sidebarMinimized && 'Home'}
                 </NavLink>
               </li>
+                <li>
+                  <NavLink to={bookkeepingPath} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                    <span className="nav-icon"><FaMoneyBillWave /></span>
+                    {!sidebarMinimized && 'Bookkeeping'}
+                  </NavLink>
+                </li>
               <li>
                 <NavLink to="/income" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                   <span className="nav-icon"><FaHandHoldingUsd /></span>

@@ -109,10 +109,29 @@ const EnterpriseEntities = () => {
     }
 
     try {
-      await createEntity({
+      // Map extended UI entity types to backend-supported choices
+      const typeMapping = {
+        public_company: 'corporation',
+        public: 'corporation',
+        holding_company: 'subsidiary',
+        spv: 'other',
+        trust: 'other',
+        foundation: 'nonprofit',
+        representative_office: 'branch',
+        government_entity: 'other',
+        joint_venture: 'partnership',
+        sole_trader: 'sole_proprietor',
+        llp: 'partnership',
+        public_company: 'corporation'
+      };
+
+      const payload = {
         ...formData,
+        entity_type: typeMapping[formData.entity_type] || formData.entity_type,
         organization_id: currentOrganization.id,
-      });
+      };
+
+      await createEntity(payload);
       alert('Entity created successfully!');
       handleCloseModal();
     } catch (err) {
@@ -322,12 +341,22 @@ const EnterpriseEntities = () => {
                   <label>Entity Type *</label>
                   <select name="entity_type" value={formData.entity_type} onChange={handleInputChange}>
                     <option value="sole_proprietor">Sole Proprietor</option>
+                    <option value="sole_trader">Sole Trader</option>
                     <option value="llc">LLC</option>
+                    <option value="llp">LLP (Limited Liability Partnership)</option>
                     <option value="partnership">Partnership</option>
                     <option value="corporation">Corporation</option>
+                    <option value="public_company">Public Company</option>
+                    <option value="holding_company">Holding Company</option>
+                    <option value="spv">SPV / Special Purpose Vehicle</option>
+                    <option value="trust">Trust</option>
+                    <option value="foundation">Foundation</option>
                     <option value="nonprofit">Nonprofit</option>
                     <option value="subsidiary">Subsidiary</option>
                     <option value="branch">Branch</option>
+                    <option value="representative_office">Representative Office</option>
+                    <option value="government_entity">Government / Public Sector</option>
+                    <option value="joint_venture">Joint Venture</option>
                     <option value="other">Other</option>
                   </select>
                 </div>

@@ -76,7 +76,27 @@ export function createEntity(
     return null;
   }
 
-  const validEntityTypes = ['PARENT', 'SUBSIDIARY', 'BRANCH', 'JV'];
+  const validEntityTypes = [
+    'PARENT',
+    'SUBSIDIARY',
+    'BRANCH',
+    'JV',
+    'JOINT_VENTURE',
+    'TRUST',
+    'FOUNDATION',
+    'LLP',
+    'PUBLIC_COMPANY',
+    'HOLDING_COMPANY',
+    'SPV',
+    'REPRESENTATIVE_OFFICE',
+    'GOVERNMENT_ENTITY',
+    'SOLE_PROPRIETOR',
+    'SOLE_TRADER',
+    'PARTNERSHIP',
+    'CORPORATION',
+    'NONPROFIT',
+    'OTHER'
+  ];
   if (!validEntityTypes.includes(entityType)) {
     console.error(`createEntity: Invalid entity type. Must be one of: ${validEntityTypes.join(', ')}`);
     return null;

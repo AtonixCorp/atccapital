@@ -519,7 +519,7 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const createEntity = useCallback(async (entityData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/entities/', {
+      const response = await fetch('/api/entities/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -530,7 +530,18 @@ export const EnterpriseProvider = ({ children }) => {
 
       if (response.ok) {
         const newEntity = await response.json();
-        setEntities([...entities, newEntity]);
+        // Refresh authoritative list from server to avoid local-state drift
+        try {
+          if (entityData.organization_id) {
+            await fetchEntities(entityData.organization_id);
+          } else {
+            setEntities(prev => [...prev, newEntity]);
+          }
+        } catch (err) {
+          // fallback to local update
+          setEntities(prev => [...prev, newEntity]);
+        }
+
         return newEntity;
       } else {
         // Try to parse error response

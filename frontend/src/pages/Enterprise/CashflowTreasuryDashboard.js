@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FaWallet, FaChartLine, FaCoins, FaClock, FaExclamationTriangle, FaCheckCircle, FaArrowUp, FaArrowDown, FaExchangeAlt, FaPiggyBank, FaCreditCard, FaCalendarAlt, FaFilter, FaDownload } from 'react-icons/fa';
+import { useSearchParams } from 'react-router-dom';
+import { 
+  FaWallet, FaChartLine, FaCoins, FaClock, FaExclamationTriangle, FaCheckCircle, 
+  FaArrowUp, FaArrowDown, FaExchangeAlt, FaPiggyBank, FaCreditCard, FaCalendarAlt, 
+  FaFilter, FaDownload, FaRobot, FaBrain, FaShieldAlt, FaChartBar, FaBell, 
+  FaGlobe, FaSync, FaFileAlt, FaCog, FaPlay, FaBuilding, FaPercent,
+  FaTachometerAlt, FaNetworkWired, FaProjectDiagram, FaLightbulb, FaRocket
+} from 'react-icons/fa';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import './CashflowTreasury.css';
 
 const CashflowTreasuryDashboard = () => {
   const { currentOrganization, entities, fetchCashflowTreasuryDashboard } = useEnterprise();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeSection = searchParams.get('section') || 'overview';
 
   // State management
   const [selectedEntity, setSelectedEntity] = useState(null);

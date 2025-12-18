@@ -552,27 +552,6 @@ const EnterpriseTaxCompliance = () => {
 
   const renderOverview = () => (
     <div className="compliance-overview">
-      <div className="overview-header">
-        <h2>Tax Compliance Overview</h2>
-        <p>Automated tax management across {taxProfiles.length} jurisdictions</p>
-      </div>
-
-      {/* Quick Actions Bar */}
-      <div className="quick-actions">
-        <button className="btn-primary" onClick={() => setSearchParams({ section: 'calculator' })}>
-          <FaCalculator /> Run Tax Calculation
-        </button>
-        <button className="btn-secondary" onClick={() => setSearchParams({ section: 'monitoring' })}>
-          <FaBell /> Check Compliance Status
-        </button>
-        <button className="btn-secondary" onClick={() => setSearchParams({ section: 'filing' })}>
-          <FaFileExport /> Generate Reports
-        </button>
-        <button className="btn-link" onClick={() => setSearchParams({ section: 'advisor' })}>
-          <FaRobot /> Ask AI Advisor
-        </button>
-      </div>
-
       {/* Quick Stats */}
       <div className="overview-stats">
         <div className="stat-card">
@@ -607,6 +586,22 @@ const EnterpriseTaxCompliance = () => {
             <span className="stat-trend positive">All up to date</span>
           </div>
         </div>
+      </div>
+
+      {/* Quick Actions Bar */}
+      <div className="quick-actions">
+        <button className="quick-action-btn" onClick={() => setSearchParams({ section: 'calculator' })}>
+          <FaCalculator /> Run Tax Calculation
+        </button>
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'monitoring' })}>
+          <FaBell /> Check Compliance
+        </button>
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'filing' })}>
+          <FaFileExport /> Generate Reports
+        </button>
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'advisor' })}>
+          <FaRobot /> Ask AI Advisor
+        </button>
       </div>
 
       {/* Compliance Health Dashboard */}
@@ -2593,6 +2588,14 @@ const EnterpriseTaxCompliance = () => {
 
   return (
     <div className="enterprise-tax-compliance">
+      {/* Page Header */}
+      <div className="page-header-tax">
+        <div className="header-content-tax">
+          <h1>Tax & Compliance</h1>
+          <p>Automated Global Tax Management</p>
+        </div>
+      </div>
+
       {/* Section Navigation Header */}
       <div className="section-navigation">
         <button

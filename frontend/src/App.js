@@ -28,6 +28,7 @@ import TransactionList from './pages/Enterprise/Bookkeeping/TransactionList';
 import CategoryManager from './pages/Enterprise/Bookkeeping/CategoryManager';
 import AccountManager from './pages/Enterprise/Bookkeeping/AccountManager';
 import BookkeepingReports from './pages/Enterprise/Bookkeeping/BookkeepingReports';
+import StaffHR from './pages/Enterprise/Bookkeeping/StaffHR';
 import CashflowTreasuryDashboard from './pages/Enterprise/CashflowTreasuryDashboard';
 import ExpensesManager from './pages/Enterprise/Management/ExpensesManager';
 import IncomeManager from './pages/Enterprise/Management/IncomeManager';
@@ -229,6 +230,13 @@ function App() {
               <ProtectedRoute>
                 <AccountTypeRoute requiredType="enterprise">
                   <Layout><BookkeepingReports /></Layout>
+                </AccountTypeRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/enterprise/entity/:entityId/bookkeeping/staff-hr" element={
+              <ProtectedRoute>
+                <AccountTypeRoute requiredType="enterprise">
+                  <Layout><StaffHR /></Layout>
                 </AccountTypeRoute>
               </ProtectedRoute>
             } />

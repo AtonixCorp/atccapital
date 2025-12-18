@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaMoneyBillWave, FaWallet, FaChartLine, FaFileInvoiceDollar, FaPlus, FaFilter, FaDownload, FaList, FaTag, FaUniversity, FaFileAlt } from 'react-icons/fa';
+import { FaMoneyBillWave, FaWallet, FaChartLine, FaFileInvoiceDollar, FaPlus, FaFilter, FaDownload, FaList, FaTag, FaUniversity, FaFileAlt, FaUsers } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
 import TransactionForm from './TransactionForm';
 import './Bookkeeping.css';
@@ -141,6 +141,10 @@ const BookkeepingDashboard = () => {
         <button className="nav-card" onClick={() => navigate(`/enterprise/entity/${entityId}/bookkeeping/reports`)}>
           <FaFileAlt className="nav-icon" />
           <span>Reports</span>
+        </button>
+        <button className="nav-card" onClick={() => navigate(`/enterprise/entity/${entityId}/bookkeeping/staff-hr`)}>
+          <FaUsers className="nav-icon" />
+          <span>Staff & HR</span>
         </button>
       </div>
       
