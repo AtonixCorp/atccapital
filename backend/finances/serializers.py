@@ -7,7 +7,8 @@ from .models import (
     CustomKPI, KPICalculation, Report, Consolidation, ConsolidationEntity,
     TaxCalculation, ACCOUNT_TYPE_PERSONAL, ACCOUNT_TYPE_ENTERPRISE,
     EntityDepartment, EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
-    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog
+    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog,
+    RecurringTransaction, TaskRequest
 )
 
 
@@ -477,3 +478,50 @@ class BookkeepingAuditLogSerializer(serializers.ModelSerializer):
     
     def get_user_name(self, obj):
         return obj.user.get_full_name() if obj.user else 'System'
+
+
+# ============================================================================
+# WORKFLOW & TASK QUEUE SERIALIZERS
+# ============================================================================
+
+class RecurringTransactionSerializer(serializers.ModelSerializer):
+    category_name = serializers.ReadOnlyField(source='category.name')
+    account_name = serializers.ReadOnlyField(source='account.name')
+    staff_member_name = serializers.SerializerMethodField()
+    created_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecurringTransaction
+        fields = [
+            'id', 'entity', 'account', 'account_name', 'category', 'category_name',
+            'type', 'amount', 'currency', 'payment_method', 'description',
+            'staff_member', 'staff_member_name', 'created_by', 'created_by_name',
+            'frequency', 'next_run_date', 'end_date', 'max_occurrences',
+            'occurrences_executed', 'is_active', 'created_at', 'updated_at',
+        ]
+        read_only_fields = ['occurrences_executed', 'created_at', 'updated_at']
+
+    def get_staff_member_name(self, obj):
+        return obj.staff_member.full_name if obj.staff_member else None
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None
+
+
+class TaskRequestSerializer(serializers.ModelSerializer):
+    organization_name = serializers.ReadOnlyField(source='organization.name')
+    entity_name = serializers.ReadOnlyField(source='entity.name')
+    created_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TaskRequest
+        fields = [
+            'id', 'organization', 'organization_name', 'entity', 'entity_name',
+            'created_by', 'created_by_name', 'task_type', 'status', 'priority',
+            'payload', 'result', 'error_message', 'created_at', 'started_at',
+            'completed_at',
+        ]
+        read_only_fields = ['status', 'result', 'error_message', 'created_at', 'started_at', 'completed_at']
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None

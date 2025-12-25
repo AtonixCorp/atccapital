@@ -15,7 +15,7 @@ from .enterprise_views import (
     EntityDepartmentViewSet, EntityRoleViewSet, EntityStaffViewSet,
     BankAccountViewSet, WalletViewSet, ComplianceDocumentViewSet,
     BookkeepingCategoryViewSet, BookkeepingAccountViewSet, TransactionViewSet, BookkeepingAuditLogViewSet,
-    CashflowTreasuryViewSet
+    CashflowTreasuryViewSet, RecurringTransactionViewSet, TaskRequestViewSet
 )
 
 router = DefaultRouter()
@@ -49,6 +49,10 @@ router.register(r'bookkeeping-categories', BookkeepingCategoryViewSet, basename=
 router.register(r'bookkeeping-accounts', BookkeepingAccountViewSet, basename='bookkeeping-account')
 router.register(r'transactions', TransactionViewSet, basename='transaction')
 router.register(r'bookkeeping-audit-logs', BookkeepingAuditLogViewSet, basename='bookkeeping-audit-log')
+
+# Workflow & task queue endpoints
+router.register(r'recurring-transactions', RecurringTransactionViewSet, basename='recurring-transaction')
+router.register(r'task-requests', TaskRequestViewSet, basename='task-request')
 
 # Cashflow & Treasury endpoints
 router.register(r'cashflow-treasury', CashflowTreasuryViewSet, basename='cashflow-treasury')

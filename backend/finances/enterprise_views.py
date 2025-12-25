@@ -13,7 +13,8 @@ from .models import (
     Organization, Entity, TeamMember, Role, Permission, TaxExposure,
     ComplianceDeadline, CashflowForecast, AuditLog, EntityDepartment,
     EntityRole, EntityStaff, BankAccount, Wallet, ComplianceDocument,
-    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog
+    BookkeepingCategory, BookkeepingAccount, Transaction, BookkeepingAuditLog,
+    RecurringTransaction, TaskRequest
 )
 from .serializers import (
     OrganizationSerializer, EntitySerializer, EntityDetailSerializer,
@@ -22,7 +23,8 @@ from .serializers import (
     CashflowForecastSerializer, AuditLogSerializer, OrgOverviewSerializer,
     EntityDepartmentSerializer, EntityRoleSerializer, EntityStaffSerializer,
     BankAccountSerializer, WalletSerializer, ComplianceDocumentSerializer,
-    BookkeepingCategorySerializer, BookkeepingAccountSerializer, TransactionSerializer, BookkeepingAuditLogSerializer
+    BookkeepingCategorySerializer, BookkeepingAccountSerializer, TransactionSerializer, BookkeepingAuditLogSerializer,
+    RecurringTransactionSerializer, TaskRequestSerializer
 )
 from .permissions import PermissionChecker
 
@@ -811,3 +813,148 @@ class CashflowTreasuryViewSet(viewsets.ViewSet):
         """Allocate funds to investment"""
         # Mock implementation
         return Response({'status': 'success', 'message': 'Investment allocation completed'})
+
+
+# ============================================================================
+# WORKFLOW & TASK QUEUE VIEWSETS
+# ============================================================================
+
+
+class RecurringTransactionViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing recurring bookkeeping transactions."""
+
+    serializer_class = RecurringTransactionSerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+
+    def get_queryset(self):
+        entity_id = self.request.query_params.get('entity_id')
+        qs = RecurringTransaction.objects.all()
+        if entity_id:
+            qs = qs.filter(entity_id=entity_id)
+        return qs
+
+    def perform_create(self, serializer):
+        user = getattr(self.request, 'user', None)
+        if user and user.is_authenticated:
+            serializer.save(created_by=user)
+        else:
+            serializer.save()
+
+    @action(detail=False, methods=['post'])
+    def run_due(self, request):
+        """Generate transactions for all due recurring templates as of today."""
+        from datetime import date
+
+        as_of_str = request.data.get('as_of_date')
+        if as_of_str:
+            try:
+                as_of = date.fromisoformat(as_of_str)
+            except ValueError:
+                return Response({'error': 'Invalid as_of_date, expected YYYY-MM-DD'}, status=400)
+        else:
+            as_of = date.today()
+
+        created = []
+        for rt in RecurringTransaction.objects.all():
+            if rt.is_due(as_of):
+                tx = rt.create_transaction(run_date=as_of)
+                if tx is not None:
+                    created.append(tx.id)
+
+        return Response({'created_transaction_ids': created, 'count': len(created), 'as_of_date': as_of.isoformat()})
+
+
+class TaskRequestViewSet(viewsets.ModelViewSet):
+    """Queue-based task management for digital workflows."""
+
+    serializer_class = TaskRequestSerializer
+    permission_classes = []  # Temporarily disabled for mock auth
+
+    def get_queryset(self):
+        qs = TaskRequest.objects.all()
+        org_id = self.request.query_params.get('organization_id')
+        entity_id = self.request.query_params.get('entity_id')
+        status_filter = self.request.query_params.get('status')
+
+        if org_id:
+            qs = qs.filter(organization_id=org_id)
+        if entity_id:
+            qs = qs.filter(entity_id=entity_id)
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        return qs
+
+    def perform_create(self, serializer):
+        user = getattr(self.request, 'user', None)
+        if user and user.is_authenticated:
+            serializer.save(created_by=user)
+        else:
+            serializer.save()
+
+    @action(detail=True, methods=['post'])
+    def process(self, request, pk=None):
+        """Process a queued task synchronously.
+
+        In production this would be delegated to a background worker (Celery,
+        etc.). Here we execute lightweight logic inline and update status.
+        """
+
+        task = self.get_object()
+        if task.status not in ['queued', 'failed']:
+            return Response({'detail': f'Task is already {task.status}.'}, status=400)
+
+        task.mark_processing()
+
+        try:
+            if task.task_type == 'generate_statement':
+                result = self._generate_statement(task)
+            else:
+                result = {
+                    'message': 'Task recorded. Detailed processing to be implemented.',
+                    'task_type': task.task_type,
+                }
+
+            task.mark_completed(result=result)
+        except Exception as exc:  # pragma: no cover - defensive
+            task.mark_failed(error_message=str(exc))
+            return Response({'detail': 'Task processing failed', 'error': str(exc)}, status=500)
+
+        serializer = self.get_serializer(task)
+        return Response(serializer.data)
+
+    def _generate_statement(self, task):
+        """Build a simple income statement from bookkeeping transactions."""
+        from django.db.models import Sum
+
+        payload = task.payload or {}
+        entity_id = payload.get('entity_id') or (task.entity_id if task.entity_id else None)
+        if not entity_id:
+            return {'error': 'entity_id is required in payload to generate a statement.'}
+
+        start_date = payload.get('start_date')
+        end_date = payload.get('end_date')
+
+        qs = Transaction.objects.filter(entity_id=entity_id)
+        if start_date:
+            qs = qs.filter(date__gte=start_date)
+        if end_date:
+            qs = qs.filter(date__lte=end_date)
+
+        income_total = qs.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0
+        expense_total = qs.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0
+
+        by_category = list(
+            qs.values('category__name', 'type')
+            .annotate(total=Sum('amount'))
+            .order_by('-total')
+        )
+
+        return {
+            'entity_id': entity_id,
+            'start_date': start_date,
+            'end_date': end_date,
+            'total_income': float(income_total),
+            'total_expense': float(expense_total),
+            'net_profit': float(income_total - expense_total),
+            'by_category': by_category,
+        }

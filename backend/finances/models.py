@@ -1143,6 +1143,224 @@ class TaxCalculation(models.Model):
 
 
 # ============================================================================
+# WORKFLOW & AUTOMATION MODELS
+# ============================================================================
+
+
+class RecurringTransaction(models.Model):
+    """Template for automatically created recurring bookkeeping transactions.
+
+    Used for items like payroll, rent, subscriptions, depreciation journals, etc.
+    """
+
+    FREQUENCY_CHOICES = [
+        ("daily", "Daily"),
+        ("weekly", "Weekly"),
+        ("monthly", "Monthly"),
+        ("quarterly", "Quarterly"),
+        ("yearly", "Yearly"),
+    ]
+
+    # Local copy of transaction type/payment method choices to avoid referencing
+    # the Transaction class before it is defined.
+    TRANSACTION_TYPE_CHOICES = [
+        ("income", "Income"),
+        ("expense", "Expense"),
+    ]
+
+    PAYMENT_METHOD_CHOICES = [
+        ("bank", "Bank Transfer"),
+        ("wallet", "Wallet"),
+        ("cash", "Cash"),
+        ("card", "Card Payment"),
+        ("cheque", "Cheque"),
+        ("other", "Other"),
+    ]
+
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name="recurring_transactions")
+    account = models.ForeignKey('BookkeepingAccount', on_delete=models.PROTECT, related_name="recurring_transactions")
+    category = models.ForeignKey('BookkeepingCategory', on_delete=models.PROTECT, related_name="recurring_transactions")
+
+    type = models.CharField(max_length=20, choices=TRANSACTION_TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    currency = models.CharField(max_length=3, default="USD")
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default="bank")
+    description = models.TextField()
+
+    staff_member = models.ForeignKey(EntityStaff, on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_transactions")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="recurring_transactions_created")
+
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, default="monthly")
+    next_run_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+
+    max_occurrences = models.IntegerField(null=True, blank=True)
+    occurrences_executed = models.IntegerField(default=0)
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-is_active", "next_run_date"]
+
+    def __str__(self):
+        return f"{self.get_frequency_display()} {self.get_type_display()} - {self.entity.name}"
+
+    def _frequency_delta_days(self):
+        """Approximate frequency in days (used for simple scheduling)."""
+        if self.frequency == "daily":
+            return 1
+        if self.frequency == "weekly":
+            return 7
+        if self.frequency == "monthly":
+            return 30
+        if self.frequency == "quarterly":
+            return 90
+        if self.frequency == "yearly":
+            return 365
+        return 30
+
+    def is_due(self, as_of_date=None):
+        from datetime import date
+
+        if not self.is_active:
+            return False
+
+        today = as_of_date or date.today()
+        if self.next_run_date and self.next_run_date > today:
+            return False
+
+        if self.end_date and today > self.end_date:
+            return False
+
+        if self.max_occurrences is not None and self.occurrences_executed >= self.max_occurrences:
+            return False
+
+        return True
+
+    def schedule_next(self):
+        from datetime import timedelta, date
+
+        base_date = self.next_run_date or date.today()
+        delta_days = self._frequency_delta_days()
+        self.next_run_date = base_date + timedelta(days=delta_days)
+        self.save(update_fields=["next_run_date"])
+
+    def create_transaction(self, run_date=None):
+        """Create a concrete Transaction instance from this template."""
+        from datetime import date
+
+        if not self.is_due(run_date):
+            return None
+
+        transaction_date = run_date or self.next_run_date or date.today()
+
+        transaction = Transaction.objects.create(
+            entity=self.entity,
+            type=self.type,
+            category=self.category,
+            account=self.account,
+            amount=self.amount,
+            currency=self.currency,
+            payment_method=self.payment_method,
+            description=self.description,
+            reference_number=f"AUTO-{self.id}-{self.occurrences_executed + 1}",
+            date=transaction_date,
+            staff_member=self.staff_member,
+            created_by=self.created_by,
+        )
+
+        self.occurrences_executed += 1
+        self.save(update_fields=["occurrences_executed"])
+        self.schedule_next()
+        return transaction
+
+
+class TaskRequest(models.Model):
+    """Queue-based task management for digital office workflows.
+
+    Allows users to submit tasks (e.g. generate statements, run tax calcs,
+    import bank feeds) and poll for status instead of waiting in a physical
+    queue.
+    """
+
+    TASK_TYPE_CHOICES = [
+        ("generate_statement", "Generate Financial Statement"),
+        ("run_tax_calculation", "Run Tax Calculation"),
+        ("import_bank_feed", "Import Bank Feed"),
+        ("process_payroll", "Process Payroll"),
+        ("custom", "Custom Task"),
+    ]
+
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("processing", "Processing"),
+        ("completed", "Completed"),
+        ("failed", "Failed"),
+        ("cancelled", "Cancelled"),
+    ]
+
+    PRIORITY_CHOICES = [
+        ("low", "Low"),
+        ("normal", "Normal"),
+        ("high", "High"),
+        ("urgent", "Urgent"),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="task_requests")
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, null=True, blank=True, related_name="task_requests")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="task_requests")
+
+    task_type = models.CharField(max_length=50, choices=TASK_TYPE_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="queued")
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default="normal")
+
+    payload = models.JSONField(default=dict, blank=True)
+    result = models.JSONField(default=dict, blank=True)
+    error_message = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["organization", "status"]),
+            models.Index(fields=["entity", "status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.get_task_type_display()} [{self.get_status_display()}]"
+
+    def mark_processing(self):
+        from django.utils import timezone
+
+        self.status = "processing"
+        self.started_at = timezone.now()
+        self.save(update_fields=["status", "started_at"])
+
+    def mark_completed(self, result=None):
+        from django.utils import timezone
+
+        self.status = "completed"
+        if result is not None:
+            self.result = result
+        self.completed_at = timezone.now()
+        self.error_message = ""
+        self.save(update_fields=["status", "result", "completed_at", "error_message"])
+
+    def mark_failed(self, error_message):
+        from django.utils import timezone
+
+        self.status = "failed"
+        self.error_message = str(error_message)
+        self.completed_at = timezone.now()
+        self.save(update_fields=["status", "error_message", "completed_at"])
+
+
+# ============================================================================
 # BOOKKEEPING MODULE MODELS
 # ============================================================================
 
