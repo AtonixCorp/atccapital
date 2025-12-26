@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFinance } from '../../context/FinanceContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
-import './Dashboard.css';
+import './Dashboard.charcoal.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -65,7 +65,24 @@ const Dashboard = () => {
     recentTransactions: Array.isArray(expenses) ? [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5) : []
   };
 
-  const COLORS = ['#e74c3c', '#3498db', '#9b59b6', '#f39c12', '#2ecc71', '#1abc9c'];
+  const THEME = {
+    base: '#FFFFFF',
+    panel: '#F2F2F7',
+    border: '#E5E7EB',
+    text: '#1C1C1E',
+    muted: '#6B7280',
+    primary: '#4B5DFF',
+    accent: '#5AC8FA'
+  };
+
+  const COLORS = [
+    'rgba(75, 93, 255, 0.95)',
+    'rgba(90, 200, 250, 0.95)',
+    'rgba(28, 28, 30, 0.55)',
+    'rgba(75, 93, 255, 0.55)',
+    'rgba(90, 200, 250, 0.55)',
+    'rgba(28, 28, 30, 0.35)'
+  ];
 
   return (
     <div className="page-container" key={language}>
@@ -253,13 +270,24 @@ const Dashboard = () => {
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
-                    label={(entry) => `${entry.category}: $${(entry.amount || 0).toFixed(2)}`}
+                    animationDuration={150}
                   >
                     {displayData.categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+                  <Tooltip
+                    formatter={(value) => `$${value.toFixed(2)}`}
+                    contentStyle={{
+                      backgroundColor: THEME.panel,
+                      border: `1px solid ${THEME.border}`,
+                      borderRadius: 8,
+                      color: THEME.text
+                    }}
+                    labelStyle={{ color: THEME.text }}
+                    itemStyle={{ color: THEME.text }}
+                  />
+                  <Legend wrapperStyle={{ color: THEME.muted }} />
                 </PieChart>
               </ResponsiveContainer>
               
@@ -289,13 +317,32 @@ const Dashboard = () => {
             <>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={displayData.budgetComparison}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
-                  <Legend />
-                  <Bar dataKey="spent" fill="#e74c3c" name={t('labels.spent')} />
-                  <Bar dataKey="budget" fill="#2ecc71" name={t('labels.budget')} />
+                  <CartesianGrid stroke={THEME.border} strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="category"
+                    tick={{ fill: THEME.muted, fontSize: 12 }}
+                    axisLine={{ stroke: THEME.border }}
+                    tickLine={{ stroke: THEME.border }}
+                  />
+                  <YAxis
+                    tick={{ fill: THEME.muted, fontSize: 12 }}
+                    axisLine={{ stroke: THEME.border }}
+                    tickLine={{ stroke: THEME.border }}
+                  />
+                  <Tooltip
+                    formatter={(value) => `$${value.toFixed(2)}`}
+                    contentStyle={{
+                      backgroundColor: THEME.panel,
+                      border: `1px solid ${THEME.border}`,
+                      borderRadius: 8,
+                      color: THEME.text
+                    }}
+                    labelStyle={{ color: THEME.text }}
+                    itemStyle={{ color: THEME.text }}
+                  />
+                  <Legend wrapperStyle={{ color: THEME.muted }} />
+                  <Bar dataKey="spent" fill={THEME.accent} name={t('labels.spent')} animationDuration={150} />
+                  <Bar dataKey="budget" fill={THEME.primary} name={t('labels.budget')} animationDuration={150} />
                 </BarChart>
               </ResponsiveContainer>
               
@@ -331,12 +378,38 @@ const Dashboard = () => {
           <h2 className="chart-title">Weekly Spending Pattern</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={monthlySummary.patterns.weeklySpending}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" />
-              <YAxis />
-              <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
-              <Legend />
-              <Line type="monotone" dataKey="amount" stroke="#e74c3c" strokeWidth={2} />
+              <CartesianGrid stroke={THEME.border} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="week"
+                tick={{ fill: THEME.muted, fontSize: 12 }}
+                axisLine={{ stroke: THEME.border }}
+                tickLine={{ stroke: THEME.border }}
+              />
+              <YAxis
+                tick={{ fill: THEME.muted, fontSize: 12 }}
+                axisLine={{ stroke: THEME.border }}
+                tickLine={{ stroke: THEME.border }}
+              />
+              <Tooltip
+                formatter={(value) => `$${value.toFixed(2)}`}
+                contentStyle={{
+                  backgroundColor: THEME.panel,
+                  border: `1px solid ${THEME.border}`,
+                  borderRadius: 8,
+                  color: THEME.text
+                }}
+                labelStyle={{ color: THEME.text }}
+                itemStyle={{ color: THEME.text }}
+              />
+              <Legend wrapperStyle={{ color: THEME.muted }} />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke={THEME.primary}
+                strokeWidth={2}
+                dot={false}
+                animationDuration={150}
+              />
             </LineChart>
           </ResponsiveContainer>
           

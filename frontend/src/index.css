@@ -4,14 +4,44 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Dashboard theme tokens — “Tech Startup Clean” */
+  --pf-base: #FFFFFF;
+  --pf-panel: #F2F2F7;
+  --pf-border: #E5E7EB;
+  --pf-text: #1C1C1E;
+  --pf-text-muted: #6B7280;
+  /* Map existing accent slots to the requested colors */
+  --pf-accent-blue: #4B5DFF; /* Primary (Indigo) */
+  --pf-accent-gold: #5AC8FA; /* Accent (Sky) */
+
+  /* Light app defaults (public pages) */
+  --app-bg: #f5f7fa;
+  --app-text: #333;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Open Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f7fa;
-  color: #333;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}
+
+/* Headings: Open Sans SemiBold */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* Numbers / analytics: Inter (optional) */
+.numeric {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 code {
