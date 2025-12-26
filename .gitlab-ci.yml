@@ -6,6 +6,11 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   NODE_ENV: test
 
+cache:
+  paths:
+    - .cache/pip
+    - frontend/node_modules/
+
 backend-test:
   stage: test
   image: python:3.10-slim
@@ -23,6 +28,6 @@ frontend-build:
   image: node:20-alpine
   before_script:
     - cd frontend
-    - npm install
+    - npm ci
   script:
     - npm run build
