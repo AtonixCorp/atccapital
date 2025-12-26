@@ -20,85 +20,49 @@ const CashflowTreasuryDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [timelineView, setTimelineView] = useState('monthly');
 
-  // Mock data for demonstration - in real implementation, this would come from API
-  const mockDashboardData = useMemo(() => ({
-    kpis: {
-      cashOnHand: 2456789.45,
-      netCashflow: 156789.23,
-      liquidityRatio: 1.45,
-      burnRate: -45678.90,
-      runway: 54 // days
-    },
-    cashflowTimeline: {
-      monthly: [
-        { month: 'Jan', inflows: 450000, outflows: 380000, forecast: 420000 },
-        { month: 'Feb', inflows: 480000, outflows: 395000, forecast: 435000 },
-        { month: 'Mar', inflows: 520000, outflows: 410000, forecast: 450000 },
-        { month: 'Apr', inflows: 495000, outflows: 425000, forecast: 465000 },
-        { month: 'May', inflows: 535000, outflows: 440000, forecast: 480000 },
-        { month: 'Jun', inflows: 510000, outflows: 455000, forecast: 495000 }
-      ],
-      weekly: [], // Would be populated with weekly data
-      daily: [] // Would be populated with daily data
-    },
-    bankAccounts: [
-      { id: 1, name: 'Main Operating Account', bank: 'Chase', balance: 1250000.00, currency: 'USD', type: 'operational' },
-      { id: 2, name: 'Reserve Account', bank: 'Wells Fargo', balance: 850000.00, currency: 'USD', type: 'reserve' },
-      { id: 3, name: 'Investment Account', bank: 'Goldman Sachs', balance: 356789.45, currency: 'USD', type: 'investment' },
-      { id: 4, name: 'EUR Operations', bank: 'Deutsche Bank', balance: 234567.89, currency: 'EUR', type: 'operational' }
-    ],
-    accountsPayable: {
-      upcoming: [
-        { id: 1, vendor: 'Microsoft', amount: 45000.00, dueDate: '2025-01-15', status: 'pending', risk: 'low' },
-        { id: 2, vendor: 'AWS', amount: 28500.00, dueDate: '2025-01-18', status: 'pending', risk: 'medium' },
-        { id: 3, vendor: 'Office Supplies Inc', amount: 12500.00, dueDate: '2025-01-20', status: 'pending', risk: 'low' }
-      ],
-      overdue: [
-        { id: 4, vendor: 'Consulting LLC', amount: 75000.00, dueDate: '2024-12-28', status: 'overdue', risk: 'high' }
-      ]
-    },
-    accountsReceivable: {
-      expected: [
-        { id: 1, customer: 'Tech Corp', amount: 125000.00, dueDate: '2025-01-10', status: 'pending', reliability: 'high' },
-        { id: 2, customer: 'Startup Inc', amount: 87500.00, dueDate: '2025-01-15', status: 'pending', reliability: 'medium' }
-      ],
-      aging: {
-        current: 245000.00,
-        '1-30': 156000.00,
-        '31-60': 89000.00,
-        '61-90': 45000.00,
-        '90+': 23000.00
-      }
-    },
-    insights: [
-      { type: 'warning', message: 'Cash runway decreased by 12% this month', impact: 'high' },
-      { type: 'info', message: 'AI detected seasonal cashflow pattern - Q4 typically 15% higher', impact: 'medium' },
-      { type: 'success', message: 'Payment optimization saved $12,500 in fees', impact: 'low' }
-    ],
-    alerts: [
-      { type: 'critical', message: 'Liquidity ratio below 1.2 threshold', priority: 'high' },
-      { type: 'warning', message: 'Large transaction pending approval: $250,000', priority: 'medium' },
-      { type: 'info', message: 'FX exposure increased 8% this week', priority: 'low' }
-    ]
-  }), []);
+  const emptyDashboardData = useMemo(
+    () => ({
+      kpis: {
+        cashOnHand: 0,
+        netCashflow: 0,
+        liquidityRatio: 0,
+        burnRate: 0,
+        runway: 0,
+      },
+      cashflowTimeline: {
+        monthly: [],
+        weekly: [],
+        daily: [],
+      },
+      bankAccounts: [],
+      accountsPayable: { upcoming: [], overdue: [] },
+      accountsReceivable: { expected: [], aging: {} },
+      insights: [],
+      alerts: [],
+    }),
+    []
+  );
 
   const loadDashboardData = useCallback(async () => {
     setLoading(true);
+
+    const activeEntityId = selectedEntity?.id || entities[0]?.id;
+    if (!activeEntityId) {
+      setDashboardData(emptyDashboardData);
+      setLoading(false);
+      return;
+    }
+
     const filters = {
       start_date: dateRange.start,
       end_date: dateRange.end,
       currency: selectedCurrency
     };
 
-    const data = await fetchCashflowTreasuryDashboard(selectedEntity?.id || entities[0]?.id, filters);
-    if (data) {
-      setDashboardData(data);
-    } else {
-      // Fallback to mock data if API fails
-      setDashboardData(mockDashboardData);
-    }
+    const data = await fetchCashflowTreasuryDashboard(activeEntityId, filters);
+    setDashboardData(data || emptyDashboardData);
     setLoading(false);
-  }, [dateRange.end, dateRange.start, entities, fetchCashflowTreasuryDashboard, mockDashboardData, selectedCurrency, selectedEntity?.id]);
+  }, [dateRange.end, dateRange.start, emptyDashboardData, entities, fetchCashflowTreasuryDashboard, selectedCurrency, selectedEntity?.id]);
 
   useEffect(() => {
     loadDashboardData();

@@ -103,6 +103,13 @@ const EnterpriseEntities = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!currentOrganization) {
+      alert('No organization selected. Please ensure an organization is loaded.');
+      console.error('currentOrganization is null/undefined:', currentOrganization);
+      return;
+    }
+
     if (!hasPermission(PERMISSIONS.CREATE_ENTITY)) {
       alert('You do not have permission to create entities');
       return;
@@ -130,10 +137,16 @@ const EnterpriseEntities = () => {
         organization_id: currentOrganization.id,
       };
 
+      console.log('Creating entity with payload:', payload);
       await createEntity(payload);
       alert('Entity created successfully!');
       handleCloseModal();
+      // Refresh entities list
+      if (currentOrganization) {
+        await fetchEntities(currentOrganization.id);
+      }
     } catch (err) {
+      console.error('Entity creation error:', err);
       alert('Failed to create entity: ' + err.message);
     }
   };

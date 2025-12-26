@@ -8,7 +8,9 @@ const FinancialSettings = () => {
   const { 
     userCountry, 
     userTaxRate, 
+    userTaxType,
     updateUserCountry, 
+    updateUserTaxType,
     updateUserTaxRate,
     financialSummary,
     validationService
@@ -16,7 +18,7 @@ const FinancialSettings = () => {
 
   const [selectedCountry, setSelectedCountry] = useState(userCountry);
   const [customTaxRate, setCustomTaxRate] = useState(userTaxRate);
-  const [taxType, setTaxType] = useState('corporate');
+  const [taxType, setTaxType] = useState(userTaxType || 'corporate');
   const [countries, setCountries] = useState([]);
   const [validation, setValidation] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -29,7 +31,8 @@ const FinancialSettings = () => {
   useEffect(() => {
     setSelectedCountry(userCountry);
     setCustomTaxRate(userTaxRate);
-  }, [userCountry, userTaxRate]);
+    setTaxType(userTaxType || 'corporate');
+  }, [userCountry, userTaxRate, userTaxType]);
 
   const handleCountryChange = (country) => {
     setSelectedCountry(country);
@@ -62,9 +65,10 @@ const FinancialSettings = () => {
     setSaved(false);
   };
 
-  const handleSave = () => {
-    updateUserCountry(selectedCountry);
-    const success = updateUserTaxRate(customTaxRate);
+  const handleSave = async () => {
+    await updateUserCountry(selectedCountry);
+    await updateUserTaxType(taxType);
+    const success = await updateUserTaxRate(customTaxRate);
     if (success) {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

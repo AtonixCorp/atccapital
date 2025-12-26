@@ -37,6 +37,18 @@ class UserProfile(models.Model):
     )
     country = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=20, blank=True)
+
+    TAX_TYPE_CORPORATE = 'corporate'
+    TAX_TYPE_PERSONAL = 'personal'
+    TAX_TYPE_VAT = 'vat'
+    TAX_TYPE_CHOICES = [
+        (TAX_TYPE_CORPORATE, 'Corporate Tax'),
+        (TAX_TYPE_PERSONAL, 'Personal Income Tax'),
+        (TAX_TYPE_VAT, 'VAT/Sales Tax'),
+    ]
+
+    tax_type = models.CharField(max_length=20, choices=TAX_TYPE_CHOICES, default=TAX_TYPE_CORPORATE)
+    tax_rate = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     avatar_color = models.CharField(max_length=7, default='#667eea')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,6 +68,7 @@ class Organization(models.Model):
     employee_count = models.IntegerField(default=1)
     primary_currency = models.CharField(max_length=3, default='USD')
     primary_country = models.CharField(max_length=100)
+    settings = models.JSONField(default=dict, blank=True)
     website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

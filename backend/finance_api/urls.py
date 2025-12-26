@@ -8,5 +8,6 @@ from finances.views import landing_page
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('finances.urls')),
+    path('api/auth/', include('finances.auth_urls')),
     path('', landing_page, name='landing_page'),
 ]

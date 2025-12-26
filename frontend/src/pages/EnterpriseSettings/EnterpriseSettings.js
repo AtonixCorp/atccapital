@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { 
   FaCog, FaShieldAlt, FaBell, FaPlug, 
@@ -100,14 +100,15 @@ const CURRENCIES = [
 ];
 
 const EnterpriseSettings = () => {
-  const { currentOrganization } = useEnterprise();
+  const { currentOrganization, updateOrganization } = useEnterprise();
   const [activeTab, setActiveTab] = useState('organization');
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // Organization Settings State
   const [orgSettings, setOrgSettings] = useState({
-    orgName: currentOrganization?.name || 'Atonix Capital',
-    orgCountry: currentOrganization?.country || 'Nigeria',
+    orgName: '',
+    orgCountry: '',
     fiscalYearEnd: '12-31',
     taxFilingFrequency: 'annual',
     accountingStandard: 'IFRS',
@@ -155,16 +156,19 @@ const EnterpriseSettings = () => {
     
     setOrgSettings({ ...orgSettings, ...updates });
     setSaved(false);
+    setSaveError(null);
   };
 
   const handleNotificationChange = (field) => {
     setNotifications({ ...notifications, [field]: !notifications[field] });
     setSaved(false);
+    setSaveError(null);
   };
 
   const handleSecurityChange = (field, value) => {
     setSecurity({ ...security, [field]: value });
     setSaved(false);
+    setSaveError(null);
   };
 
   const handleIntegrationToggle = (service) => {
@@ -176,11 +180,66 @@ const EnterpriseSettings = () => {
       }
     });
     setSaved(false);
+    setSaveError(null);
   };
 
-  const handleSaveSettings = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  useEffect(() => {
+    const org = currentOrganization;
+    if (!org) return;
+
+    const orgCountry = org.primary_country || org.country || '';
+    const orgCurrency = org.primary_currency || org.currency || 'USD';
+    const orgSettingsFromServer = org.settings || {};
+
+    setOrgSettings(prev => ({
+      ...prev,
+      orgName: org.name || '',
+      orgCountry,
+      currency: orgCurrency,
+      fiscalYearEnd: orgSettingsFromServer.fiscalYearEnd || prev.fiscalYearEnd,
+      taxFilingFrequency: orgSettingsFromServer.taxFilingFrequency || prev.taxFilingFrequency,
+      accountingStandard: orgSettingsFromServer.accountingStandard || prev.accountingStandard,
+    }));
+
+    if (orgSettingsFromServer.integrations) {
+      setIntegrations(prev => ({ ...prev, ...orgSettingsFromServer.integrations }));
+    }
+    if (orgSettingsFromServer.notifications) {
+      setNotifications(prev => ({ ...prev, ...orgSettingsFromServer.notifications }));
+    }
+    if (orgSettingsFromServer.security) {
+      setSecurity(prev => ({ ...prev, ...orgSettingsFromServer.security }));
+    }
+  }, [currentOrganization]);
+
+  const handleSaveSettings = async () => {
+    if (!currentOrganization?.id) return;
+    setSaveError(null);
+
+    const existingSettings = currentOrganization.settings || {};
+
+    const payload = {
+      name: orgSettings.orgName,
+      primary_country: orgSettings.orgCountry,
+      primary_currency: orgSettings.currency,
+      settings: {
+        ...existingSettings,
+        fiscalYearEnd: orgSettings.fiscalYearEnd,
+        taxFilingFrequency: orgSettings.taxFilingFrequency,
+        accountingStandard: orgSettings.accountingStandard,
+        integrations,
+        notifications,
+        security,
+      },
+    };
+
+    try {
+      await updateOrganization(currentOrganization.id, payload);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setSaveError(err.message || 'Failed to save settings');
+    }
   };
 
   const handleRegenerateApiKey = () => {
@@ -191,6 +250,8 @@ const EnterpriseSettings = () => {
         apiKey: 'sk-' + Math.random().toString(36).substr(2, 9) + '-' + Math.random().toString(36).substr(2, 9)
       }
     });
+    setSaved(false);
+    setSaveError(null);
   };
 
   return (
@@ -206,6 +267,12 @@ const EnterpriseSettings = () => {
       {saved && (
         <div className="save-confirmation">
           <FaCheck /> Settings saved successfully
+        </div>
+      )}
+
+      {saveError && (
+        <div className="save-confirmation">
+          <FaInfo /> {saveError}
         </div>
       )}
 

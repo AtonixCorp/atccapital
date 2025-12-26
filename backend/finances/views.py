@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
@@ -47,7 +49,7 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         queryset = Expense.objects.all()
         entity_id = self.request.query_params.get('entity_id')
         if entity_id:
-            queryset = queryset.filter(entity_id=entity_id)
+            queryset = queryset.filter(entity_id=entity_id, entity__organization__owner=self.request.user)
         else:
             # If no entity specified, return user's personal expenses
             queryset = queryset.filter(user=self.request.user, entity__isnull=True)
@@ -119,7 +121,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
         queryset = Income.objects.all()
         entity_id = self.request.query_params.get('entity_id')
         if entity_id:
-            queryset = queryset.filter(entity_id=entity_id)
+            queryset = queryset.filter(entity_id=entity_id, entity__organization__owner=self.request.user)
         else:
             # If no entity specified, return user's personal income
             queryset = queryset.filter(user=self.request.user, entity__isnull=True)
@@ -148,7 +150,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         queryset = Budget.objects.all()
         entity_id = self.request.query_params.get('entity_id')
         if entity_id:
-            queryset = queryset.filter(entity_id=entity_id)
+            queryset = queryset.filter(entity_id=entity_id, entity__organization__owner=self.request.user)
         else:
             # If no entity specified, return user's personal budgets
             queryset = queryset.filter(user=self.request.user, entity__isnull=True)
@@ -180,6 +182,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def list_countries(request):
     """Return list of tax countries from data file"""
     countries = _load_countries()
@@ -187,6 +190,7 @@ def list_countries(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_country(request, code):
     """Return single country by code (ISO alpha-2)"""
     countries = _load_countries()

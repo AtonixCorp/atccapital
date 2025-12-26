@@ -11,47 +11,31 @@ import {
 
 const FinanceContext = createContext();
 
-// Mock data for demonstration (will be replaced with API calls)
-const initialExpenses = [
-  { id: 1, description: 'Grocery Shopping', amount: 150.50, category: 'Food', date: '2025-12-10', type: 'expense' },
-  { id: 2, description: 'Electric Bill', amount: 85.00, category: 'Utilities', date: '2025-12-08', type: 'expense' },
-  { id: 3, description: 'Netflix Subscription', amount: 15.99, category: 'Entertainment', date: '2025-12-05', type: 'expense' },
-  { id: 4, description: 'Gas Station', amount: 45.00, category: 'Transportation', date: '2025-12-12', type: 'expense' },
-  { id: 5, description: 'Restaurant Dinner', amount: 75.25, category: 'Food', date: '2025-12-14', type: 'expense' },
-  { id: 6, description: 'Gym Membership', amount: 50.00, category: 'Health', date: '2025-12-01', type: 'expense' },
-];
-
-const initialIncome = [
-  { id: 1, source: 'Salary', amount: 5000.00, date: '2025-12-01', type: 'income' },
-  { id: 2, source: 'Freelance Project', amount: 1200.00, date: '2025-12-10', type: 'income' },
-  { id: 3, source: 'Investment Returns', amount: 300.00, date: '2025-12-05', type: 'income' },
-];
-
-const initialBudgets = [
-  { id: 1, category: 'Food', limit: 500, spent: 225.75, color: '#e74c3c' },
-  { id: 2, category: 'Transportation', limit: 200, spent: 45, color: '#3498db' },
-  { id: 3, category: 'Entertainment', limit: 150, spent: 15.99, color: '#9b59b6' },
-  { id: 4, category: 'Utilities', limit: 300, spent: 85, color: '#f39c12' },
-  { id: 5, category: 'Health', limit: 200, spent: 50, color: '#2ecc71' },
-];
-
-// Mock portfolio for AI analysis
-const mockPortfolio = [
-  { id: 1, name: 'Bitcoin', type: 'crypto', value: 5000, volatility: 'high' },
-  { id: 2, name: 'Ethereum', type: 'crypto', value: 3000, volatility: 'high' },
-  { id: 3, name: 'Apple Stock', type: 'stock', value: 8000, volatility: 'moderate' },
-  { id: 4, name: 'Tesla Stock', type: 'stock', value: 6000, volatility: 'high' },
-  { id: 5, name: 'S&P 500 ETF', type: 'stock', value: 10000, volatility: 'low' },
-  { id: 6, name: 'US Treasury Bonds', type: 'bond', value: 15000, volatility: 'low' },
-  { id: 7, name: 'Real Estate Fund', type: 'real-estate', value: 12000, volatility: 'low' },
-  { id: 8, name: 'Gold ETF', type: 'commodity', value: 4000, volatility: 'moderate' },
-];
+const mockPortfolio = [];
 
 export const FinanceProvider = ({ children }) => {
   // Core Data States
-  const [expenses, setExpenses] = useState(initialExpenses);
-  const [income, setIncome] = useState(initialIncome);
-  const [budgets, setBudgets] = useState(initialBudgets);
+  const [expenses, setExpenses] = useState([]);
+  const [income, setIncome] = useState([]);
+  const [budgets, setBudgets] = useState([]);
+
+  const API_BASE_URL =
+    process.env.REACT_APP_API_BASE_URL ||
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+
+  const apiUrl = useCallback(
+    (path) => {
+      if (!path) return API_BASE_URL;
+      if (path.startsWith('http://') || path.startsWith('https://')) return path;
+      return `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    },
+    [API_BASE_URL]
+  );
+
+  const buildAuthHeaders = useCallback(() => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }, []);
 
   // Financial Modeling States
   const [models, setModels] = useState([]);
@@ -83,6 +67,7 @@ export const FinanceProvider = ({ children }) => {
   // User Settings
   const [userCountry, setUserCountry] = useState('United States');
   const [userTaxRate, setUserTaxRate] = useState(21); // Default corporate tax
+  const [userTaxType, setUserTaxType] = useState('corporate');
   
   // Monthly Tracking
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -201,6 +186,67 @@ export const FinanceProvider = ({ children }) => {
     recalculateAll();
     updateAvailableMonths();
   }, [recalculateAll, updateAvailableMonths]);
+
+  // Load persisted personal finance data for authenticated users
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setExpenses([]);
+      setIncome([]);
+      setBudgets([]);
+      return;
+    }
+
+    const load = async () => {
+      try {
+        const [expRes, incRes, budRes] = await Promise.all([
+          fetch(apiUrl('/api/expenses/'), { headers: buildAuthHeaders() }),
+          fetch(apiUrl('/api/income/'), { headers: buildAuthHeaders() }),
+          fetch(apiUrl('/api/budgets/'), { headers: buildAuthHeaders() }),
+        ]);
+
+        const expJson = expRes.ok ? await expRes.json() : [];
+        const incJson = incRes.ok ? await incRes.json() : [];
+        const budJson = budRes.ok ? await budRes.json() : [];
+
+        const expItems = Array.isArray(expJson) ? expJson : expJson.results || [];
+        const incItems = Array.isArray(incJson) ? incJson : incJson.results || [];
+        const budItems = Array.isArray(budJson) ? budJson : budJson.results || [];
+
+        setExpenses(expItems);
+        setIncome(incItems);
+        setBudgets(budItems);
+      } catch (err) {
+        console.error('Failed to load personal finance data:', err);
+      }
+    };
+
+    load();
+  }, [apiUrl, buildAuthHeaders]);
+
+  // Load persisted user settings (country/tax) for authenticated users
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const loadSettings = async () => {
+      try {
+        const res = await fetch(apiUrl('/api/auth/me/'), { headers: buildAuthHeaders() });
+        if (!res.ok) return;
+        const me = await res.json();
+
+        if (me?.country) setUserCountry(me.country);
+        if (typeof me?.tax_rate === 'number' && !Number.isNaN(me.tax_rate)) {
+          setUserTaxRate(me.tax_rate);
+        }
+        if (me?.tax_type) setUserTaxType(me.tax_type);
+      } catch (err) {
+        console.error('Failed to load user settings:', err);
+      }
+    };
+
+    loadSettings();
+  }, [apiUrl, buildAuthHeaders]);
   
   /**
    * Change selected month
@@ -211,7 +257,7 @@ export const FinanceProvider = ({ children }) => {
   
   // ==================== EXPENSES ====================
   
-  const addExpense = (expense) => {
+  const addExpense = async (expense) => {
     // Validate expense first
     const validation = validationService.validateExpense(
       expense.amount,
@@ -227,22 +273,53 @@ export const FinanceProvider = ({ children }) => {
       }
     }
     
-    const newExpense = {
-      ...expense,
-      id: Date.now(),
-      type: 'expense',
-      category: expense.category || 'Other',
-      date: expense.date || new Date().toISOString().split('T')[0],
-      amount: calculationEngine.round(parseFloat(expense.amount || 0))
-    };
-    
-    setExpenses([newExpense, ...expenses]);
-    // Budget sync happens automatically via useEffect recalculation
+    try {
+      const response = await fetch(apiUrl('/api/expenses/'), {
+        method: 'POST',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: expense.description,
+          amount: calculationEngine.round(parseFloat(expense.amount || 0)),
+          category: expense.category || 'Other',
+          date: expense.date || new Date().toISOString().split('T')[0],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create expense');
+      }
+
+      const created = await response.json();
+      setExpenses((prev) => [created, ...(Array.isArray(prev) ? prev : [])]);
+
+      // Refresh budgets because backend may update spent
+      const budRes = await fetch(apiUrl('/api/budgets/'), { headers: buildAuthHeaders() });
+      if (budRes.ok) {
+        const budJson = await budRes.json();
+        const budItems = Array.isArray(budJson) ? budJson : budJson.results || [];
+        setBudgets(budItems);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteExpense = (id) => {
-    setExpenses(expenses.filter(e => e.id !== id));
-    // Budget automatically updates via useEffect
+  const deleteExpense = async (id) => {
+    try {
+      const response = await fetch(apiUrl(`/api/expenses/${id}/`), {
+        method: 'DELETE',
+        headers: buildAuthHeaders(),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete expense');
+      }
+      setExpenses((prev) => (Array.isArray(prev) ? prev.filter(e => e.id !== id) : []));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const updateExpense = (id, updatedExpense) => {
@@ -255,7 +332,7 @@ export const FinanceProvider = ({ children }) => {
 
   // ==================== INCOME ====================
   
-  const addIncome = (incomeItem) => {
+  const addIncome = async (incomeItem) => {
     // Validate income first
     const validation = validationService.validateIncome(
       incomeItem.amount,
@@ -266,20 +343,44 @@ export const FinanceProvider = ({ children }) => {
       console.error('Income validation failed:', validation.errors);
     }
     
-    const newIncome = {
-      ...incomeItem,
-      id: Date.now(),
-      type: 'income',
-      source: incomeItem.source || 'Other',
-      date: incomeItem.date || new Date().toISOString().split('T')[0],
-      amount: calculationEngine.round(parseFloat(incomeItem.amount || 0))
-    };
-    
-    setIncome([newIncome, ...income]);
+    try {
+      const response = await fetch(apiUrl('/api/income/'), {
+        method: 'POST',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source: incomeItem.source || 'Other',
+          amount: calculationEngine.round(parseFloat(incomeItem.amount || 0)),
+          date: incomeItem.date || new Date().toISOString().split('T')[0],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create income');
+      }
+
+      const created = await response.json();
+      setIncome((prev) => [created, ...(Array.isArray(prev) ? prev : [])]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteIncome = (id) => {
-    setIncome(income.filter(i => i.id !== id));
+  const deleteIncome = async (id) => {
+    try {
+      const response = await fetch(apiUrl(`/api/income/${id}/`), {
+        method: 'DELETE',
+        headers: buildAuthHeaders(),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete income');
+      }
+      setIncome((prev) => (Array.isArray(prev) ? prev.filter(i => i.id !== id) : []));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const updateIncome = (id, updatedIncome) => {
@@ -292,7 +393,7 @@ export const FinanceProvider = ({ children }) => {
 
   // ==================== BUDGETS ====================
   
-  const addBudget = (budget) => {
+  const addBudget = async (budget) => {
     // Validate budget
     const validation = validationService.validateBudget(budget.amount || budget.limit);
     
@@ -300,17 +401,29 @@ export const FinanceProvider = ({ children }) => {
       console.error('Budget validation failed:', validation.errors);
     }
     
-    const newBudget = {
-      ...budget,
-      id: Date.now(),
-      amount: calculationEngine.round(parseFloat(budget.amount || budget.limit || 0)),
-      limit: calculationEngine.round(parseFloat(budget.amount || budget.limit || 0)),
-      category: budget.category || 'Other',
-      spent: 0,
-      color: budget.color || '#' + Math.floor(Math.random()*16777215).toString(16)
-    };
-    
-    setBudgets([...budgets, newBudget]);
+    try {
+      const response = await fetch(apiUrl('/api/budgets/'), {
+        method: 'POST',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          category: budget.category || 'Other',
+          limit: calculationEngine.round(parseFloat(budget.amount || budget.limit || 0)),
+          color: budget.color,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create budget');
+      }
+
+      const created = await response.json();
+      setBudgets((prev) => [...(Array.isArray(prev) ? prev : []), created]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const updateBudget = (id, updates) => {
@@ -326,8 +439,19 @@ export const FinanceProvider = ({ children }) => {
     ));
   };
 
-  const deleteBudget = (id) => {
-    setBudgets(budgets.filter(b => b.id !== id));
+  const deleteBudget = async (id) => {
+    try {
+      const response = await fetch(apiUrl(`/api/budgets/${id}/`), {
+        method: 'DELETE',
+        headers: buildAuthHeaders(),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete budget');
+      }
+      setBudgets((prev) => (Array.isArray(prev) ? prev.filter(b => b.id !== id) : []));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // ==================== CALCULATIONS (from engine) ====================
@@ -482,22 +606,84 @@ export const FinanceProvider = ({ children }) => {
 
   // ==================== TAX MANAGEMENT ====================
 
-  const updateUserCountry = (country) => {
+  const updateUserCountry = async (country) => {
     setUserCountry(country);
-    // Get tax rate for country
+
+    // Keep local UX behavior: auto-suggest a default corporate rate for the selected country.
     const taxInfo = taxCalculatorService.getTaxInfo(country);
     if (taxInfo) {
-      setUserTaxRate(taxInfo.rate); // Default to corporate rate
+      setUserTaxRate(taxInfo.rate);
+    }
+
+    try {
+      const res = await fetch(apiUrl('/api/auth/me/'), {
+        method: 'PATCH',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ country }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        console.error('Failed to persist country:', err || res.status);
+      }
+    } catch (err) {
+      console.error('Failed to persist country:', err);
     }
   };
 
-  const updateUserTaxRate = (rate) => {
+  const updateUserTaxType = async (taxType) => {
+    setUserTaxType(taxType);
+    try {
+      const res = await fetch(apiUrl('/api/auth/me/'), {
+        method: 'PATCH',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tax_type: taxType }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        console.error('Failed to persist tax type:', err || res.status);
+      }
+    } catch (err) {
+      console.error('Failed to persist tax type:', err);
+    }
+  };
+
+  const updateUserTaxRate = async (rate) => {
     const validation = validationService.validateTaxRate(rate, userCountry);
     if (!validation.isValid) {
       console.error('Tax rate validation failed:', validation.errors);
       return false;
     }
-    setUserTaxRate(calculationEngine.round(parseFloat(rate)));
+
+    const rounded = calculationEngine.round(parseFloat(rate));
+    setUserTaxRate(rounded);
+
+    try {
+      const res = await fetch(apiUrl('/api/auth/me/'), {
+        method: 'PATCH',
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tax_rate: rounded }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        console.error('Failed to persist tax rate:', err || res.status);
+        return false;
+      }
+    } catch (err) {
+      console.error('Failed to persist tax rate:', err);
+      return false;
+    }
+
     return true;
   };
 
@@ -607,7 +793,9 @@ export const FinanceProvider = ({ children }) => {
     // Tax & Country Settings
     userCountry,
     userTaxRate,
+    userTaxType,
     updateUserCountry,
+    updateUserTaxType,
     updateUserTaxRate,
     
     // Calculation Engine (expose for components that need it)

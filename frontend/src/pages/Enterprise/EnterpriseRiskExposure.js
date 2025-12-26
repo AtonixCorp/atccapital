@@ -4,55 +4,35 @@ import { FaExclamationTriangle, FaChartBar, FaMap, FaBell } from 'react-icons/fa
 import './EnterpriseRiskExposure.css';
 
 const EnterpriseRiskExposure = () => {
-  const { currentOrganization } = useEnterprise();
+  const { currentOrganization, fetchRiskExposureDashboard } = useEnterprise();
   const [riskData, setRiskData] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (currentOrganization) {
+    let isMounted = true;
+
+    const load = async () => {
+      if (!currentOrganization?.id) {
+        if (isMounted) {
+          setRiskData({});
+          setLoading(false);
+        }
+        return;
+      }
+
       setLoading(true);
-      // TODO: Call API endpoint /api/tax-exposures/by_country/?organization_id=currentOrganization.id
-      const mockData = {
-        concentration_risk: {
-          top3_percentage: 68,
-          countries_with_exposure: 8,
-          largest_exposures: [
-            { country: 'US', percentage: 32, amount: 450000 },
-            { country: 'UK', percentage: 22, amount: 310000 },
-            { country: 'CA', percentage: 14, amount: 195000 },
-          ]
-        },
-        country_risks: [
-          { country: 'US', exposure: 450000, risk_score: 15, status: 'low', alerts: 0 },
-          { country: 'UK', exposure: 310000, risk_score: 22, status: 'medium', alerts: 1 },
-          { country: 'CA', exposure: 195000, risk_score: 18, status: 'low', alerts: 0 },
-          { country: 'AU', exposure: 125000, risk_score: 35, status: 'high', alerts: 2 },
-          { country: 'DE', exposure: 95000, risk_score: 28, status: 'medium', alerts: 1 },
-          { country: 'FR', exposure: 75000, risk_score: 25, status: 'medium', alerts: 0 },
-          { country: 'JP', exposure: 65000, risk_score: 32, status: 'high', alerts: 1 },
-          { country: 'SG', exposure: 55000, risk_score: 12, status: 'low', alerts: 0 },
-        ],
-        compliance_alerts: [
-          { id: 1, country: 'UK', type: 'Overdue Filing', description: 'VAT return overdue by 10 days', severity: 'high' },
-          { id: 2, country: 'AU', type: 'Documentation', description: 'Missing entity registration documents', severity: 'high' },
-          { id: 3, country: 'AU', type: 'Policy Change', description: 'New tax policy effective Feb 1', severity: 'medium' },
-          { id: 4, country: 'DE', type: 'Filing Deadline', description: 'Tax return due in 15 days', severity: 'medium' },
-        ],
-        fx_exposure: {
-          total_exposure: 1405000,
-          by_currency: [
-            { currency: 'USD', exposure: 450000, concentration: 32 },
-            { currency: 'EUR', exposure: 350000, concentration: 25 },
-            { currency: 'GBP', exposure: 310000, concentration: 22 },
-            { currency: 'CAD', exposure: 195000, concentration: 14 },
-            { currency: 'AUD', exposure: 100000, concentration: 7 },
-          ]
-        },
-      };
-      setRiskData(mockData);
-      setLoading(false);
-    }
-  }, [currentOrganization]);
+      const data = await fetchRiskExposureDashboard(currentOrganization.id);
+      if (isMounted) {
+        setRiskData(data || {});
+        setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentOrganization?.id, fetchRiskExposureDashboard]);
 
   const getRiskColor = (score) => {
     if (score < 20) return '#10b981'; // green

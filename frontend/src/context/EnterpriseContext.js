@@ -13,6 +13,24 @@ export const useEnterprise = () => {
 
 export const EnterpriseProvider = ({ children }) => {
   const { user } = useAuth();
+
+  const API_BASE_URL =
+    process.env.REACT_APP_API_BASE_URL ||
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+
+  const apiUrl = useCallback(
+    (path) => {
+      if (!path) return API_BASE_URL;
+      if (path.startsWith('http://') || path.startsWith('https://')) return path;
+      return `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    },
+    [API_BASE_URL]
+  );
+
+  const buildAuthHeaders = useCallback(() => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }, []);
   
   // Organization state
   const [organizations, setOrganizations] = useState([]);
@@ -83,175 +101,16 @@ export const EnterpriseProvider = ({ children }) => {
     ASSIGN_ROLES: 'assign_roles',
   }), []);
 
-  // Mock enterprise data for testing
-  const mockOrganizations = useMemo(() => ([
-    {
-      id: 1,
-      name: 'Atonix Capital',
-      slug: 'atonix-capital',
-      industry: 'Financial Services',
-      country: 'Nigeria',
-      headquarters: 'Lagos, Nigeria',
-      founded_year: 2023,
-      employees_count: 50,
-      status: 'active'
-    }
-  ]), []);
-
-  const mockOrgOverview = useMemo(() => ({
-    total_assets: 15000000,
-    total_liabilities: 5000000,
-    net_position: 10000000,
-    total_tax_exposure: 2500000,
-    active_jurisdictions: 12,
-    active_entities: 5,
-    pending_tax_returns: 2,
-    missing_data_entities: 1,
-    tax_exposure_by_country: {
-      // Africa - West
-      'Nigeria': 1500000,
-      'Ghana': 450000,
-      'Senegal': 280000,
-      
-      // Africa - East
-      'Kenya': 700000,
-      'Tanzania': 320000,
-      'Uganda': 180000,
-      
-      // Africa - Southern
-      'South Africa': 300000,
-      'Botswana': 120000,
-      
-      // Europe
-      'United Kingdom': 850000,
-      'Germany': 620000,
-      'Switzerland': 340000,
-      
-      // North America
-      'United States': 1200000,
-      'Canada': 480000,
-      
-      // Asia Pacific
-      'Singapore': 550000,
-      'Hong Kong': 420000,
-      'India': 380000,
-      'Australia': 290000,
-      'United Arab Emirates': 180000,
-    }
-  }), []);
-
-  const mockEntities = useMemo(() => ([
-    {
-      id: 1,
-      name: 'Atonix Capital Limited',
-      type: 'Limited Company',
-      country: 'Nigeria',
-      status: 'Active',
-      tax_id: 'TIN123456789',
-      incorporation_date: '2023-01-15'
-    },
-    {
-      id: 2,
-      name: 'Atonix East Africa',
-      type: 'Limited Company',
-      country: 'Kenya',
-      status: 'Active',
-      tax_id: 'KE123456789',
-      incorporation_date: '2023-06-20'
-    },
-    {
-      id: 3,
-      name: 'Atonix Southern Africa',
-      type: 'Limited Company',
-      country: 'South Africa',
-      status: 'Active',
-      tax_id: 'ZA123456789',
-      incorporation_date: '2023-09-10'
-    },
-    {
-      id: 4,
-      name: 'Atonix Advisory',
-      type: 'Partnership',
-      country: 'Nigeria',
-      status: 'Active',
-      tax_id: 'TIN987654321',
-      incorporation_date: '2023-03-01'
-    },
-    {
-      id: 5,
-      name: 'Atonix Investments',
-      type: 'Trust',
-      country: 'Nigeria',
-      status: 'Pending',
-      tax_id: 'TIN555555555',
-      incorporation_date: '2024-01-01'
-    }
-  ]), []);
-
-  const mockTeamMembers = useMemo(() => ([
-    {
-      id: 1,
-      user_name: 'Enterprise Admin',
-      user_email: 'admin@atonixcapital.com',
-      role_code: ROLES.ORG_OWNER,
-      role_name: 'Organization Owner',
-      status: 'active'
-    },
-    {
-      id: 2,
-      user_name: 'CFO',
-      user_email: 'cfo@atonixcapital.com',
-      role_code: ROLES.CFO,
-      role_name: 'Chief Financial Officer',
-      status: 'active'
-    },
-    {
-      id: 3,
-      user_name: 'Tax Analyst',
-      user_email: 'analyst@atonixcapital.com',
-      role_code: ROLES.FINANCE_ANALYST,
-      role_name: 'Finance Analyst',
-      status: 'active'
-    }
-  ]), [ROLES.ORG_OWNER, ROLES.CFO, ROLES.FINANCE_ANALYST]);
-
-  const mockTaxExposures = useMemo(() => ([
-    { country: 'Nigeria', total_exposure: 1500000, entities: 2, rate: 30 },
-    { country: 'Kenya', total_exposure: 700000, entities: 1, rate: 37.5 },
-    { country: 'South Africa', total_exposure: 300000, entities: 1, rate: 28 }
-  ]), []);
-
-  const mockComplianceDeadlines = useMemo(() => ([
-    { id: 1, country: 'Nigeria', type: 'Corporate Tax Return', dueDate: '2025-04-15', status: 'upcoming', entity: 'Atonix Capital Limited' },
-    { id: 2, country: 'Nigeria', type: 'Payroll Tax', dueDate: '2025-01-31', status: 'due_soon', entity: 'Atonix Capital Limited' },
-    { id: 3, country: 'Kenya', type: 'VAT Return', dueDate: '2025-01-20', status: 'due_soon', entity: 'Atonix East Africa' },
-    { id: 4, country: 'South Africa', type: 'Corporate Tax', dueDate: '2025-06-30', status: 'upcoming', entity: 'Atonix Southern Africa' },
-    { id: 5, country: 'Nigeria', type: 'Annual Return', dueDate: '2025-03-31', status: 'upcoming', entity: 'Atonix Advisory' }
-  ]), []);
-
   /**
    * Initialize enterprise data for user
    */
   useEffect(() => {
     if (user && user.account_type === 'enterprise') {
-      // Set default user role to ORG_OWNER for testing
       setCurrentUserRole(ROLES.ORG_OWNER);
-
-      // Seed roles/permissions so setters are used (and available for UI)
       setRoles(Object.values(ROLES));
       setPermissions(Object.values(PERMISSIONS));
-      
-      // Initialize with mock data
-      setOrganizations(mockOrganizations);
-      setCurrentOrganization(mockOrganizations[0]);
-      setOrgOverview(mockOrgOverview);
-      setEntities(mockEntities);
-      setTeamMembers(mockTeamMembers);
-      
-      console.log('Enterprise user initialized:', user);
-      console.log('Current user role set to:', ROLES.ORG_OWNER);
     }
-  }, [user, ROLES, mockOrganizations, mockOrgOverview, mockEntities, mockTeamMembers, PERMISSIONS]);
+  }, [user, ROLES, PERMISSIONS]);
 
   /**
    * Fetch organizations for current user
@@ -260,11 +119,11 @@ export const EnterpriseProvider = ({ children }) => {
     if (!user) return;
     setLoading(true);
     try {
-      const response = await fetch('/api/organizations/my_organizations/', {
+      const response = await fetch(apiUrl('/api/organizations/my_organizations/'), {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
           'Content-Type': 'application/json',
-        },
+        }
       });
       if (response.ok) {
         const data = await response.json();
@@ -272,14 +131,22 @@ export const EnterpriseProvider = ({ children }) => {
         if (data.length > 0 && !currentOrganization) {
           setCurrentOrganization(data[0]);
         }
+      } else {
+        setOrganizations([]);
       }
     } catch (err) {
       setError('Failed to fetch organizations');
       console.error(err);
+      setOrganizations([]);
     } finally {
       setLoading(false);
     }
-  }, [user, currentOrganization]);
+  }, [user, currentOrganization, apiUrl, buildAuthHeaders]);
+
+  useEffect(() => {
+    if (!user || user.account_type !== 'enterprise') return;
+    fetchOrganizations();
+  }, [user, fetchOrganizations]);
 
   /**
    * Fetch organization overview/dashboard
@@ -287,24 +154,20 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchOrgOverview = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/organizations/${orgId}/overview/`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/organizations/${orgId}/overview/`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
         setOrgOverview(data);
       } else {
-        // Use mock data as fallback
-        setOrgOverview(mockOrgOverview);
+        setOrgOverview(null);
       }
     } catch (err) {
-      console.error('Failed to fetch org overview, using mock data:', err);
-      // Use mock data as fallback
-      setOrgOverview(mockOrgOverview);
+      console.error('Failed to fetch org overview:', err);
+      setOrgOverview(null);
     }
-  }, [mockOrgOverview]);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch entities for organization
@@ -312,24 +175,20 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchEntities = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/entities/?organization_id=${orgId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/entities/?organization_id=${orgId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
         setEntities(Array.isArray(data) ? data : data.results || []);
       } else {
-        // Use mock data as fallback
-        setEntities(mockEntities);
+        setEntities([]);
       }
     } catch (err) {
-      console.error('Failed to fetch entities, using mock data:', err);
-      // Use mock data as fallback
-      setEntities(mockEntities);
+      console.error('Failed to fetch entities:', err);
+      setEntities([]);
     }
-  }, [mockEntities]);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch team members
@@ -337,10 +196,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchTeamMembers = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/team-members/?organization_id=${orgId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/team-members/?organization_id=${orgId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -354,15 +211,13 @@ export const EnterpriseProvider = ({ children }) => {
           setCurrentUserRole(currentMember.role_code);
         }
       } else {
-        // Use mock data as fallback
-        setTeamMembers(mockTeamMembers);
+        setTeamMembers([]);
       }
     } catch (err) {
-      console.error('Failed to fetch team members, using mock data:', err);
-      // Use mock data as fallback
-      setTeamMembers(mockTeamMembers);
+      console.error('Failed to fetch team members:', err);
+      setTeamMembers([]);
     }
-  }, [mockTeamMembers, user]);
+  }, [apiUrl, buildAuthHeaders, user]);
 
   /**
    * Fetch tax compliance data
@@ -370,22 +225,20 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchTaxExposures = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/tax-exposures/by_country/?organization_id=${orgId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/tax-exposures/by_country/?organization_id=${orgId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
         setTaxExposures(data);
       } else {
-        setTaxExposures(mockTaxExposures);
+        setTaxExposures([]);
       }
     } catch (err) {
       console.error('Failed to fetch tax exposures:', err);
-      setTaxExposures(mockTaxExposures);
+      setTaxExposures([]);
     }
-  }, [mockTaxExposures]);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch compliance deadlines
@@ -393,22 +246,20 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchComplianceDeadlines = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/compliance-deadlines/upcoming/?organization_id=${orgId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/compliance-deadlines/upcoming/?organization_id=${orgId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
         setComplianceDeadlines(Array.isArray(data) ? data : data.results || []);
       } else {
-        setComplianceDeadlines(mockComplianceDeadlines);
+        setComplianceDeadlines([]);
       }
     } catch (err) {
       console.error('Failed to fetch compliance deadlines:', err);
-      setComplianceDeadlines(mockComplianceDeadlines);
+      setComplianceDeadlines([]);
     }
-  }, [mockComplianceDeadlines]);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch cashflow forecast
@@ -416,24 +267,43 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchCashflowData = useCallback(async (orgId) => {
     if (!orgId) return;
     try {
-      const response = await fetch(`/api/cashflow-forecasts/by_category/?organization_id=${orgId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/cashflow-forecasts/by_category/?organization_id=${orgId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
         setCashflowData(Array.isArray(data) ? data : data.results || []);
       } else {
-        // Use empty array as fallback for cashflow (pages handle their own mock data)
+        // Use empty array as fallback for cashflow (pages handle their own empty state)
         setCashflowData([]);
       }
     } catch (err) {
       console.error('Failed to fetch cashflow data, using empty array:', err);
-      // Use empty array as fallback for cashflow (pages handle their own mock data)
+      // Use empty array as fallback for cashflow (pages handle their own empty state)
       setCashflowData([]);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
+
+  /**
+   * Fetch risk & exposure dashboard data for an organization
+   */
+  const fetchRiskExposureDashboard = useCallback(async (orgId) => {
+    if (!orgId) return null;
+    try {
+      const response = await fetch(apiUrl(`/api/organizations/${orgId}/risk_exposure/`), {
+        headers: buildAuthHeaders(),
+      });
+
+      if (response.ok) {
+        return await response.json();
+      }
+
+      return null;
+    } catch (err) {
+      console.error('Failed to fetch risk exposure dashboard:', err);
+      return null;
+    }
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Check if current user has permission
@@ -501,11 +371,11 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const createOrganization = useCallback(async (orgData) => {
     try {
-      const response = await fetch('/api/organizations/', {
+      const response = await fetch(apiUrl('/api/organizations/'), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(orgData),
       });
@@ -522,24 +392,56 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, [organizations, switchOrganization]);
+  }, [apiUrl, buildAuthHeaders, organizations, switchOrganization]);
+
+  /**
+   * Update organization settings
+   */
+  const updateOrganization = useCallback(async (orgId, updates) => {
+    if (!orgId) throw new Error('Organization id is required');
+    try {
+      const response = await fetch(apiUrl(`/api/organizations/${orgId}/`), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
+        },
+        body: JSON.stringify(updates || {}),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.detail || 'Failed to update organization');
+      }
+
+      const updatedOrg = await response.json();
+      setOrganizations(prev => prev.map(o => (o.id === updatedOrg.id ? updatedOrg : o)));
+      setCurrentOrganization(prev => (prev && prev.id === updatedOrg.id ? updatedOrg : prev));
+      return updatedOrg;
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+      throw err;
+    }
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create new entity
    */
   const createEntity = useCallback(async (entityData) => {
     try {
-      const response = await fetch('/api/entities/', {
+      const response = await fetch(apiUrl('/api/entities/'), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(entityData),
       });
 
       if (response.ok) {
         const newEntity = await response.json();
+        console.log('Entity created successfully:', newEntity);
         // Refresh authoritative list from server to avoid local-state drift
         try {
           if (entityData.organization_id) {
@@ -562,6 +464,7 @@ export const EnterpriseProvider = ({ children }) => {
         } catch {
           errorMessage = `Server error: ${response.status} ${response.statusText}`;
         }
+        console.error('Entity creation failed:', errorMessage);
         throw new Error(errorMessage);
       }
     } catch (err) {
@@ -569,7 +472,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error('Entity creation error:', err);
       throw err; // Re-throw so the component can handle it
     }
-  }, [fetchEntities]);
+  }, [apiUrl, buildAuthHeaders, fetchEntities]);
 
   /**
    * Add team member
@@ -608,10 +511,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchEntityExpenses = useCallback(async (entityId) => {
     if (!entityId) return [];
     try {
-      const response = await fetch(`/api/expenses/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/expenses/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -621,7 +522,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error('Failed to fetch entity expenses:', err);
     }
     return [];
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch entity-specific income
@@ -629,10 +530,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchEntityIncome = useCallback(async (entityId) => {
     if (!entityId) return [];
     try {
-      const response = await fetch(`/api/income/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/income/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -642,7 +541,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error('Failed to fetch entity income:', err);
     }
     return [];
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch entity-specific budgets
@@ -650,10 +549,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchEntityBudgets = useCallback(async (entityId) => {
     if (!entityId) return [];
     try {
-      const response = await fetch(`/api/budgets/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/budgets/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -663,18 +560,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error('Failed to fetch entity budgets:', err);
     }
     return [];
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create entity-specific expense
    */
   const createEntityExpense = useCallback(async (entityId, expenseData) => {
     try {
-      const response = await fetch('/api/expenses/', {
+      const response = await fetch(apiUrl('/api/expenses/'), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify({ ...expenseData, entity_id: entityId }),
       });
@@ -689,18 +586,18 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create entity-specific income
    */
   const createEntityIncome = useCallback(async (entityId, incomeData) => {
     try {
-      const response = await fetch('/api/income/', {
+      const response = await fetch(apiUrl('/api/income/'), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify({ ...incomeData, entity_id: entityId }),
       });
@@ -715,18 +612,18 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create entity-specific budget
    */
   const createEntityBudget = useCallback(async (entityId, budgetData) => {
     try {
-      const response = await fetch('/api/budgets/', {
+      const response = await fetch(apiUrl('/api/budgets/'), {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify({ ...budgetData, entity_id: entityId }),
       });
@@ -741,7 +638,7 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   // ============ Entity-Specific API Functions ============
 
@@ -1006,11 +903,11 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const createComplianceDocument = useCallback(async (documentData) => {
     try {
-      const response = await fetch('/api/compliance-documents/', {
+      const response = await fetch(apiUrl('/api/compliance-documents/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(documentData),
       });
@@ -1025,7 +922,7 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   // ============================================================================
   // BOOKKEEPING FUNCTIONS
@@ -1036,10 +933,8 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const fetchBookkeepingCategories = useCallback(async (entityId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/bookkeeping-categories/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/bookkeeping-categories/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1052,18 +947,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return [];
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create default bookkeeping categories for entity
    */
   const createDefaultCategories = useCallback(async (entityId) => {
     try {
-      const response = await fetch('http://localhost:8000/api/bookkeeping-categories/create_defaults/', {
+      const response = await fetch(apiUrl('/api/bookkeeping-categories/create_defaults/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify({ entity_id: entityId }),
       });
@@ -1077,18 +972,18 @@ export const EnterpriseProvider = ({ children }) => {
       setError(err.message);
       console.error(err);
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create custom category
    */
   const createBookkeepingCategory = useCallback(async (categoryData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/bookkeeping-categories/', {
+      const response = await fetch(apiUrl('/api/bookkeeping-categories/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(categoryData),
       });
@@ -1104,17 +999,15 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       throw err;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch bookkeeping accounts for entity
    */
   const fetchBookkeepingAccounts = useCallback(async (entityId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/bookkeeping-accounts/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/bookkeeping-accounts/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1127,18 +1020,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return [];
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create bookkeeping account
    */
   const createBookkeepingAccount = useCallback(async (accountData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/bookkeeping-accounts/', {
+      const response = await fetch(apiUrl('/api/bookkeeping-accounts/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(accountData),
       });
@@ -1154,7 +1047,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       throw err;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch transactions for entity with filters
@@ -1162,10 +1055,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchTransactions = useCallback(async (entityId, filters = {}) => {
     try {
       const params = new URLSearchParams({ entity_id: entityId, ...filters });
-      const response = await fetch(`http://localhost:8000/api/transactions/?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/transactions/?${params}`), {
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1178,18 +1069,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return [];
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Create transaction
    */
   const createTransaction = useCallback(async (transactionData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/transactions/', {
+      const response = await fetch(apiUrl('/api/transactions/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(transactionData),
       });
@@ -1205,18 +1096,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       throw err;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Update transaction
    */
   const updateTransaction = useCallback(async (transactionId, transactionData) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/transactions/${transactionId}/`, {
+      const response = await fetch(apiUrl(`/api/transactions/${transactionId}/`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(transactionData),
       });
@@ -1232,18 +1123,16 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       throw err;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Delete transaction
    */
   const deleteTransaction = useCallback(async (transactionId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/transactions/${transactionId}/`, {
+      const response = await fetch(apiUrl(`/api/transactions/${transactionId}/`), {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1256,7 +1145,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       throw err;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch bookkeeping summary for entity
@@ -1264,10 +1153,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchBookkeepingSummary = useCallback(async (entityId, filters = {}) => {
     try {
       const params = new URLSearchParams({ entity_id: entityId, ...filters });
-      const response = await fetch(`http://localhost:8000/api/transactions/summary/?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/transactions/summary/?${params}`), {
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1280,7 +1167,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch cashflow treasury dashboard data
@@ -1288,10 +1175,8 @@ export const EnterpriseProvider = ({ children }) => {
   const fetchCashflowTreasuryDashboard = useCallback(async (entityId, filters = {}) => {
     try {
       const params = new URLSearchParams({ entity_id: entityId, ...filters });
-      const response = await fetch(`http://localhost:8000/api/cashflow-treasury/dashboard/?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/cashflow-treasury/dashboard/?${params}`), {
+        headers: buildAuthHeaders(),
       });
 
       if (response.ok) {
@@ -1304,18 +1189,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Execute internal transfer
    */
   const executeInternalTransfer = useCallback(async (transferData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/cashflow-treasury/transfer/', {
+      const response = await fetch(apiUrl('/api/cashflow-treasury/transfer/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(transferData),
       });
@@ -1330,18 +1215,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Execute FX conversion
    */
   const executeFXConversion = useCallback(async (conversionData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/cashflow-treasury/fx_conversion/', {
+      const response = await fetch(apiUrl('/api/cashflow-treasury/fx_conversion/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(conversionData),
       });
@@ -1356,18 +1241,18 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Execute investment allocation
    */
   const executeInvestmentAllocation = useCallback(async (allocationData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/cashflow-treasury/investment_allocation/', {
+      const response = await fetch(apiUrl('/api/cashflow-treasury/investment_allocation/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          ...buildAuthHeaders(),
         },
         body: JSON.stringify(allocationData),
       });
@@ -1382,17 +1267,15 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   /**
    * Fetch audit logs for entity
    */
   const fetchBookkeepingAuditLogs = useCallback(async (entityId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/bookkeeping-audit-logs/?entity_id=${entityId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+      const response = await fetch(apiUrl(`/api/bookkeeping-audit-logs/?entity_id=${entityId}`), {
+        headers: buildAuthHeaders(),
       });
       
       if (response.ok) {
@@ -1405,7 +1288,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error(err);
       return null;
     }
-  }, []);
+  }, [apiUrl, buildAuthHeaders]);
 
   const value = {
     // State
@@ -1436,10 +1319,12 @@ export const EnterpriseProvider = ({ children }) => {
     fetchTaxExposures,
     fetchComplianceDeadlines,
     fetchCashflowData,
+    fetchRiskExposureDashboard,
     hasPermission,
     hasRole,
     switchOrganization,
     createOrganization,
+    updateOrganization,
     createEntity,
     addTeamMember,
     

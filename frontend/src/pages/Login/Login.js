@@ -12,7 +12,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -26,11 +26,11 @@ const Login = () => {
       return;
     }
 
-    const result = login(email, password);
+    const result = await login(email, password);
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setError('Login failed. Please try again.');
+      setError(result.error || 'Login failed. Please try again.');
     }
   };
 
@@ -94,9 +94,6 @@ const Login = () => {
             <p>Don't have an account? <Link to="/register">Sign up</Link></p>
           </div>
 
-          <div className="demo-notice">
-            <p>💡 <strong>Demo Mode:</strong> Enter any email and password to login</p>
-          </div>
         </div>
       </div>
     </div>

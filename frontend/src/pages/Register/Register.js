@@ -59,7 +59,7 @@ const Register = () => {
   };
 
   // Step 3: Details submission
-  const handleDetailsSubmit = (e) => {
+  const handleDetailsSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -88,7 +88,7 @@ const Register = () => {
       return;
     }
 
-    const result = register(name, email, password, country, phone, accountType);
+    const result = await register(name, email, password, country, phone, accountType, orgName);
     if (result.success) {
       // Redirect based on account type
       if (accountType === 'enterprise') {
@@ -97,7 +97,7 @@ const Register = () => {
         navigate('/dashboard');
       }
     } else {
-      setError('Registration failed. Please try again.');
+      setError(result.error || 'Registration failed. Please try again.');
     }
   };
 

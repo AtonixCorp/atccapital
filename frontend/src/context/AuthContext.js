@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext();
 
@@ -18,134 +18,184 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        // Ensure account_type is always set (default to 'personal' for backward compatibility)
-        if (!parsedUser.account_type) {
-          parsedUser.account_type = detectAccountType(parsedUser.email);
-          localStorage.setItem('user', JSON.stringify(parsedUser));
-          console.log('Updated stored user with account_type:', parsedUser);
-        }
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-        console.log('Loaded user from localStorage:', parsedUser);
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('user');
-      }
-    }
-    setLoading(false);
+  const API_BASE_URL =
+    process.env.REACT_APP_API_BASE_URL ||
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '');
+
+  const apiUrl = useCallback(
+    (path) => {
+      if (!path) return API_BASE_URL;
+      if (path.startsWith('http://') || path.startsWith('https://')) return path;
+      return `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    },
+    [API_BASE_URL]
+  );
+
+  const buildAuthHeaders = useCallback(() => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }, []);
 
-  const login = (email, password) => {
-    // Mock authentication - in production, this would call the backend API
-    
-    // Test users for easy login
-    const testUsers = [
-      {
-        id: 1,
-        name: 'John Doe',
-        email: 'test@test.com',
-        password: 'password',
-        country: 'Nigeria',
-        phone: '+234 801 234 5678',
-        avatar: 'J',
-        account_type: 'enterprise'
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        email: 'jane@gmail.com',
-        password: 'demo123',
-        country: 'Kenya',
-        phone: '+254 712 345 678',
-        avatar: 'J',
-        account_type: 'personal'
-      },
-      {
-        id: 3,
-        name: 'Admin User',
-        email: 'admin@company.com',
-        password: 'admin123',
-        country: 'South Africa',
-        phone: '+27 82 123 4567',
-        avatar: 'A',
-        account_type: 'enterprise'
-      },
-      {
-        id: 4,
-        name: 'Admin',
-        email: 'admin@admin.com',
-        password: 'admin',
-        country: 'United States',
-        phone: '+1 555 000 0000',
-        avatar: 'A',
-        account_type: 'personal'
-      },
-      {
-        id: 5,
-        name: 'Enterprise Admin',
-        email: 'admin@atonixcapital.com',
-        password: 'enterprise123',
-        country: 'Nigeria',
-        phone: '+234 702 345 6789',
-        avatar: 'E',
-        account_type: 'enterprise'
+  useEffect(() => {
+    const initialize = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
       }
-    ];
 
-    // Check if credentials match any test user
-    const foundUser = testUsers.find(u => u.email === email && u.password === password);
-    
-    if (foundUser) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      return { success: true, user: userWithoutPassword };
-    }
+      try {
+        const response = await fetch(apiUrl('/api/auth/me/'), {
+          headers: {
+            ...buildAuthHeaders(),
+            'Content-Type': 'application/json',
+          },
+        });
 
-    // If no match, accept any email/password (for flexibility)
-    const accountType = detectAccountType(email);
-    const mockUser = {
-      id: Date.now(),
-      name: email.split('@')[0],
-      email: email,
-      avatar: email.charAt(0).toUpperCase(),
-      account_type: accountType
+        if (!response.ok) {
+          throw new Error('Failed to load user');
+        }
+
+        const me = await response.json();
+        const derivedUser = {
+          id: me.id,
+          name: me.username || me.email?.split('@')[0] || 'User',
+          email: me.email,
+          avatar: (me.username || me.email || 'U').charAt(0).toUpperCase(),
+          account_type: me.account_type || detectAccountType(me.email || ''),
+          country: me.country || '',
+          phone: me.phone || '',
+        };
+
+        setUser(derivedUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(derivedUser));
+      } catch (error) {
+        console.error('Auth initialize error:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setUser(mockUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    return { success: true, user: mockUser };
+    initialize();
+  }, [apiUrl, buildAuthHeaders]);
+
+  const login = async (email, password) => {
+    try {
+      const tokenRes = await fetch(apiUrl('/api/auth/token/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password }),
+      });
+
+      if (!tokenRes.ok) {
+        let details = 'Invalid credentials';
+        try {
+          const data = await tokenRes.json();
+          details = data?.detail || details;
+        } catch {
+          // ignore
+        }
+        return { success: false, error: details };
+      }
+
+      const tokenData = await tokenRes.json();
+      localStorage.setItem('token', tokenData.access);
+      localStorage.setItem('refreshToken', tokenData.refresh);
+
+      const meRes = await fetch(apiUrl('/api/auth/me/'), {
+        headers: {
+          ...buildAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!meRes.ok) {
+        return { success: false, error: 'Failed to load user profile' };
+      }
+
+      const me = await meRes.json();
+      const derivedUser = {
+        id: me.id,
+        name: me.username || me.email?.split('@')[0] || 'User',
+        email: me.email,
+        avatar: (me.username || me.email || 'U').charAt(0).toUpperCase(),
+        account_type: me.account_type || detectAccountType(me.email || ''),
+        country: me.country || '',
+        phone: me.phone || '',
+      };
+
+      setUser(derivedUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(derivedUser));
+      return { success: true, user: derivedUser };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { success: false, error: 'Login failed' };
+    }
   };
 
-  const register = (name, email, password, country, phone, account_type) => {
-    // Mock registration - in production, this would call the backend API
-    const mockUser = {
-      id: Date.now(),
-      name: name,
-      email: email,
-      country: country,
-      phone: phone,
-      avatar: name.charAt(0).toUpperCase(),
-      account_type: account_type || detectAccountType(email)
-    };
+  const register = async (name, email, password, country, phone, account_type, org_name) => {
+    try {
+      const response = await fetch(apiUrl('/api/auth/register/'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          username: email,
+          account_type,
+          country,
+          phone,
+          org_name,
+        }),
+      });
 
-    setUser(mockUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    return { success: true, user: mockUser };
+      if (!response.ok) {
+        let details = 'Registration failed';
+        try {
+          const data = await response.json();
+          details = data?.detail || JSON.stringify(data);
+        } catch {
+          // ignore
+        }
+        return { success: false, error: details };
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+
+      const derivedUser = {
+        id: data.user?.id,
+        name: name || data.user?.username || email?.split('@')[0] || 'User',
+        email: data.user?.email || email,
+        avatar: ((name || data.user?.username || email || 'U').charAt(0) || 'U').toUpperCase(),
+        account_type: data.user?.account_type || account_type || detectAccountType(email || ''),
+        country: data.user?.country || country,
+        phone: data.user?.phone || phone,
+      };
+
+      setUser(derivedUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(derivedUser));
+      return { success: true, user: derivedUser };
+    } catch (error) {
+      console.error('Register error:', error);
+      return { success: false, error: 'Registration failed' };
+    }
   };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   };
 

@@ -19,10 +19,10 @@ const Budget = () => {
     limit: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.category && formData.limit) {
-      addBudget({
+      await addBudget({
         category: formData.category,
         limit: parseFloat(formData.limit)
       });

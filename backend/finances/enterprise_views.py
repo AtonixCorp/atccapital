@@ -5,9 +5,13 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Count
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
+from collections import defaultdict
+from decimal import Decimal
+
+from django.utils import timezone
 
 from .models import (
     Organization, Entity, TeamMember, Role, Permission, TaxExposure,
@@ -97,16 +101,178 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         serializer = OrgOverviewSerializer(overview_data)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def risk_exposure(self, request, pk=None):
+        """Risk & Exposure dashboard computed from real data.
+
+        Returns a stable shape with zero/empty defaults when no data exists.
+        """
+        organization = self.get_object()
+
+        exposures_qs = TaxExposure.objects.filter(entity__organization=organization)
+        totals_by_country = list(
+            exposures_qs.values('country')
+            .annotate(total=Sum('estimated_amount'))
+            .order_by('-total')
+        )
+
+        total_tax_exposure = Decimal('0')
+        for row in totals_by_country:
+            total_tax_exposure += (row.get('total') or Decimal('0'))
+
+        # Compliance deadline counts (used for alerts + risk scores)
+        deadline_counts = defaultdict(int)
+        deadlines_qs = ComplianceDeadline.objects.filter(
+            entity__organization=organization,
+            status__in=['upcoming', 'due_soon', 'overdue'],
+        )
+        for row in (
+            deadlines_qs.values('entity__country', 'status')
+            .annotate(count=Count('id'))
+        ):
+            country = row.get('entity__country') or ''
+            status = row.get('status') or ''
+            if country and status:
+                deadline_counts[(country, status)] += int(row.get('count') or 0)
+
+        # Concentration risk: top 3 countries share
+        top_rows = totals_by_country[:3]
+        top_total = Decimal('0')
+        for row in top_rows:
+            top_total += (row.get('total') or Decimal('0'))
+
+        if total_tax_exposure > 0:
+            top3_percentage = int(round((top_total / total_tax_exposure) * 100))
+        else:
+            top3_percentage = 0
+
+        largest_exposures = []
+        for row in top_rows:
+            amount = row.get('total') or Decimal('0')
+            if total_tax_exposure > 0:
+                pct = int(round((amount / total_tax_exposure) * 100))
+            else:
+                pct = 0
+            largest_exposures.append({
+                'country': row.get('country') or '',
+                'percentage': pct,
+                'amount': float(amount),
+            })
+
+        # Country risks list
+        country_risks = []
+        for row in totals_by_country:
+            country = row.get('country') or ''
+            exposure_amount = row.get('total') or Decimal('0')
+            if not country:
+                continue
+
+            share_pct = float((exposure_amount / total_tax_exposure) * 100) if total_tax_exposure > 0 else 0.0
+            overdue = deadline_counts.get((country, 'overdue'), 0)
+            due_soon = deadline_counts.get((country, 'due_soon'), 0)
+            upcoming = deadline_counts.get((country, 'upcoming'), 0)
+
+            # Simple, explainable scoring: exposure share + compliance pressure.
+            # Scale is 0-100; thresholds match the frontend legend.
+            risk_score = int(round(min(100.0, (share_pct * 1.2) + (overdue * 20) + (due_soon * 12) + (upcoming * 6))))
+            if risk_score < 20:
+                status = 'low'
+            elif risk_score < 30:
+                status = 'medium'
+            else:
+                status = 'high'
+
+            alerts = int(overdue + due_soon + upcoming)
+            country_risks.append({
+                'country': country,
+                'exposure': float(exposure_amount),
+                'risk_score': risk_score,
+                'status': status,
+                'alerts': alerts,
+            })
+
+        # Compliance alerts list (overdue + upcoming next 30 days)
+        today = timezone.now().date()
+        window_end = today + timedelta(days=30)
+        alerts_qs = ComplianceDeadline.objects.filter(entity__organization=organization).exclude(status='completed')
+        alerts_qs = alerts_qs.filter(Q(status='overdue') | Q(deadline_date__lte=window_end))
+        alerts_qs = alerts_qs.filter(status__in=['upcoming', 'due_soon', 'overdue']).order_by('deadline_date')
+
+        compliance_alerts = []
+        for deadline in alerts_qs:
+            if deadline.status == 'overdue':
+                alert_type = 'Overdue Filing'
+                severity = 'high'
+            elif deadline.status == 'due_soon':
+                alert_type = 'Filing Deadline'
+                severity = 'medium'
+            else:
+                alert_type = 'Filing Deadline'
+                severity = 'medium'
+
+            compliance_alerts.append({
+                'id': deadline.id,
+                'country': getattr(deadline.entity, 'country', '') or '',
+                'type': alert_type,
+                'description': deadline.description or deadline.title,
+                'severity': severity,
+            })
+
+        # FX exposure from bank accounts + wallets (by currency)
+        balances_by_currency = defaultdict(Decimal)
+        for acct in BankAccount.objects.filter(entity__organization=organization, is_active=True):
+            currency = acct.currency or 'USD'
+            balances_by_currency[currency] += (acct.balance or Decimal('0'))
+
+        for wallet in Wallet.objects.filter(entity__organization=organization, is_active=True):
+            currency = wallet.currency or 'USD'
+            balances_by_currency[currency] += (wallet.balance or Decimal('0'))
+
+        total_fx_exposure = Decimal('0')
+        for amt in balances_by_currency.values():
+            total_fx_exposure += (amt or Decimal('0'))
+
+        fx_by_currency = []
+        for currency, amount in sorted(balances_by_currency.items(), key=lambda kv: kv[1], reverse=True):
+            if total_fx_exposure > 0:
+                concentration = int(round((amount / total_fx_exposure) * 100))
+            else:
+                concentration = 0
+            fx_by_currency.append({
+                'currency': currency,
+                'exposure': float(amount),
+                'concentration': concentration,
+            })
+
+        dashboard = {
+            'concentration_risk': {
+                'top3_percentage': top3_percentage,
+                'countries_with_exposure': len(totals_by_country),
+                'largest_exposures': largest_exposures,
+            },
+            'country_risks': country_risks,
+            'compliance_alerts': compliance_alerts,
+            'fx_exposure': {
+                'total_exposure': float(total_fx_exposure),
+                'by_currency': fx_by_currency,
+            },
+        }
+
+        return Response(dashboard)
+
 
 class EntityViewSet(viewsets.ModelViewSet):
     """ViewSet for managing entities"""
     serializer_class = EntitySerializer
-    permission_classes = []  # Temporarily disabled for mock auth frontend
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Return entities for all organizations (temporarily for testing)"""
-        return Entity.objects.all()  # FIXME: Should filter by user
-        # return Entity.objects.filter(organization__owner=self.request.user)
+        """Return entities for organizations owned by the user."""
+        queryset = Entity.objects.filter(organization__owner=self.request.user)
+        org_id = self.request.query_params.get('organization_id')
+        if org_id:
+            queryset = queryset.filter(organization_id=org_id)
+        return queryset
 
     def perform_create(self, serializer):
         """Create entity for organization"""
@@ -114,13 +280,17 @@ class EntityViewSet(viewsets.ModelViewSet):
         from rest_framework.exceptions import ValidationError
         
         org_id = self.request.data.get('organization_id')
-        organization = get_object_or_404(Organization, id=org_id)  # Removed owner check for mock auth
+        if not org_id:
+            raise ValidationError({'organization_id': 'This field is required.'})
+        
+        # Get the organization owned by the current user
+        organization = get_object_or_404(Organization, id=org_id, owner=self.request.user)
         
         try:
             entity = serializer.save(organization=organization)
             # Create default structure for the new entity
             entity.create_default_structure()
-        except IntegrityError:
+        except IntegrityError as e:
             raise ValidationError({
                 'detail': f"An entity with the name '{self.request.data.get('name')}' already exists in {self.request.data.get('country')} for this organization."
             })
@@ -409,20 +579,21 @@ class ComplianceDocumentViewSet(viewsets.ModelViewSet):
 class BookkeepingCategoryViewSet(viewsets.ModelViewSet):
     """ViewSet for bookkeeping categories"""
     serializer_class = BookkeepingCategorySerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Return categories for specific entity"""
         entity_id = self.request.query_params.get('entity_id')
+        qs = BookkeepingCategory.objects.filter(entity__organization__owner=self.request.user)
         if entity_id:
-            return BookkeepingCategory.objects.filter(entity_id=entity_id)
-        return BookkeepingCategory.objects.all()
+            qs = qs.filter(entity_id=entity_id)
+        return qs
     
     @action(detail=False, methods=['post'])
     def create_defaults(self, request):
         """Create default categories for an entity"""
         entity_id = request.data.get('entity_id')
-        entity = get_object_or_404(Entity, id=entity_id)
+        entity = get_object_or_404(Entity, id=entity_id, organization__owner=request.user)
         
         # Default income categories
         income_categories = [
@@ -466,25 +637,26 @@ class BookkeepingCategoryViewSet(viewsets.ModelViewSet):
 class BookkeepingAccountViewSet(viewsets.ModelViewSet):
     """ViewSet for bookkeeping accounts"""
     serializer_class = BookkeepingAccountSerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Return accounts for specific entity"""
         entity_id = self.request.query_params.get('entity_id')
+        qs = BookkeepingAccount.objects.filter(entity__organization__owner=self.request.user)
         if entity_id:
-            return BookkeepingAccount.objects.filter(entity_id=entity_id)
-        return BookkeepingAccount.objects.all()
+            qs = qs.filter(entity_id=entity_id)
+        return qs
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
     """ViewSet for transactions with calculations"""
     serializer_class = TransactionSerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Return transactions for specific entity with filters"""
         entity_id = self.request.query_params.get('entity_id')
-        queryset = Transaction.objects.all()
+        queryset = Transaction.objects.filter(entity__organization__owner=self.request.user)
         
         if entity_id:
             queryset = queryset.filter(entity_id=entity_id)
@@ -514,7 +686,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         """Create transaction and log action"""
-        transaction = serializer.save(created_by=self.request.user if hasattr(self.request, 'user') and self.request.user.is_authenticated else None)
+        transaction = serializer.save(created_by=self.request.user)
         
         # Log action
         BookkeepingAuditLog.objects.create(
@@ -731,14 +903,15 @@ class TransactionViewSet(viewsets.ModelViewSet):
 class BookkeepingAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet for bookkeeping audit logs (read-only)"""
     serializer_class = BookkeepingAuditLogSerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Return audit logs for specific entity"""
         entity_id = self.request.query_params.get('entity_id')
+        qs = BookkeepingAuditLog.objects.filter(entity__organization__owner=self.request.user)
         if entity_id:
-            return BookkeepingAuditLog.objects.filter(entity_id=entity_id)
-        return BookkeepingAuditLog.objects.all()
+            qs = qs.filter(entity_id=entity_id)
+        return qs
 
 
 class FinancialStatementsViewSet(viewsets.ViewSet):
@@ -762,10 +935,7 @@ class FinancialStatementsViewSet(viewsets.ViewSet):
         else:
             as_of = datetime.now().date()
         
-        try:
-            entity = Entity.objects.get(pk=entity_id)
-        except Entity.DoesNotExist:
-            return Response({'error': 'Entity not found'}, status=404)
+        entity = get_object_or_404(Entity, pk=entity_id, organization__owner=request.user)
         
         # Get all transactions up to the as_of date
         transactions = Transaction.objects.filter(entity=entity, date__lte=as_of)
@@ -840,10 +1010,7 @@ class FinancialStatementsViewSet(viewsets.ViewSet):
         else:
             start = end - timedelta(days=365)
         
-        try:
-            entity = Entity.objects.get(pk=entity_id)
-        except Entity.DoesNotExist:
-            return Response({'error': 'Entity not found'}, status=404)
+        entity = get_object_or_404(Entity, pk=entity_id, organization__owner=request.user)
         
         # Get all transactions in the period
         txns = Transaction.objects.filter(entity=entity, date__gte=start, date__lte=end)
@@ -924,10 +1091,7 @@ class FinancialStatementsViewSet(viewsets.ViewSet):
         else:
             start = end - timedelta(days=365)
         
-        try:
-            entity = Entity.objects.get(pk=entity_id)
-        except Entity.DoesNotExist:
-            return Response({'error': 'Entity not found'}, status=404)
+        entity = get_object_or_404(Entity, pk=entity_id, organization__owner=request.user)
         
         # Get all transactions in the period
         from django.db.models import Sum
@@ -966,7 +1130,7 @@ class FinancialStatementsViewSet(viewsets.ViewSet):
 
 class CashflowTreasuryViewSet(viewsets.ViewSet):
     """ViewSet for cashflow and treasury data"""
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['get'])
     def dashboard(self, request):
@@ -979,163 +1143,106 @@ class CashflowTreasuryViewSet(viewsets.ViewSet):
         if not entity_id:
             return Response({'error': 'entity_id required'}, status=400)
 
-        # Mock data - in production, this would aggregate from multiple sources
-        dashboard_data = {
+        entity = get_object_or_404(Entity, id=entity_id, organization__owner=request.user)
+
+        from datetime import date
+        from django.db.models import Sum
+        from django.db.models.functions import TruncMonth
+
+        def _parse_date(value):
+            if not value:
+                return None
+            try:
+                return date.fromisoformat(value)
+            except ValueError:
+                return None
+
+        start = _parse_date(start_date)
+        end = _parse_date(end_date)
+        today = date.today()
+
+        if end is None:
+            end = today
+        if start is None:
+            start = (end.replace(day=1) - timedelta(days=180)).replace(day=1)
+
+        bank_accounts = BankAccount.objects.filter(entity=entity)
+        wallets = Wallet.objects.filter(entity=entity)
+
+        cash_on_hand = float(bank_accounts.aggregate(total=Sum('balance'))['total'] or 0) + float(
+            wallets.aggregate(total=Sum('balance'))['total'] or 0
+        )
+
+        txns = Transaction.objects.filter(entity=entity, date__gte=start, date__lte=end)
+        inflows = float(txns.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0)
+        outflows = float(txns.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0)
+        net_cashflow = inflows - outflows
+
+        monthly_rows = (
+            txns.annotate(month=TruncMonth('date'))
+            .values('month', 'type')
+            .annotate(total=Sum('amount'))
+            .order_by('month')
+        )
+        monthly_map = {}
+        for row in monthly_rows:
+            month_key = row['month'].strftime('%b') if row.get('month') else ''
+            if month_key not in monthly_map:
+                monthly_map[month_key] = {'month': month_key, 'inflows': 0.0, 'outflows': 0.0, 'forecast': 0.0}
+            if row['type'] == 'income':
+                monthly_map[month_key]['inflows'] = float(row['total'] or 0)
+            elif row['type'] == 'expense':
+                monthly_map[month_key]['outflows'] = float(row['total'] or 0)
+
+        monthly = list(monthly_map.values())
+        months_count = max(1, len(monthly))
+        burn_rate = net_cashflow / months_count
+        runway_days = 0
+        if burn_rate < 0:
+            runway_days = int((cash_on_hand / abs(burn_rate)) * 30) if abs(burn_rate) > 0 else 0
+
+        return Response({
             'kpis': {
-                'cashOnHand': 2456789.45,
-                'netCashflow': 156789.23,
-                'liquidityRatio': 1.45,
-                'burnRate': -45678.90,
-                'runway': 54  # days
+                'cashOnHand': round(cash_on_hand, 2),
+                'netCashflow': round(net_cashflow, 2),
+                'liquidityRatio': 0,
+                'burnRate': round(burn_rate, 2),
+                'runway': runway_days,
             },
             'cashflowTimeline': {
-                'monthly': [
-                    {'month': 'Jan', 'inflows': 450000, 'outflows': 380000, 'forecast': 420000},
-                    {'month': 'Feb', 'inflows': 480000, 'outflows': 395000, 'forecast': 435000},
-                    {'month': 'Mar', 'inflows': 520000, 'outflows': 410000, 'forecast': 450000},
-                    {'month': 'Apr', 'inflows': 495000, 'outflows': 425000, 'forecast': 465000},
-                    {'month': 'May', 'inflows': 535000, 'outflows': 440000, 'forecast': 480000},
-                    {'month': 'Jun', 'inflows': 510000, 'outflows': 455000, 'forecast': 495000}
-                ]
+                'monthly': monthly,
             },
             'bankAccounts': [
                 {
-                    'id': 1,
-                    'name': 'Main Operating Account',
-                    'bank': 'Chase',
-                    'balance': 1250000.00,
-                    'currency': 'USD',
-                    'type': 'operational'
-                },
-                {
-                    'id': 2,
-                    'name': 'Reserve Account',
-                    'bank': 'Wells Fargo',
-                    'balance': 850000.00,
-                    'currency': 'USD',
-                    'type': 'reserve'
-                },
-                {
-                    'id': 3,
-                    'name': 'Investment Account',
-                    'bank': 'Goldman Sachs',
-                    'balance': 356789.45,
-                    'currency': 'USD',
-                    'type': 'investment'
+                    'id': a.id,
+                    'name': a.name,
+                    'bank': getattr(a, 'bank_name', None) or getattr(a, 'bank', None),
+                    'balance': float(a.balance or 0),
+                    'currency': getattr(a, 'currency', currency),
+                    'type': getattr(a, 'type', None),
                 }
+                for a in bank_accounts
             ],
-            'accountsPayable': {
-                'upcoming': [
-                    {
-                        'id': 1,
-                        'vendor': 'Microsoft',
-                        'amount': 45000.00,
-                        'dueDate': '2025-01-15',
-                        'status': 'pending',
-                        'risk': 'low'
-                    },
-                    {
-                        'id': 2,
-                        'vendor': 'AWS',
-                        'amount': 28500.00,
-                        'dueDate': '2025-01-18',
-                        'status': 'pending',
-                        'risk': 'medium'
-                    }
-                ],
-                'overdue': [
-                    {
-                        'id': 3,
-                        'vendor': 'Consulting LLC',
-                        'amount': 75000.00,
-                        'dueDate': '2024-12-28',
-                        'status': 'overdue',
-                        'risk': 'high'
-                    }
-                ]
-            },
-            'accountsReceivable': {
-                'expected': [
-                    {
-                        'id': 1,
-                        'customer': 'Tech Corp',
-                        'amount': 125000.00,
-                        'dueDate': '2025-01-10',
-                        'status': 'pending',
-                        'reliability': 'high'
-                    },
-                    {
-                        'id': 2,
-                        'customer': 'Startup Inc',
-                        'amount': 87500.00,
-                        'dueDate': '2025-01-15',
-                        'status': 'pending',
-                        'reliability': 'medium'
-                    }
-                ],
-                'aging': {
-                    'current': 245000.00,
-                    '1-30': 156000.00,
-                    '31-60': 89000.00,
-                    '61-90': 45000.00,
-                    '90+': 23000.00
-                }
-            },
-            'insights': [
-                {
-                    'type': 'warning',
-                    'message': 'Cash runway decreased by 12% this month',
-                    'impact': 'high'
-                },
-                {
-                    'type': 'info',
-                    'message': 'AI detected seasonal cashflow pattern - Q4 typically 15% higher',
-                    'impact': 'medium'
-                },
-                {
-                    'type': 'success',
-                    'message': 'Payment optimization saved $12,500 in fees',
-                    'impact': 'low'
-                }
-            ],
-            'alerts': [
-                {
-                    'type': 'critical',
-                    'message': 'Liquidity ratio below 1.2 threshold',
-                    'priority': 'high'
-                },
-                {
-                    'type': 'warning',
-                    'message': 'Large transaction pending approval: $250,000',
-                    'priority': 'medium'
-                },
-                {
-                    'type': 'info',
-                    'message': 'FX exposure increased 8% this week',
-                    'priority': 'low'
-                }
-            ]
-        }
-
-        return Response(dashboard_data)
+            'accountsPayable': {'upcoming': [], 'overdue': []},
+            'accountsReceivable': {'expected': [], 'aging': {}},
+            'insights': [],
+            'alerts': [],
+        })
 
     @action(detail=False, methods=['post'])
     def transfer(self, request):
         """Execute internal transfer between accounts"""
-        # Mock implementation - in production, this would integrate with banking APIs
-        return Response({'status': 'success', 'message': 'Transfer initiated'})
+        return Response({'detail': 'Not implemented.'}, status=501)
 
     @action(detail=False, methods=['post'])
     def fx_conversion(self, request):
         """Execute FX conversion"""
-        # Mock implementation
-        return Response({'status': 'success', 'message': 'FX conversion executed'})
+        return Response({'detail': 'Not implemented.'}, status=501)
 
     @action(detail=False, methods=['post'])
     def investment_allocation(self, request):
         """Allocate funds to investment"""
-        # Mock implementation
-        return Response({'status': 'success', 'message': 'Investment allocation completed'})
+        return Response({'detail': 'Not implemented.'}, status=501)
 
 
 # ============================================================================
@@ -1147,21 +1254,22 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
     """ViewSet for managing recurring bookkeeping transactions."""
 
     serializer_class = RecurringTransactionSerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         entity_id = self.request.query_params.get('entity_id')
-        qs = RecurringTransaction.objects.all()
+        qs = RecurringTransaction.objects.filter(entity__organization__owner=self.request.user)
         if entity_id:
             qs = qs.filter(entity_id=entity_id)
         return qs
 
     def perform_create(self, serializer):
-        user = getattr(self.request, 'user', None)
-        if user and user.is_authenticated:
-            serializer.save(created_by=user)
+        entity_id = self.request.data.get('entity') or self.request.data.get('entity_id')
+        if entity_id:
+            entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+            serializer.save(created_by=self.request.user, entity=entity)
         else:
-            serializer.save()
+            serializer.save(created_by=self.request.user)
 
     @action(detail=False, methods=['post'])
     def run_due(self, request):
@@ -1178,7 +1286,7 @@ class RecurringTransactionViewSet(viewsets.ModelViewSet):
             as_of = date.today()
 
         created = []
-        for rt in RecurringTransaction.objects.all():
+        for rt in RecurringTransaction.objects.filter(entity__organization__owner=request.user):
             if rt.is_due(as_of):
                 tx = rt.create_transaction(run_date=as_of)
                 if tx is not None:
@@ -1191,10 +1299,10 @@ class TaskRequestViewSet(viewsets.ModelViewSet):
     """Queue-based task management for digital workflows."""
 
     serializer_class = TaskRequestSerializer
-    permission_classes = []  # Temporarily disabled for mock auth
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = TaskRequest.objects.all()
+        qs = TaskRequest.objects.filter(organization__owner=self.request.user)
         org_id = self.request.query_params.get('organization_id')
         entity_id = self.request.query_params.get('entity_id')
         status_filter = self.request.query_params.get('status')
@@ -1208,11 +1316,20 @@ class TaskRequestViewSet(viewsets.ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
-        user = getattr(self.request, 'user', None)
-        if user and user.is_authenticated:
-            serializer.save(created_by=user)
-        else:
-            serializer.save()
+        org_id = self.request.data.get('organization') or self.request.data.get('organization_id')
+        entity_id = self.request.data.get('entity') or self.request.data.get('entity_id')
+
+        organization = None
+        entity = None
+
+        if entity_id:
+            entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+            organization = entity.organization
+
+        if org_id:
+            organization = get_object_or_404(Organization, id=org_id, owner=self.request.user)
+
+        serializer.save(created_by=self.request.user, organization=organization, entity=entity)
 
     @action(detail=True, methods=['post'])
     def process(self, request, pk=None):
@@ -1254,10 +1371,12 @@ class TaskRequestViewSet(viewsets.ModelViewSet):
         if not entity_id:
             return {'error': 'entity_id is required in payload to generate a statement.'}
 
+        entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
+
         start_date = payload.get('start_date')
         end_date = payload.get('end_date')
 
-        qs = Transaction.objects.filter(entity_id=entity_id)
+        qs = Transaction.objects.filter(entity=entity)
         if start_date:
             qs = qs.filter(date__gte=start_date)
         if end_date:

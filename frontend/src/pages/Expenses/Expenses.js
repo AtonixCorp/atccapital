@@ -25,10 +25,10 @@ const Expenses = () => {
 
   const categories = ['Food', 'Transportation', 'Entertainment', 'Utilities', 'Health', 'Shopping', 'Other'];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.description && formData.amount) {
-      addExpense({
+      await addExpense({
         ...formData,
         amount: parseFloat(formData.amount)
       });

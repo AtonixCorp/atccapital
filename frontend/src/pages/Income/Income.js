@@ -20,11 +20,11 @@ const Income = () => {
   });
   
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.source && formData.amount) {
       // Validation happens automatically in context
-      addIncome({
+      await addIncome({
         ...formData,
         amount: parseFloat(formData.amount)
       });

@@ -23,7 +23,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user_id', 'email', 'username', 'first_name', 'last_name', 'account_type', 'country', 'phone', 'avatar_color', 'created_at']
+        fields = ['user_id', 'email', 'username', 'first_name', 'last_name', 'account_type', 'country', 'phone', 'tax_type', 'tax_rate', 'avatar_color', 'created_at']
         read_only_fields = ['created_at']
 
     def get_first_name(self, obj):
@@ -37,10 +37,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class OrganizationSerializer(serializers.ModelSerializer):
     owner_name = serializers.ReadOnlyField(source='owner.get_full_name')
+    # Backward-compatible aliases (frontend previously used `country`/`currency`)
+    country = serializers.CharField(source='primary_country', required=False)
+    currency = serializers.CharField(source='primary_currency', required=False)
 
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'website', 'owner_name', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'slug', 'description', 'logo_url', 'industry', 'employee_count', 'primary_currency', 'primary_country', 'country', 'currency', 'settings', 'website', 'owner_name', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
 

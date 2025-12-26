@@ -18,6 +18,10 @@ const EnterpriseOrgOverview = () => {
     return <div className="permission-denied">You don't have permission to view this dashboard.</div>;
   }
 
+  if (!currentOrganization) {
+    return <div className="loading">No organization yet. Create one to get started.</div>;
+  }
+
   if (!orgOverview) {
     return <div className="loading">Loading organization overview...</div>;
   }
@@ -28,7 +32,8 @@ const EnterpriseOrgOverview = () => {
     net_position = 0,
     total_tax_exposure = 0,
     active_jurisdictions = 0,
-    active_entities = 0
+    active_entities = 0,
+    pending_tax_returns = 0
   } = orgOverview;
 
   const handleNavigate = (path) => {
@@ -66,7 +71,7 @@ const EnterpriseOrgOverview = () => {
             <div className="metric-value">
               ${Number(total_tax_exposure).toLocaleString('en-US', { maximumFractionDigits: 0 })}
             </div>
-            <div className="metric-badge">2 returns pending</div>
+            <div className="metric-badge">{pending_tax_returns} returns pending</div>
           </div>
 
           {/* Jurisdictions Card */}
@@ -102,10 +107,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">💰</div>
               <h4>Cash & Equivalents</h4>
             </div>
-            <div className="position-value">$2,450,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>4 active accounts</span>
-              <span>3 currencies</span>
+              <span>0 active accounts</span>
+              <span>0 currencies</span>
             </div>
           </div>
 
@@ -115,10 +120,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">📈</div>
               <h4>Investments</h4>
             </div>
-            <div className="position-value">$8,750,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>12 holdings</span>
-              <span>5 asset classes</span>
+              <span>0 holdings</span>
+              <span>0 asset classes</span>
             </div>
           </div>
 
@@ -128,10 +133,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">🏢</div>
               <h4>Real Estate</h4>
             </div>
-            <div className="position-value">$15,200,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>8 properties</span>
-              <span>4 countries</span>
+              <span>0 properties</span>
+              <span>0 countries</span>
             </div>
           </div>
 
@@ -141,10 +146,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">₿</div>
               <h4>Cryptocurrency</h4>
             </div>
-            <div className="position-value">$1,850,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>6 assets</span>
-              <span>24h: +2.4%</span>
+              <span>0 assets</span>
+              <span>24h: 0%</span>
             </div>
           </div>
 
@@ -154,10 +159,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">📊</div>
               <h4>Derivatives</h4>
             </div>
-            <div className="position-value">$3,100,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>15 contracts</span>
-              <span>7 counterparties</span>
+              <span>0 contracts</span>
+              <span>0 counterparties</span>
             </div>
           </div>
 
@@ -167,10 +172,10 @@ const EnterpriseOrgOverview = () => {
               <div className="position-icon">🏛️</div>
               <h4>Private Equity</h4>
             </div>
-            <div className="position-value">$12,500,000</div>
+            <div className="position-value">$0</div>
             <div className="position-details">
-              <span>5 investments</span>
-              <span>3 funds</span>
+              <span>0 investments</span>
+              <span>0 funds</span>
             </div>
           </div>
         </div>
