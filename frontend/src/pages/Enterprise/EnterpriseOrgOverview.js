@@ -37,12 +37,6 @@ const EnterpriseOrgOverview = () => {
 
   return (
     <div className="org-overview-container">
-      {/* Header */}
-      <div className="overview-header">
-        <h1>Organization Overview</h1>
-        <p>Executive summary of your organization's financial and tax position</p>
-      </div>
-
       {/* Executive Summary */}
       <section className="executive-summary">
         <h2 className="section-title">Executive Summary</h2>
