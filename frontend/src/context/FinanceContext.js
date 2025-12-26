@@ -1,16 +1,12 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import calculationEngine from '../services/calculation/calculationEngine';
 import validationService from '../services/calculation/validationService';
 import monthlyAnalysisService from '../services/calculation/monthlyAnalysisService';
 import taxCalculatorService from '../services/taxCalculatorService';
 import {
-  expensesAPI, incomeAPI, budgetsAPI, taxAPI,
   modelTemplatesAPI, financialModelsAPI, scenariosAPI,
-  sensitivityAnalysisAPI, aiInsightsAPI, customKPIsAPI,
-  kpiCalculationsAPI, reportsAPI, consolidationsAPI,
-  taxCalculationsAPI, complianceDeadlinesAPI, cashflowForecastsAPI,
-  organizationsAPI, entitiesAPI, teamMembersAPI, rolesAPI,
-  permissionsAPI, auditLogsAPI, taxExposuresAPI
+  aiInsightsAPI, reportsAPI,
+  organizationsAPI, entitiesAPI
 } from '../services/api';
 
 const FinanceContext = createContext();
@@ -100,20 +96,13 @@ export const FinanceProvider = ({ children }) => {
   const [monthlySummary, setMonthlySummary] = useState(null);
   const [validationResults, setValidationResults] = useState(null);
   
-  // Recalculate everything when data changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    recalculateAll();
-    updateAvailableMonths();
-  }, [expenses, income, budgets, userCountry, userTaxRate, selectedMonth.year, selectedMonth.month]);
-
   // ==================== CALCULATION ENGINE ====================
   
   /**
    * Master recalculation function
    * Called automatically when any financial data changes
    */
-  const recalculateAll = () => {
+  const recalculateAll = useCallback(() => {
     // Get tax info for user's country
     const taxInfo = taxCalculatorService.getTaxInfo(userCountry);
     const effectiveTaxRate = userTaxRate || (taxInfo ? taxInfo.rate : 0);
@@ -162,12 +151,12 @@ export const FinanceProvider = ({ children }) => {
     setValidationResults(validation);
     
     return summary;
-  };
+  }, [budgets, expenses, income, selectedMonth.month, selectedMonth.year, userCountry, userTaxRate]);
   
   /**
    * Update available months based on existing transactions
    */
-  const updateAvailableMonths = () => {
+  const updateAvailableMonths = useCallback(() => {
     const months = new Set();
     
     // Get months from income
@@ -205,7 +194,13 @@ export const FinanceProvider = ({ children }) => {
     }
     
     setAvailableMonths(monthsList);
-  };
+  }, [expenses, income]);
+
+  // Recalculate everything when data changes
+  useEffect(() => {
+    recalculateAll();
+    updateAvailableMonths();
+  }, [recalculateAll, updateAvailableMonths]);
   
   /**
    * Change selected month
@@ -531,6 +526,20 @@ export const FinanceProvider = ({ children }) => {
     complianceDeadlines,
     cashflowForecasts,
 
+    // Financial Modeling setters (exposed for screens that manage these)
+    setModels,
+    setCurrentModel,
+    setModelTemplates,
+    setScenarios,
+    setSensitivityAnalyses,
+    setAiInsights,
+    setCustomKPIs,
+    setReports,
+    setConsolidations,
+    setTaxCalculations,
+    setComplianceDeadlines,
+    setCashflowForecasts,
+
     // Enterprise Data
     organizations,
     entities,
@@ -539,6 +548,15 @@ export const FinanceProvider = ({ children }) => {
     permissions,
     auditLogs,
     taxExposures,
+
+    // Enterprise setters (exposed for admin screens)
+    setOrganizations,
+    setEntities,
+    setTeamMembers,
+    setRoles,
+    setPermissions,
+    setAuditLogs,
+    setTaxExposures,
 
     // Loading and Error States
     loading,

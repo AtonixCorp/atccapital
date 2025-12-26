@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { 
-  FaCog, FaShieldAlt, FaUserCog, FaBell, FaPlug, 
-  FaFileInvoice, FaLink, FaKey, FaToggleOn, FaToggleOff,
+  FaCog, FaShieldAlt, FaBell, FaPlug, 
+  FaLink, FaToggleOn, FaToggleOff,
   FaSlack, FaGoogle, FaMicrosoft, FaSave, FaCheck, FaInfo,
-  FaDatabase, FaLock, FaServer, FaExclamationTriangle
+  FaDatabase, FaLock, FaServer
 } from 'react-icons/fa';
 import './EnterpriseSettings.css';
 
@@ -101,8 +100,7 @@ const CURRENCIES = [
 ];
 
 const EnterpriseSettings = () => {
-  const { user } = useAuth();
-  const { currentOrganization, hasPermission, PERMISSIONS } = useEnterprise();
+  const { currentOrganization } = useEnterprise();
   const [activeTab, setActiveTab] = useState('organization');
   const [saved, setSaved] = useState(false);
 
@@ -467,7 +465,7 @@ const EnterpriseSettings = () => {
                   <div className="api-docs">
                     <h4>API Documentation</h4>
                     <p>Read our comprehensive API docs to get started:</p>
-                    <a href="#" className="link">View API Documentation →</a>
+                    <a href="/api/docs" className="link" target="_blank" rel="noreferrer">View API Documentation →</a>
                   </div>
                 </div>
               </div>

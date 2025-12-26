@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FaGlobe,
@@ -17,45 +17,28 @@ import {
   FaInfoCircle,
   FaArrowRight,
   FaCog,
-  FaChartLine,
   FaBell,
   FaSearch,
-  FaFilter,
   FaEye,
-  FaEdit,
-  FaTrash,
   FaPlay,
-  FaPause,
   FaRedo,
   FaCloudUploadAlt,
   FaFolder,
   FaChevronRight,
   FaFileInvoice,
-  FaQuestionCircle,
   FaLightbulb,
   FaChartBar,
   FaCalendarAlt,
   FaMapMarkerAlt,
-  FaFlag,
   FaMoneyBillWave,
   FaPercent,
   FaClock,
-  FaUser,
   FaBuilding,
-  FaHandshake,
-  FaShield,
-  FaKey,
   FaDatabase,
   FaLink,
-  FaUnlink,
-  FaCheck,
   FaTimes,
-  FaSpinner,
-  FaExclamation,
   FaStar,
-  FaBookmark,
-  FaShare,
-  FaPrint
+  FaShare
 } from 'react-icons/fa';
 import './EnterpriseTaxCompliance.css';
 
@@ -64,23 +47,15 @@ const EnterpriseTaxCompliance = () => {
   const activeSection = searchParams.get('section') || 'overview';
 
   // Enhanced state management
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState('');
+  const [isLoading] = useState(false);
+  const [, setSelectedCountry] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [aiQuery, setAiQuery] = useState('');
-  const [aiResponses, setAiResponses] = useState([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [reconciliationStatus, setReconciliationStatus] = useState('idle');
   const [taxCalculationMode, setTaxCalculationMode] = useState('automatic');
-  const [monitoringAlerts, setMonitoringAlerts] = useState([]);
   const [alertFilter, setAlertFilter] = useState('all');
   const [vaultView, setVaultView] = useState('folders');
   const [showVaultUpload, setShowVaultUpload] = useState(false);
-  const [filters, setFilters] = useState({
-    type: 'all',
-    status: 'all',
-    dateRange: 'all'
-  });
   const [showCountrySelector, setShowCountrySelector] = useState(false);
   const [documentFilters, setDocumentFilters] = useState({
     type: 'all',
@@ -243,57 +218,6 @@ const EnterpriseTaxCompliance = () => {
     }
   ]);
 
-  // Auto-reconciliation data
-  const reconciliationData = {
-    status: 'completed',
-    lastRun: '2025-01-16T06:00:00Z',
-    matched: 1247,
-    unmatched: 12,
-    duplicates: 3,
-    issues: [
-      { id: 1, type: 'unmatched', description: 'Transaction $5,230 has no matching category', severity: 'medium' },
-      { id: 2, type: 'duplicate', description: 'Invoice #INV-2025-001 appears twice', severity: 'low' },
-      { id: 3, type: 'missing', description: 'Receipt missing for expense $1,450', severity: 'high' }
-    ],
-    autoFixed: 8
-  };
-
-  // Filing assistance data
-  const filingData = {
-    upcomingFilings: [
-      {
-        id: 1,
-        jurisdiction: 'US Federal',
-        form: 'Form 1120',
-        dueDate: '2025-04-15',
-        status: 'ready',
-        progress: 95,
-        autoFilled: true,
-        missingInfo: []
-      },
-      {
-        id: 2,
-        jurisdiction: 'UK',
-        form: 'CT600',
-        dueDate: '2025-12-31',
-        status: 'in-progress',
-        progress: 60,
-        autoFilled: false,
-        missingInfo: ['turnover-figures', 'director-loans']
-      }
-    ],
-    templates: [
-      { id: 1, name: 'Tax Summary Report', description: 'Comprehensive quarterly summary', autoGenerate: true },
-      { id: 2, name: 'Compliance Checklist', description: 'All filing requirements', autoGenerate: true },
-      { id: 3, name: 'Accountant Package', description: 'All documents for your accountant', autoGenerate: false }
-    ]
-  };
-
-  // Utility functions
-  const handleSectionChange = (section) => {
-    setSearchParams({ section });
-  };
-
   const handleCountrySelect = (countryCode) => {
     setSelectedCountry(countryCode);
     setShowCountrySelector(false);
@@ -337,62 +261,9 @@ const EnterpriseTaxCompliance = () => {
     return "I understand you're asking about: '" + query + "'. Based on your tax profile and recent transactions, here's my analysis: [Detailed tax advice would appear here]. Would you like me to elaborate on any specific aspect?";
   };
 
-  const handleFileUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const newFiles = files.map(file => ({
-      id: Date.now() + Math.random(),
-      name: file.name,
-      size: (file.size / 1024 / 1024).toFixed(1) + 'MB',
-      type: file.type,
-      status: 'processing',
-      uploadedAt: new Date().toISOString()
-    }));
-
-    setUploadedFiles(prev => [...prev, ...newFiles]);
-
-    // Simulate processing
-    newFiles.forEach(file => {
-      setTimeout(() => {
-        setUploadedFiles(prev => prev.map(f => 
-          f.id === file.id 
-            ? { ...f, status: 'processed', extractedData: 'Auto-extracted: $1,250 expense, Category: Office Supplies' }
-            : f
-        ));
-      }, 2000);
-    });
-  };
-
-  const startReconciliation = () => {
-    setReconciliationStatus('running');
-    // Simulate reconciliation process
-    setTimeout(() => {
-      setReconciliationStatus('completed');
-    }, 3000);
-  };
-
-  const exportDocument = (docId) => {
-    // In real implementation, this would trigger download
-    console.log('Exporting document:', docId);
-  };
-
-  const generateDocument = (templateId) => {
-    // In real implementation, this would trigger document generation
-    console.log('Generating document from template:', templateId);
-  };
-
   // Document handlers
   const handleGenerateReport = () => {
     // Simulate generating a comprehensive report
-    const newDoc = {
-      id: Date.now(),
-      name: 'Comprehensive Tax Report - Q4 2024',
-      type: 'report',
-      size: '2.4MB',
-      date: new Date().toISOString(),
-      status: 'generating',
-      autoGenerated: true
-    };
-    // Add to documents array
     console.log('Generating comprehensive report...');
   };
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import AtonixLogo from '../Logo/AtonixLogo';
 import { useLanguage } from '../../context/LanguageContext';
 import LanguageSelector from '../LanguageSelector/LanguageSelector';
@@ -17,8 +16,8 @@ const Header = () => {
         </a>
         <div className="header-nav-links">
           <LanguageSelector />
-          <a href="/login" className="btn-outline" role="link">{t('auth.login')}</a>
-          <a href="/register" className="btn-primary" role="link">{t('auth.getStarted')}</a>
+          <a href="/login" className="btn-outline">{t('auth.login')}</a>
+          <a href="/register" className="btn-primary">{t('auth.getStarted')}</a>
         </div>
       </div>
     </nav>

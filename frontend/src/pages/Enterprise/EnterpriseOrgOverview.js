@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import './EnterpriseOrgOverview.css';
-import { FaArrowUp, FaArrowDown, FaGlobe, FaBuilding, FaArrowRight, FaClipboardList, FaUsers, FaChartBar } from 'react-icons/fa';
+import { FaGlobe, FaBuilding, FaArrowRight, FaClipboardList, FaUsers, FaChartBar } from 'react-icons/fa';
 
 const EnterpriseOrgOverview = () => {
   const navigate = useNavigate();

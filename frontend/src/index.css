@@ -10,14 +10,14 @@
   --pf-panel: #F2F2F7;
   --pf-border: #E5E7EB;
   --pf-text: #1C1C1E;
-  --pf-text-muted: #6B7280;
+  --pf-text-muted: #4B5563;
   /* Map existing accent slots to the requested colors */
   --pf-accent-blue: #4B5DFF; /* Primary (Indigo) */
   --pf-accent-gold: #5AC8FA; /* Accent (Sky) */
 
   /* Light app defaults (public pages) */
   --app-bg: #f5f7fa;
-  --app-text: #333;
+  --app-text: var(--pf-text);
 }
 
 body {

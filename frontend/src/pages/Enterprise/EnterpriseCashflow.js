@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import { FaWallet, FaChartLine, FaPercent, FaArrowRight } from 'react-icons/fa';
+import { FaWallet, FaChartLine, FaPercent } from 'react-icons/fa';
 import './EnterpriseCashflow.css';
 
 const EnterpriseCashflow = () => {

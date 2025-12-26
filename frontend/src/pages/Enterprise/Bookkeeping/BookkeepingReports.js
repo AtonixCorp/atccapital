@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaFileAlt, FaDownload, FaChartLine, FaMoneyBillWave, FaWallet, FaCalculator, FaFilter } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
@@ -19,11 +19,7 @@ const BookkeepingReports = () => {
 
   const entity = entities.find(e => e.id === parseInt(entityId));
 
-  useEffect(() => {
-    loadReportData();
-  }, [entityId, dateRange]);
-
-  const loadReportData = async () => {
+  const loadReportData = useCallback(async () => {
     setLoading(true);
     const filters = {
       start_date: dateRange.start,
@@ -33,7 +29,11 @@ const BookkeepingReports = () => {
     const summaryData = await fetchBookkeepingSummary(entityId, filters);
     setSummary(summaryData);
     setLoading(false);
-  };
+  }, [dateRange.end, dateRange.start, entityId, fetchBookkeepingSummary]);
+
+  useEffect(() => {
+    loadReportData();
+  }, [loadReportData]);
 
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {

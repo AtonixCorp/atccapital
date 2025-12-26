@@ -26,7 +26,7 @@ export const AccessibilityProvider = ({ children }) => {
       fontSizeClass,
       fontSizeValue,
     };
-  }, [fontSize]);
+  }, [fontSize, fontSizeClass, fontSizeValue]);
 
   return (
     <AccessibilityContext.Provider value={value}>

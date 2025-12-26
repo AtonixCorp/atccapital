@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaWallet, FaUniversity, FaMoneyBillWave, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
@@ -25,23 +25,23 @@ const AccountManager = () => {
   });
   
   const entity = entities.find(e => e.id === parseInt(entityId));
+
+  const loadAccounts = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchBookkeepingAccounts(entityId);
+    setAccounts(data.results || data);
+    setLoading(false);
+  }, [entityId, fetchBookkeepingAccounts]);
   
   useEffect(() => {
     loadAccounts();
-  }, [entityId]);
+  }, [loadAccounts]);
   
   useEffect(() => {
     if (entity) {
       setFormData(prev => ({ ...prev, currency: entity.local_currency || 'USD' }));
     }
   }, [entity]);
-  
-  const loadAccounts = async () => {
-    setLoading(true);
-    const data = await fetchBookkeepingAccounts(entityId);
-    setAccounts(data.results || data);
-    setLoading(false);
-  };
   
   const handleSubmit = async (e) => {
     e.preventDefault();

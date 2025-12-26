@@ -6,7 +6,6 @@ import './EnterpriseRiskExposure.css';
 const EnterpriseRiskExposure = () => {
   const { currentOrganization } = useEnterprise();
   const [riskData, setRiskData] = useState({});
-  const [selectedCountry, setSelectedCountry] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ const EnterpriseRiskExposure = () => {
               </div>
 
               {(riskData.concentration_risk?.largest_exposures || []).map((exp, idx) => (
-                <div key={idx} className="concentration-card" onClick={() => setSelectedCountry(exp.country)}>
+                <div key={idx} className="concentration-card">
                   <div className="rank">#{idx + 1}</div>
                   <div className="country-name">{exp.country}</div>
                   <div className="exposure">{formatCurrency(exp.amount)}</div>
@@ -107,13 +106,6 @@ const EnterpriseRiskExposure = () => {
                 </div>
               ))}
             </div>
-
-            {/* Concentration Warning */}
-            {(riskData.concentration_risk?.top3_percentage || 0) > 60 && (
-              <div className="warning-banner">
-                <FaBell /> High concentration risk: Top 3 countries represent {riskData.concentration_risk?.top3_percentage}% of exposure
-              </div>
-            )}
           </div>
 
           {/* Country Risk Heatmap */}
@@ -124,7 +116,6 @@ const EnterpriseRiskExposure = () => {
                 <div 
                   key={country.country}
                   className={`risk-cell ${country.status}`}
-                  onClick={() => setSelectedCountry(country.country)}
                   style={{backgroundColor: getRiskColor(country.risk_score) + '20', borderColor: getRiskColor(country.risk_score)}}
                 >
                   <div className="cell-country">{country.country}</div>

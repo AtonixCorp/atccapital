@@ -4,12 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import LanguageSelector from '../LanguageSelector/LanguageSelector';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import { FaHome, FaMoneyBillWave, FaHandHoldingUsd, FaChartLine, FaChartBar, FaBrain, FaDna, FaShieldAlt, FaTrophy, FaCalculator, FaSignOutAlt, FaMoneyBill, FaBuilding, FaCheckCircle, FaFileExport, FaUsers, FaCog, FaExclamationTriangle, FaSync, FaBars, FaTimes } from 'react-icons/fa';
+import { FaHome, FaMoneyBillWave, FaHandHoldingUsd, FaChartLine, FaChartBar, FaBrain, FaCalculator, FaSignOutAlt, FaMoneyBill, FaBuilding, FaCheckCircle, FaFileExport, FaUsers, FaCog, FaExclamationTriangle, FaBars, FaTimes } from 'react-icons/fa';
 import './Layout.css';
 
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const isEnterprise = user?.account_type === 'enterprise';
   const { entities } = useEnterprise();
@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
       <nav className={`sidebar ${sidebarMinimized ? 'minimized' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-header-content">
-            <h1 className="app-title" role="heading" aria-level="1"><FaMoneyBill /> {!sidebarMinimized && t('appName')}</h1>
+            <h1 className="app-title"><FaMoneyBill /> {!sidebarMinimized && t('appName')}</h1>
             <button 
               className="sidebar-toggle" 
               onClick={toggleSidebar} 

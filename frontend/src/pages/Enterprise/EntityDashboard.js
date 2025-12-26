@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { FaGlobe } from 'react-icons/fa';
 import './EntityDashboard.css';
 
@@ -399,7 +399,18 @@ const EntityDashboard = () => {
             {expenses.length === 0 && <p className="no-data">No expenses recorded for this entity</p>}
             {expenses.length > 10 && (
               <div className="table-footer">
-                <p>Showing 10 of {expenses.length} expenses. <a onClick={() => navigate(`/enterprise/entity/${entityId}/expenses`)}>View all →</a></p>
+                <p>
+                  Showing 10 of {expenses.length} expenses.{' '}
+                  <a
+                    href={`/enterprise/entity/${entityId}/expenses`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/enterprise/entity/${entityId}/expenses`);
+                    }}
+                  >
+                    View all →
+                  </a>
+                </p>
               </div>
             )}
           </div>
@@ -446,7 +457,18 @@ const EntityDashboard = () => {
             {income.length === 0 && <p className="no-data">No income recorded for this entity</p>}
             {income.length > 10 && (
               <div className="table-footer">
-                <p>Showing 10 of {income.length} income records. <a onClick={() => navigate(`/enterprise/entity/${entityId}/income`)}>View all →</a></p>
+                <p>
+                  Showing 10 of {income.length} income records.{' '}
+                  <a
+                    href={`/enterprise/entity/${entityId}/income`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/enterprise/entity/${entityId}/income`);
+                    }}
+                  >
+                    View all →
+                  </a>
+                </p>
               </div>
             )}
           </div>

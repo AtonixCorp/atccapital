@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaMoneyBillWave, FaWallet, FaChartLine, FaFileInvoiceDollar, FaPlus, FaFilter, FaDownload, FaList, FaTag, FaUniversity, FaFileAlt, FaUsers } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
@@ -19,11 +19,7 @@ const BookkeepingDashboard = () => {
   
   const entity = entities.find(e => e.id === parseInt(entityId));
   
-  useEffect(() => {
-    loadData();
-  }, [entityId, dateFilter]);
-  
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     
     // Calculate date range
@@ -57,7 +53,11 @@ const BookkeepingDashboard = () => {
     setRecentTransactions((transactionsData.results || transactionsData).slice(0, 10));
     
     setLoading(false);
-  };
+  }, [dateFilter, entityId, fetchBookkeepingSummary, fetchTransactions]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
   
   const formatCurrency = (amount, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useContext, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 
 const EnterpriseContext = createContext();
@@ -39,15 +39,15 @@ export const EnterpriseProvider = ({ children }) => {
   const [cashflowData, setCashflowData] = useState([]);
 
   // Constants for role hierarchy
-  const ROLES = {
+  const ROLES = useMemo(() => ({
     ORG_OWNER: 'ORG_OWNER',
     CFO: 'CFO',
     FINANCE_ANALYST: 'FINANCE_ANALYST',
     VIEWER: 'VIEWER',
     EXTERNAL_ADVISOR: 'EXTERNAL_ADVISOR',
-  };
+  }), []);
 
-  const PERMISSIONS = {
+  const PERMISSIONS = useMemo(() => ({
     // Org
     VIEW_ORG_OVERVIEW: 'view_org_overview',
     MANAGE_ORG_SETTINGS: 'manage_org_settings',
@@ -81,10 +81,10 @@ export const EnterpriseProvider = ({ children }) => {
     VIEW_TEAM: 'view_team',
     MANAGE_TEAM: 'manage_team',
     ASSIGN_ROLES: 'assign_roles',
-  };
+  }), []);
 
   // Mock enterprise data for testing
-  const mockOrganizations = [
+  const mockOrganizations = useMemo(() => ([
     {
       id: 1,
       name: 'Atonix Capital',
@@ -96,9 +96,9 @@ export const EnterpriseProvider = ({ children }) => {
       employees_count: 50,
       status: 'active'
     }
-  ];
+  ]), []);
 
-  const mockOrgOverview = {
+  const mockOrgOverview = useMemo(() => ({
     total_assets: 15000000,
     total_liabilities: 5000000,
     net_position: 10000000,
@@ -138,9 +138,9 @@ export const EnterpriseProvider = ({ children }) => {
       'Australia': 290000,
       'United Arab Emirates': 180000,
     }
-  };
+  }), []);
 
-  const mockEntities = [
+  const mockEntities = useMemo(() => ([
     {
       id: 1,
       name: 'Atonix Capital Limited',
@@ -186,9 +186,9 @@ export const EnterpriseProvider = ({ children }) => {
       tax_id: 'TIN555555555',
       incorporation_date: '2024-01-01'
     }
-  ];
+  ]), []);
 
-  const mockTeamMembers = [
+  const mockTeamMembers = useMemo(() => ([
     {
       id: 1,
       user_name: 'Enterprise Admin',
@@ -213,21 +213,21 @@ export const EnterpriseProvider = ({ children }) => {
       role_name: 'Finance Analyst',
       status: 'active'
     }
-  ];
+  ]), [ROLES.ORG_OWNER, ROLES.CFO, ROLES.FINANCE_ANALYST]);
 
-  const mockTaxExposures = [
+  const mockTaxExposures = useMemo(() => ([
     { country: 'Nigeria', total_exposure: 1500000, entities: 2, rate: 30 },
     { country: 'Kenya', total_exposure: 700000, entities: 1, rate: 37.5 },
     { country: 'South Africa', total_exposure: 300000, entities: 1, rate: 28 }
-  ];
+  ]), []);
 
-  const mockComplianceDeadlines = [
+  const mockComplianceDeadlines = useMemo(() => ([
     { id: 1, country: 'Nigeria', type: 'Corporate Tax Return', dueDate: '2025-04-15', status: 'upcoming', entity: 'Atonix Capital Limited' },
     { id: 2, country: 'Nigeria', type: 'Payroll Tax', dueDate: '2025-01-31', status: 'due_soon', entity: 'Atonix Capital Limited' },
     { id: 3, country: 'Kenya', type: 'VAT Return', dueDate: '2025-01-20', status: 'due_soon', entity: 'Atonix East Africa' },
     { id: 4, country: 'South Africa', type: 'Corporate Tax', dueDate: '2025-06-30', status: 'upcoming', entity: 'Atonix Southern Africa' },
     { id: 5, country: 'Nigeria', type: 'Annual Return', dueDate: '2025-03-31', status: 'upcoming', entity: 'Atonix Advisory' }
-  ];
+  ]), []);
 
   /**
    * Initialize enterprise data for user
@@ -236,6 +236,10 @@ export const EnterpriseProvider = ({ children }) => {
     if (user && user.account_type === 'enterprise') {
       // Set default user role to ORG_OWNER for testing
       setCurrentUserRole(ROLES.ORG_OWNER);
+
+      // Seed roles/permissions so setters are used (and available for UI)
+      setRoles(Object.values(ROLES));
+      setPermissions(Object.values(PERMISSIONS));
       
       // Initialize with mock data
       setOrganizations(mockOrganizations);
@@ -247,7 +251,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.log('Enterprise user initialized:', user);
       console.log('Current user role set to:', ROLES.ORG_OWNER);
     }
-  }, [user]);
+  }, [user, ROLES, mockOrganizations, mockOrgOverview, mockEntities, mockTeamMembers, PERMISSIONS]);
 
   /**
    * Fetch organizations for current user
@@ -300,7 +304,7 @@ export const EnterpriseProvider = ({ children }) => {
       // Use mock data as fallback
       setOrgOverview(mockOrgOverview);
     }
-  }, []);
+  }, [mockOrgOverview]);
 
   /**
    * Fetch entities for organization
@@ -325,7 +329,7 @@ export const EnterpriseProvider = ({ children }) => {
       // Use mock data as fallback
       setEntities(mockEntities);
     }
-  }, []);
+  }, [mockEntities]);
 
   /**
    * Fetch team members
@@ -358,7 +362,7 @@ export const EnterpriseProvider = ({ children }) => {
       // Use mock data as fallback
       setTeamMembers(mockTeamMembers);
     }
-  }, [user]);
+  }, [mockTeamMembers, user]);
 
   /**
    * Fetch tax compliance data
@@ -374,11 +378,14 @@ export const EnterpriseProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         setTaxExposures(data);
+      } else {
+        setTaxExposures(mockTaxExposures);
       }
     } catch (err) {
       console.error('Failed to fetch tax exposures:', err);
+      setTaxExposures(mockTaxExposures);
     }
-  }, []);
+  }, [mockTaxExposures]);
 
   /**
    * Fetch compliance deadlines
@@ -394,11 +401,14 @@ export const EnterpriseProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         setComplianceDeadlines(Array.isArray(data) ? data : data.results || []);
+      } else {
+        setComplianceDeadlines(mockComplianceDeadlines);
       }
     } catch (err) {
       console.error('Failed to fetch compliance deadlines:', err);
+      setComplianceDeadlines(mockComplianceDeadlines);
     }
-  }, []);
+  }, [mockComplianceDeadlines]);
 
   /**
    * Fetch cashflow forecast
@@ -559,7 +569,7 @@ export const EnterpriseProvider = ({ children }) => {
       console.error('Entity creation error:', err);
       throw err; // Re-throw so the component can handle it
     }
-  }, [entities]);
+  }, [fetchEntities]);
 
   /**
    * Add team member

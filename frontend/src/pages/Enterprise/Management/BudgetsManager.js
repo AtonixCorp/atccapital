@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useEnterprise } from '../../../context/EnterpriseContext';
 import { FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
@@ -33,21 +33,35 @@ const BudgetsManager = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    loadBudgets();
-    loadExpenses();
-  }, [entityId]);
-
-  const loadBudgets = async () => {
+  const loadBudgets = useCallback(async () => {
     setLoading(true);
     const data = await fetchEntityBudgets(entityId);
     setBudgets(data || []);
     setLoading(false);
-  };
+  }, [entityId, fetchEntityBudgets]);
 
-  const loadExpenses = async () => {
+  const loadExpenses = useCallback(async () => {
     const data = await fetchEntityExpenses(entityId);
     setExpenses(data || []);
+  }, [entityId, fetchEntityExpenses]);
+
+  useEffect(() => {
+    loadBudgets();
+    loadExpenses();
+  }, [loadBudgets, loadExpenses]);
+
+  const handleEditBudget = (budget) => {
+    setEditingBudget(budget);
+    setFormData({
+      category: budget.category || '',
+      limit: budget.limit || '',
+      period: budget.period || 'monthly',
+      start_date: budget.start_date || new Date().toISOString().split('T')[0],
+      end_date: budget.end_date || '',
+      alert_threshold: budget.alert_threshold ?? 80,
+      notes: budget.notes || ''
+    });
+    setShowForm(true);
   };
 
   const handleSubmit = async (e) => {
@@ -168,7 +182,7 @@ const BudgetsManager = () => {
               <div className="budget-header">
                 <h3>{budget.category}</h3>
                 <div className="budget-actions">
-                  <button className="btn-icon-small" title="Edit">
+                  <button className="btn-icon-small" title="Edit" onClick={() => handleEditBudget(budget)}>
                     <FaEdit />
                   </button>
                   <button className="btn-icon-small delete" title="Delete">

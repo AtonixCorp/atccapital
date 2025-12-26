@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useEnterprise } from '../../../context/EnterpriseContext';
 import { FaPlus, FaEdit, FaTrash, FaDownload, FaChartLine } from 'react-icons/fa';
@@ -50,15 +50,31 @@ const IncomeManager = () => {
     notes: ''
   });
 
-  useEffect(() => {
-    loadIncome();
-  }, [entityId]);
-
-  const loadIncome = async () => {
+  const loadIncome = useCallback(async () => {
     setLoading(true);
     const data = await fetchEntityIncome(entityId);
     setIncome(data || []);
     setLoading(false);
+  }, [entityId, fetchEntityIncome]);
+
+  useEffect(() => {
+    loadIncome();
+  }, [loadIncome]);
+
+  const handleEdit = (inc) => {
+    setEditingIncome(inc);
+    setFormData({
+      source: inc.source || '',
+      amount: inc.amount || '',
+      income_type: inc.income_type || 'business',
+      date: inc.date || new Date().toISOString().split('T')[0],
+      description: inc.description || '',
+      client: inc.client || '',
+      invoice_number: inc.invoice_number || '',
+      payment_method: inc.payment_method || 'bank_transfer',
+      notes: inc.notes || ''
+    });
+    setShowForm(true);
   };
 
   const handleSubmit = async (e) => {
@@ -302,7 +318,7 @@ const IncomeManager = () => {
                 <td className="payment-method">{inc.payment_method?.replace('_', ' ')}</td>
                 <td className="amount positive">${parseFloat(inc.amount).toFixed(2)}</td>
                 <td className="actions">
-                  <button className="btn-icon-small" title="Edit">
+                  <button className="btn-icon-small" title="Edit" onClick={() => handleEdit(inc)}>
                     <FaEdit />
                   </button>
                   <button className="btn-icon-small delete" title="Delete">

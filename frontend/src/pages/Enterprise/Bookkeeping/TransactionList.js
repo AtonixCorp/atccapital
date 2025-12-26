@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaDownload, FaFilter, FaSearch, FaFileUpload } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
@@ -35,29 +35,8 @@ const TransactionList = () => {
   });
   
   const entity = entities.find(e => e.id === parseInt(entityId));
-  
-  useEffect(() => {
-    loadData();
-    loadFiltersData();
-  }, [entityId]);
-  
-  const loadData = async () => {
-    setLoading(true);
-    const data = await fetchTransactions(entityId, buildQueryParams());
-    setTransactions(data.results || data);
-    setLoading(false);
-  };
-  
-  const loadFiltersData = async () => {
-    const [cats, accs] = await Promise.all([
-      fetchBookkeepingCategories(entityId),
-      fetchBookkeepingAccounts(entityId)
-    ]);
-    setCategories(cats.results || cats);
-    setAccounts(accs.results || accs);
-  };
-  
-  const buildQueryParams = () => {
+
+  const buildQueryParams = useCallback(() => {
     const params = {};
     if (filters.startDate) params.start_date = filters.startDate;
     if (filters.endDate) params.end_date = filters.endDate;
@@ -68,7 +47,28 @@ const TransactionList = () => {
     if (filters.maxAmount) params.max_amount = filters.maxAmount;
     if (filters.search) params.search = filters.search;
     return params;
-  };
+  }, [filters]);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchTransactions(entityId, buildQueryParams());
+    setTransactions(data.results || data);
+    setLoading(false);
+  }, [buildQueryParams, entityId, fetchTransactions]);
+
+  const loadFiltersData = useCallback(async () => {
+    const [cats, accs] = await Promise.all([
+      fetchBookkeepingCategories(entityId),
+      fetchBookkeepingAccounts(entityId)
+    ]);
+    setCategories(cats.results || cats);
+    setAccounts(accs.results || accs);
+  }, [entityId, fetchBookkeepingAccounts, fetchBookkeepingCategories]);
+  
+  useEffect(() => {
+    loadData();
+    loadFiltersData();
+  }, [loadData, loadFiltersData]);
   
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));

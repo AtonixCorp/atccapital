@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPlus, FaEdit, FaTrash, FaTag, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
@@ -23,17 +23,17 @@ const CategoryManager = () => {
   });
   
   const entity = entities.find(e => e.id === parseInt(entityId));
-  
-  useEffect(() => {
-    loadCategories();
-  }, [entityId]);
-  
-  const loadCategories = async () => {
+
+  const loadCategories = useCallback(async () => {
     setLoading(true);
     const data = await fetchBookkeepingCategories(entityId);
     setCategories(data.results || data);
     setLoading(false);
-  };
+  }, [entityId, fetchBookkeepingCategories]);
+  
+  useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
   
   const handleCreateDefaults = async () => {
     if (categories.length > 0) {

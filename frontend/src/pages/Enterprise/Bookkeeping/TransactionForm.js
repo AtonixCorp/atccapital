@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSave, FaTimes } from 'react-icons/fa';
 import { useEnterprise } from '../../../context/EnterpriseContext';
 import './Bookkeeping.css';
@@ -28,6 +28,15 @@ const TransactionForm = ({ entityId, transaction, onClose, onSave }) => {
   const [categories, setCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const loadData = useCallback(async () => {
+    const [categoriesData, accountsData] = await Promise.all([
+      fetchBookkeepingCategories(entityId),
+      fetchBookkeepingAccounts(entityId)
+    ]);
+    setCategories(categoriesData.results || categoriesData);
+    setAccounts(accountsData.results || accountsData);
+  }, [entityId, fetchBookkeepingAccounts, fetchBookkeepingCategories]);
   
   useEffect(() => {
     loadData();
@@ -39,16 +48,7 @@ const TransactionForm = ({ entityId, transaction, onClose, onSave }) => {
         account: transaction.account?.id || transaction.account
       });
     }
-  }, [transaction]);
-  
-  const loadData = async () => {
-    const [categoriesData, accountsData] = await Promise.all([
-      fetchBookkeepingCategories(entityId),
-      fetchBookkeepingAccounts(entityId)
-    ]);
-    setCategories(categoriesData.results || categoriesData);
-    setAccounts(accountsData.results || accountsData);
-  };
+  }, [entityId, loadData, transaction]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();

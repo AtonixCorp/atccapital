@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   FaUsers, FaUserShield, FaFileContract, FaChartLine, FaUserPlus,
-  FaFilter, FaDownload, FaUpload, FaSearch, FaEye, FaEdit, FaCog,
+  FaDownload, FaSearch, FaEye, FaEdit, FaCog,
   FaCheckCircle, FaExclamationTriangle, FaClock, FaCalendarAlt,
-  FaBriefcase, FaGlobe, FaBuilding, FaIdCard, FaMoneyBillWave,
-  FaTrophy, FaBell, FaShieldAlt, FaRobot, FaStar, FaUserClock
+  FaGlobe, FaBuilding,
+  FaTrophy, FaBell, FaShieldAlt, FaRobot, FaStar
 } from 'react-icons/fa';
 import './StaffHR.css';
 

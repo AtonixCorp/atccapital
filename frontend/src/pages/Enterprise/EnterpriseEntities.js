@@ -122,7 +122,6 @@ const EnterpriseEntities = () => {
         joint_venture: 'partnership',
         sole_trader: 'sole_proprietor',
         llp: 'partnership',
-        public_company: 'corporation'
       };
 
       const payload = {

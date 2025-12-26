@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
-  FaWallet, FaChartLine, FaCoins, FaClock, FaExclamationTriangle, FaCheckCircle, 
-  FaArrowUp, FaArrowDown, FaExchangeAlt, FaPiggyBank, FaCreditCard, FaCalendarAlt, 
-  FaFilter, FaDownload, FaRobot, FaBrain, FaShieldAlt, FaChartBar, FaBell, 
-  FaGlobe, FaSync, FaFileAlt, FaCog, FaPlay, FaBuilding, FaPercent,
-  FaTachometerAlt, FaNetworkWired, FaProjectDiagram, FaLightbulb, FaRocket
+  FaWallet, FaChartLine, FaCoins, FaClock, FaExclamationTriangle, FaCheckCircle,
+  FaArrowDown, FaExchangeAlt, FaPiggyBank, FaCreditCard, FaDownload
 } from 'react-icons/fa';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import './CashflowTreasury.css';
 
 const CashflowTreasuryDashboard = () => {
-  const { currentOrganization, entities, fetchCashflowTreasuryDashboard } = useEnterprise();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeSection = searchParams.get('section') || 'overview';
+  const { entities, fetchCashflowTreasuryDashboard } = useEnterprise();
 
   // State management
   const [selectedEntity, setSelectedEntity] = useState(null);
@@ -27,7 +21,7 @@ const CashflowTreasuryDashboard = () => {
   const [timelineView, setTimelineView] = useState('monthly');
 
   // Mock data for demonstration - in real implementation, this would come from API
-  const mockDashboardData = {
+  const mockDashboardData = useMemo(() => ({
     kpis: {
       cashOnHand: 2456789.45,
       netCashflow: 156789.23,
@@ -86,13 +80,9 @@ const CashflowTreasuryDashboard = () => {
       { type: 'warning', message: 'Large transaction pending approval: $250,000', priority: 'medium' },
       { type: 'info', message: 'FX exposure increased 8% this week', priority: 'low' }
     ]
-  };
+  }), []);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [selectedEntity, dateRange, selectedCurrency]);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     setLoading(true);
     const filters = {
       start_date: dateRange.start,
@@ -108,7 +98,11 @@ const CashflowTreasuryDashboard = () => {
       setDashboardData(mockDashboardData);
     }
     setLoading(false);
-  };
+  }, [dateRange.end, dateRange.start, entities, fetchCashflowTreasuryDashboard, mockDashboardData, selectedCurrency, selectedEntity?.id]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const formatCurrency = (amount, currency = selectedCurrency) => {
     return new Intl.NumberFormat('en-US', {
@@ -125,15 +119,6 @@ const CashflowTreasuryDashboard = () => {
       day: 'numeric',
       year: 'numeric'
     });
-  };
-
-  const getRiskColor = (risk) => {
-    switch (risk) {
-      case 'low': return '#0E9F6E';
-      case 'medium': return '#F59E0B';
-      case 'high': return '#EF4444';
-      default: return '#6B7280';
-    }
   };
 
   const getAlertIcon = (type) => {
