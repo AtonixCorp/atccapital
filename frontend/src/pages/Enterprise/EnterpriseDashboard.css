@@ -1,8 +1,9 @@
 .ent-dash {
-  padding: 2rem;
-  max-width: 1400px;
+  padding: 0;
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: inherit;
+  width: 100%;
 }
 
 /* Header */
@@ -10,28 +11,30 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.75rem;
+  margin-bottom: var(--space-2xl, 32px);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-l, 16px);
 }
 .ed-header h1 {
-  font-size: 1.65rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: var(--font-size-page-title, 2rem);
+  font-weight: var(--font-weight-title, 700);
+  color: var(--atc-navy, #1e293b);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.3rem;
+  gap: var(--space-s, 8px);
+  margin: 0 0 var(--space-xs, 4px);
+  letter-spacing: -0.3px;
 }
 .ed-header p {
-  color: #64748b;
-  font-size: 0.875rem;
+  color: var(--atc-gray-500, #64748b);
+  font-size: var(--font-size-secondary, 0.875rem);
   margin: 0;
 }
 .ed-header-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-s, 8px);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 .btn-ed-primary {
   display: flex;
@@ -67,19 +70,20 @@
 /* KPI Row */
 .ed-kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--grid-gap, 16px);
+  margin-bottom: var(--space-2xl, 32px);
 }
 .ed-kpi {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  background: var(--bg-panel, #fff);
+  border-radius: var(--card-radius, 8px);
+  padding: var(--space-l, 16px) var(--card-padding, 24px);
   display: flex;
   align-items: center;
-  gap: 1rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  gap: var(--space-l, 16px);
+  border: var(--card-border, 1px solid #E8EBF0);
+  box-shadow: var(--card-shadow, 0 1px 3px rgba(0,0,0,.05));
+  min-width: 0;
 }
 .ed-kpi-icon {
   width: 42px;
@@ -197,11 +201,11 @@
 
 /* Card base */
 .ed-card {
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
+  background: var(--bg-panel, #fff);
+  border-radius: var(--card-radius, 8px);
+  border: var(--card-border, 1px solid #E8EBF0);
+  padding: var(--card-padding, 24px);
+  margin-bottom: var(--card-gap, 16px);
 }
 
 /* Performance bars */
@@ -259,16 +263,17 @@
 /* Branch grid */
 .ed-branch-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--grid-gap, 16px);
 }
 .ed-branch-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.2rem;
+  background: var(--bg-panel, #fff);
+  border: var(--card-border, 1px solid #E8EBF0);
+  border-radius: var(--card-radius, 8px);
+  padding: var(--card-padding, 24px);
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+  min-width: 0;
 }
 .ed-branch-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,.08);
@@ -344,14 +349,14 @@
 /* Region View */
 .ed-region-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--grid-gap, 16px);
 }
 .ed-region-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.35rem;
+  background: var(--bg-panel, #fff);
+  border: var(--card-border, 1px solid #E8EBF0);
+  border-radius: var(--card-radius, 8px);
+  padding: var(--card-padding, 24px);
 }
 .erc-header {
   display: flex;
@@ -476,7 +481,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .ent-dash { padding: 1rem; }
+  .ent-dash { padding: 0; }
   .ed-kpi-row { grid-template-columns: repeat(2, 1fr); }
   .pbr-label { width: 140px; }
   .pbr-values { width: 120px; }

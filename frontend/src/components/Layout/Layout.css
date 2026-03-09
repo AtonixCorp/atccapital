@@ -13,7 +13,7 @@
 
   background: var(--bg-base);
   color: var(--text);
-  font-family: 'Open Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
 }
 
 /* Professional Enterprise Sidebar */
@@ -156,6 +156,39 @@
   background: var(--accent-blue);
 }
 
+/* Submenu styling */
+.submenu-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: rgba(75, 93, 255, 0.04);
+  border-left: 1px solid rgba(75, 93, 255, 0.15);
+}
+
+.submenu-item {
+  padding-left: 48px !important;
+  margin: 0 8px !important;
+  font-size: 0.8rem;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform 150ms ease;
+  font-size: 0.75rem;
+}
+
+.chevron.expanded {
+  transform: rotate(180deg);
+}
+
 .nav-divider {
   height: 1px;
   background: var(--border);
@@ -294,31 +327,34 @@
   background: var(--bg-base);
   color: var(--text);
   min-height: 100vh;
-  padding: 32px;
+  padding: var(--page-padding-y, 32px) var(--page-padding-x, 32px);
   transition: all 150ms ease;
   overflow-x: hidden;
 }
 
 /* Layout-scoped enterprise primitives (only inside dashboard shell) */
 .layout .page-container {
-  padding: 32px;
-  max-width: 1400px;
+  padding: 0;
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
+  width: 100%;
 }
 
 .layout .page-title {
   color: var(--atc-navy);
-  font-weight: 700;
+  font-size: var(--font-size-page-title, 2rem);
+  font-weight: var(--font-weight-title, 700);
   letter-spacing: -0.3px;
+  margin: 0 0 var(--space-s, 8px);
 }
 
 .layout .card {
   background: var(--bg-panel);
-  border: 1px solid var(--card-border);
+  border: var(--card-border);
   border-radius: var(--card-radius);
-  padding: var(--card-padding);
+  padding: var(--card-padding, 24px);
   box-shadow: var(--card-shadow);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--card-gap, 16px);
   transition: border-color 150ms ease;
 }
 

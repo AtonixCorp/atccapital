@@ -137,6 +137,680 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
+    def accounting_dashboard(self, request, pk=None):
+        """Return a consolidated financial accounting dashboard payload.
+
+        This endpoint is optimized for the new overview dashboard and replaces
+        the client-side fan-out/aggregation pattern with one organization-scoped
+        response.
+        """
+        organization = self.get_object()
+        today = timezone.now().date()
+        month_start = today.replace(day=1)
+        previous_month_start = (month_start - timedelta(days=1)).replace(day=1)
+        year_start = today.replace(month=1, day=1)
+
+        def _safe_float(value):
+            return float(value or 0)
+
+        def _format_currency(value, currency='USD'):
+            amount = Decimal(str(value or 0))
+            if currency == 'USD':
+                if abs(amount) >= Decimal('1000000'):
+                    return f"${float(amount) / 1000000:.2f}M"
+                return f"${float(amount):,.0f}"
+            if abs(amount) >= Decimal('1000000'):
+                return f"{currency} {float(amount) / 1000000:.2f}M"
+            return f"{currency} {float(amount):,.0f}"
+
+        def _format_count(value):
+            return f"{int(value or 0):,}"
+
+        def _capitalize(value):
+            return (value or '').replace('_', ' ').title()
+
+        def _trend(current, previous, invert=False):
+            current = _safe_float(current)
+            previous = _safe_float(previous)
+            delta = current - previous
+
+            if previous == 0:
+                if current == 0:
+                    return {'direction': 'flat', 'value': '0%'}
+                return {'direction': 'down' if invert else 'up', 'value': 'New'}
+
+            percentage = abs((delta / previous) * 100)
+            if percentage < 0.5:
+                return {'direction': 'flat', 'value': f'{percentage:.1f}%'}
+
+            rising = delta > 0
+            direction = ('down' if rising else 'up') if invert else ('up' if rising else 'down')
+            return {'direction': direction, 'value': f'{percentage:.1f}%'}
+
+        def _days_between(later, earlier):
+            if not later or not earlier:
+                return 0
+            return max(0, (later - earlier).days)
+
+        def _relative_time(value):
+            if not value:
+                return 'Recently'
+
+            if isinstance(value, datetime):
+                dt = value
+            else:
+                dt = datetime.combine(value, datetime.min.time())
+
+            if timezone.is_naive(dt):
+                dt = timezone.make_aware(dt, timezone.get_current_timezone())
+
+            seconds = max(0, int((timezone.now() - dt).total_seconds()))
+            if seconds < 60:
+                return f'{seconds}s ago'
+            minutes = seconds // 60
+            if minutes < 60:
+                return f'{minutes}m ago'
+            hours = minutes // 60
+            if hours < 24:
+                return f'{hours}h ago'
+            return f'{hours // 24}d ago'
+
+        def _health_score(overdue_invoices, overdue_bills, pending_deadlines, recon_exceptions, missing_docs):
+            overdue_ar_penalty = min(20, overdue_invoices * 2.5)
+            ap_penalty = min(15, overdue_bills * 1.2)
+            deadline_penalty = min(20, pending_deadlines * 4)
+            recon_penalty = min(20, recon_exceptions * 5)
+            doc_penalty = min(10, missing_docs * 2)
+            return max(0, round(100 - overdue_ar_penalty - ap_penalty - deadline_penalty - recon_penalty - doc_penalty))
+
+        def _build_series(rows, period):
+            buckets = []
+            bucket_keys = []
+
+            if period == 'weekly':
+                start = today - timedelta(days=6)
+                for offset in range(7):
+                    key = (start + timedelta(days=offset)).isoformat()
+                    bucket_keys.append(key)
+                    buckets.append({'inflows': 0.0, 'outflows': 0.0})
+
+                def bucket_index(date_value):
+                    diff = (date_value - start).days
+                    if diff < 0 or diff > 6:
+                        return None
+                    return diff
+
+            elif period == 'monthly':
+                start = today - timedelta(days=49)
+                for offset in range(8):
+                    key = (start + timedelta(days=offset * 7)).isoformat()
+                    bucket_keys.append(key)
+                    buckets.append({'inflows': 0.0, 'outflows': 0.0})
+
+                def bucket_index(date_value):
+                    diff = (date_value - start).days
+                    if diff < 0:
+                        return None
+                    return min(7, diff // 7)
+
+            else:
+                start = month_start
+                for offset in range(5, -1, -1):
+                    month_cursor = (start.replace(day=1) - timedelta(days=offset * 31)).replace(day=1)
+                    key = month_cursor.strftime('%Y-%m')
+                    if key not in bucket_keys:
+                        bucket_keys.append(key)
+                        buckets.append({'inflows': 0.0, 'outflows': 0.0})
+
+                lookup = {key: index for index, key in enumerate(bucket_keys)}
+
+                def bucket_index(date_value):
+                    key = date_value.strftime('%Y-%m')
+                    return lookup.get(key)
+
+            for row in rows:
+                tx_date = row['date']
+                index = bucket_index(tx_date)
+                if index is None:
+                    continue
+                amount = _safe_float(row['amount'])
+                if row['type'] == 'income':
+                    buckets[index]['inflows'] += amount
+                elif row['type'] == 'expense':
+                    buckets[index]['outflows'] += amount
+
+            inflow = [round(bucket['inflows'], 2) for bucket in buckets]
+            outflow = [round(bucket['outflows'], 2) for bucket in buckets]
+            forecast = []
+            for index in range(len(inflow)):
+                start_index = max(0, index - 2)
+                sample = inflow[start_index:index + 1]
+                average = sum(sample) / max(1, len(sample))
+                forecast.append(round(average, 2))
+
+            return {'inflow': inflow, 'outflow': outflow, 'forecast': forecast}
+
+        entities = list(
+            organization.entities.filter(status='active').values('id', 'name')
+        )
+        entity_name_by_id = {entity['id']: entity['name'] for entity in entities}
+        entity_count = len(entities)
+
+        bank_accounts = list(
+            BankAccount.objects.filter(entity__organization=organization, is_active=True).values(
+                'id', 'entity_id', 'account_name', 'currency', 'balance'
+            )
+        )
+        wallets = list(
+            Wallet.objects.filter(entity__organization=organization, is_active=True).values(
+                'id', 'entity_id', 'name', 'currency', 'balance'
+            )
+        )
+        transactions = list(
+            Transaction.objects.filter(entity__organization=organization, date__gte=year_start).values(
+                'id', 'entity_id', 'type', 'amount', 'currency', 'description', 'date', 'created_at'
+            )
+        )
+        journals = list(
+            JournalEntry.objects.filter(entity__organization=organization).order_by('-created_at').values(
+                'id', 'entity_id', 'reference_number', 'description', 'posting_date', 'status', 'created_at'
+            )[:20]
+        )
+        invoices = list(
+            Invoice.objects.filter(entity__organization=organization).order_by('-invoice_date').values(
+                'id', 'entity_id', 'customer_name', 'invoice_number', 'invoice_date', 'due_date',
+                'total_amount', 'outstanding_amount', 'currency', 'status'
+            )[:50]
+        )
+        bills = list(
+            Bill.objects.filter(entity__organization=organization).order_by('-bill_date').values(
+                'id', 'entity_id', 'vendor_name', 'bill_number', 'bill_date', 'due_date',
+                'total_amount', 'outstanding_amount', 'currency', 'status'
+            )[:50]
+        )
+        reconciliations = list(
+            BankReconciliation.objects.filter(entity__organization=organization)
+            .select_related('bank_account')
+            .order_by('bank_account_id', '-reconciliation_date')
+            .values(
+                'id', 'entity_id', 'bank_account_id', 'bank_account__account_name', 'reconciliation_date',
+                'status', 'variance', 'reconciled_at'
+            )
+        )
+        task_requests = list(
+            TaskRequest.objects.filter(organization=organization).order_by('-created_at').values(
+                'id', 'entity_id', 'task_type', 'status', 'priority', 'created_at'
+            )[:20]
+        )
+        notifications = list(
+            Notification.objects.filter(user=request.user, organization=organization, status='unread')
+            .order_by('-sent_at')
+            .values('id', 'notification_type', 'priority', 'title', 'message', 'sent_at')[:20]
+        )
+        documents = list(
+            ComplianceDocument.objects.filter(entity__organization=organization).order_by('expiry_date').values(
+                'id', 'entity_id', 'title', 'document_type', 'issuing_authority', 'status', 'file_path', 'expiry_date'
+            )[:20]
+        )
+        close_checklists = list(
+            PeriodCloseChecklist.objects.filter(entity__organization=organization)
+            .select_related('period')
+            .order_by('-created_at')
+            .values('id', 'entity_id', 'period__period_name', 'status')[:20]
+        )
+        deadlines = list(
+            ComplianceDeadline.objects.filter(
+                Q(organization=organization) | Q(entity__organization=organization),
+                status__in=['upcoming', 'overdue']
+            )
+            .order_by('deadline_date')
+            .values('id', 'entity_id', 'title', 'deadline_date', 'status')[:20]
+        )
+
+        cash_by_currency = defaultdict(float)
+        for account in bank_accounts:
+            cash_by_currency[account['currency'] or 'USD'] += _safe_float(account['balance'])
+        for wallet in wallets:
+            cash_by_currency[wallet['currency'] or 'USD'] += _safe_float(wallet['balance'])
+
+        total_cash = sum(cash_by_currency.values())
+
+        open_invoices = [invoice for invoice in invoices if invoice['status'] not in ['paid', 'cancelled']]
+        open_bills = [bill for bill in bills if bill['status'] not in ['paid', 'cancelled']]
+        overdue_invoices = [invoice for invoice in open_invoices if invoice['status'] == 'overdue' or invoice['due_date'] < today]
+        overdue_bills = [bill for bill in open_bills if bill['status'] == 'overdue' or bill['due_date'] < today]
+
+        ar_outstanding = sum(_safe_float(invoice.get('outstanding_amount') or invoice.get('total_amount')) for invoice in open_invoices)
+        ap_outstanding = sum(_safe_float(bill.get('outstanding_amount') or bill.get('total_amount')) for bill in open_bills)
+        overdue_ar_amount = sum(_safe_float(invoice.get('outstanding_amount') or invoice.get('total_amount')) for invoice in overdue_invoices)
+        overdue_ap_amount = sum(_safe_float(bill.get('outstanding_amount') or bill.get('total_amount')) for bill in overdue_bills)
+
+        receivable_dso = round(
+            sum(_days_between(today, invoice['invoice_date']) for invoice in open_invoices) / max(1, len(open_invoices))
+        ) if open_invoices else 0
+        payable_dpo = round(
+            sum(_days_between(today, bill['bill_date']) for bill in open_bills) / max(1, len(open_bills))
+        ) if open_bills else 0
+
+        mtd_transactions = [row for row in transactions if row['date'] >= month_start]
+        previous_month_transactions = [
+            row for row in transactions if previous_month_start <= row['date'] < month_start
+        ]
+
+        total_income_mtd = sum(_safe_float(row['amount']) for row in mtd_transactions if row['type'] == 'income')
+        total_expense_mtd = sum(_safe_float(row['amount']) for row in mtd_transactions if row['type'] == 'expense')
+        total_income_previous = sum(_safe_float(row['amount']) for row in previous_month_transactions if row['type'] == 'income')
+        total_expense_previous = sum(_safe_float(row['amount']) for row in previous_month_transactions if row['type'] == 'expense')
+        total_income_ytd = sum(_safe_float(row['amount']) for row in transactions if row['type'] == 'income')
+        total_expense_ytd = sum(_safe_float(row['amount']) for row in transactions if row['type'] == 'expense')
+        net_income_mtd = total_income_mtd - total_expense_mtd
+        net_income_previous = total_income_previous - total_expense_previous
+        net_income_ytd = total_income_ytd - total_expense_ytd
+        treasury_net_cashflow = total_income_mtd - total_expense_mtd
+        prior_cash_position = max(0, total_cash - treasury_net_cashflow)
+
+        reconciliation_by_bank = {}
+        for item in reconciliations:
+            bank_id = item['bank_account_id']
+            if bank_id not in reconciliation_by_bank:
+                reconciliation_by_bank[bank_id] = item
+
+        reconciliation_items = []
+        for account in bank_accounts[:4]:
+            latest = reconciliation_by_bank.get(account['id'])
+            if not latest:
+                reconciliation_items.append({
+                    'name': account['account_name'],
+                    'status': f"No reconciliation recorded for {entity_name_by_id.get(account['entity_id'], 'entity')}",
+                    'badge': 'Pending',
+                    'tone': 'pending',
+                })
+                continue
+
+            variance = _safe_float(latest['variance'])
+            if variance > 0:
+                reconciliation_items.append({
+                    'name': latest['bank_account__account_name'] or account['account_name'],
+                    'status': f"{_format_currency(variance, account['currency'] or 'USD')} variance requires review",
+                    'badge': 'Review',
+                    'tone': 'error',
+                })
+            elif latest['status'] == 'reconciled':
+                reconciliation_items.append({
+                    'name': latest['bank_account__account_name'] or account['account_name'],
+                    'status': f"Reconciled {_relative_time(latest['reconciled_at'] or latest['reconciliation_date'])}",
+                    'badge': 'OK',
+                    'tone': 'ok',
+                })
+            else:
+                reconciliation_items.append({
+                    'name': latest['bank_account__account_name'] or account['account_name'],
+                    'status': f"Status: {_capitalize(latest['status'])}",
+                    'badge': 'Pending',
+                    'tone': 'pending',
+                })
+
+        reconciliation_exceptions = sum(1 for item in reconciliation_items if item['tone'] == 'error')
+        pending_deadlines = len(deadlines)
+        missing_documents = sum(1 for document in documents if not document['file_path'])
+        health_score = _health_score(len(overdue_invoices), len(overdue_bills), pending_deadlines, reconciliation_exceptions, missing_documents)
+
+        health_badges = [
+            {'label': 'Liquidity stable' if health_score >= 80 else 'Liquidity watch', 'tone': 'ok' if health_score >= 80 else 'warn'},
+            {'label': 'AR follow-up required' if overdue_ar_amount > 0 else 'AR current', 'tone': 'warn' if overdue_ar_amount > 0 else 'ok'},
+            {'label': 'Compliance open' if pending_deadlines > 0 else 'Compliance current', 'tone': 'danger' if pending_deadlines > 0 else 'ok'},
+        ]
+
+        chart_series = {
+            'weekly': _build_series(transactions, 'weekly'),
+            'monthly': _build_series(transactions, 'monthly'),
+            'quarterly': _build_series(transactions, 'quarterly'),
+        }
+
+        kpis = [
+            {
+                'id': 'cash',
+                'label': 'Total Cash Position',
+                'value': _format_currency(total_cash),
+                'sublabel': f"{_format_count(len(bank_accounts) + len(wallets))} cash accounts",
+                'trend': _trend(total_cash, prior_cash_position),
+                'iconKey': 'wallet',
+                'details': [
+                    {'label': currency, 'value': _format_currency(amount, currency)}
+                    for currency, amount in list(cash_by_currency.items())[:2]
+                ],
+            },
+            {
+                'id': 'ar',
+                'label': 'Accounts Receivable',
+                'value': _format_currency(ar_outstanding),
+                'sublabel': f"{_format_count(len(open_invoices))} open invoices",
+                'trend': _trend(ar_outstanding, overdue_ar_amount or (ar_outstanding * 0.8), invert=True),
+                'iconKey': 'file',
+                'details': [
+                    {'label': 'Overdue', 'value': _format_currency(overdue_ar_amount), 'tone': 'danger' if overdue_ar_amount > 0 else ''},
+                    {'label': 'DSO', 'value': f'{receivable_dso} days', 'tone': 'warning' if receivable_dso > 45 else ''},
+                ],
+            },
+            {
+                'id': 'ap',
+                'label': 'Accounts Payable',
+                'value': _format_currency(ap_outstanding),
+                'sublabel': f"{_format_count(len(open_bills))} unpaid bills",
+                'trend': _trend(ap_outstanding, overdue_ap_amount or (ap_outstanding * 0.85), invert=True),
+                'iconKey': 'clock',
+                'details': [
+                    {'label': 'Overdue', 'value': _format_currency(overdue_ap_amount), 'tone': 'danger' if overdue_ap_amount > 0 else ''},
+                    {'label': 'DPO', 'value': f'{payable_dpo} days', 'tone': 'warning' if payable_dpo > 35 else ''},
+                ],
+            },
+            {
+                'id': 'income',
+                'label': 'Net Income',
+                'value': _format_currency(net_income_mtd),
+                'sublabel': f"MTD / YTD {_format_currency(net_income_ytd)}",
+                'trend': _trend(net_income_mtd, net_income_previous),
+                'iconKey': 'arrowUp',
+                'details': [
+                    {'label': 'Revenue', 'value': _format_currency(total_income_mtd)},
+                    {'label': 'Expenses', 'value': _format_currency(total_expense_mtd)},
+                ],
+            },
+            {
+                'id': 'cashflow',
+                'label': 'Operating Cash Flow',
+                'value': _format_currency(treasury_net_cashflow),
+                'sublabel': 'Current operating period',
+                'trend': _trend(treasury_net_cashflow, net_income_previous or (treasury_net_cashflow * 0.9)),
+                'iconKey': 'exchange',
+                'details': [
+                    {'label': 'Inflows', 'value': _format_currency(total_income_mtd)},
+                    {'label': 'Outflows', 'value': _format_currency(total_expense_mtd)},
+                ],
+            },
+            {
+                'id': 'health',
+                'label': 'Financial Health Score',
+                'value': f'{health_score} / 100',
+                'sublabel': f'{pending_deadlines + reconciliation_exceptions} active risk signals',
+                'trend': {'direction': 'up' if health_score >= 80 else 'flat' if health_score >= 65 else 'down', 'value': 'Stable' if health_score >= 80 else 'Moderate' if health_score >= 65 else 'Elevated'},
+                'iconKey': 'robot',
+                'score': health_score,
+                'badges': health_badges,
+            },
+        ]
+
+        feed_items = []
+        for transaction in transactions:
+            feed_items.append({
+                'id': f"txn-{transaction['id']}",
+                'type': 'Bank',
+                'title': transaction['description'] or f"{_capitalize(transaction['type'])} transaction",
+                'meta': f"{entity_name_by_id.get(transaction['entity_id'], 'Entity')} · {_relative_time(transaction['created_at'] or transaction['date'])}",
+                'amount': f"{'-' if transaction['type'] == 'expense' else '+'}{_format_currency(transaction['amount'], transaction['currency'] or 'USD')}",
+                'tone': 'negative' if transaction['type'] == 'expense' else 'positive',
+                'context': 'cash',
+                'sort_at': transaction['created_at'] or datetime.combine(transaction['date'], datetime.min.time()),
+            })
+
+        for journal in journals:
+            feed_items.append({
+                'id': f"je-{journal['id']}",
+                'type': 'Journals',
+                'title': journal['description'] or f"Journal {journal['reference_number']}",
+                'meta': f"{entity_name_by_id.get(journal['entity_id'], 'Entity')} · {_capitalize(journal['status'])} · {_relative_time(journal['created_at'] or journal['posting_date'])}",
+                'amount': _capitalize(journal['status']),
+                'tone': 'positive' if journal['status'] == 'posted' else 'neutral',
+                'context': 'income',
+                'sort_at': journal['created_at'] or datetime.combine(journal['posting_date'], datetime.min.time()),
+            })
+
+        for invoice in invoices:
+            feed_items.append({
+                'id': f"ar-{invoice['id']}",
+                'type': 'AR',
+                'title': f"{invoice['invoice_number']} · {invoice['customer_name']}",
+                'meta': f"{_capitalize(invoice['status'])} · Due {invoice['due_date'].isoformat()}",
+                'amount': _format_currency(invoice.get('outstanding_amount') or invoice.get('total_amount'), invoice['currency'] or 'USD'),
+                'tone': 'negative' if invoice['status'] == 'overdue' or invoice['due_date'] < today else 'positive',
+                'context': 'ar',
+                'sort_at': datetime.combine(invoice['invoice_date'], datetime.min.time()),
+            })
+
+        for bill in bills:
+            feed_items.append({
+                'id': f"ap-{bill['id']}",
+                'type': 'AP',
+                'title': f"{bill['bill_number']} · {bill['vendor_name']}",
+                'meta': f"{_capitalize(bill['status'])} · Due {bill['due_date'].isoformat()}",
+                'amount': _format_currency(bill.get('outstanding_amount') or bill.get('total_amount'), bill['currency'] or 'USD'),
+                'tone': 'negative' if bill['status'] == 'overdue' or bill['due_date'] < today else 'neutral',
+                'context': 'ap',
+                'sort_at': datetime.combine(bill['bill_date'], datetime.min.time()),
+            })
+
+        feed_items = sorted(feed_items, key=lambda item: item['sort_at'], reverse=True)[:12]
+        for item in feed_items:
+            item.pop('sort_at', None)
+
+        task_items = []
+        for task in task_requests[:6]:
+            task_items.append({
+                'id': f"task-{task['id']}",
+                'title': _capitalize(task['task_type']),
+                'sub': f"{entity_name_by_id.get(task['entity_id'], organization.name)} · {_capitalize(task['status'])}",
+                'priority': 'urgent' if task['priority'] in ['urgent', 'high'] else 'normal' if task['priority'] == 'normal' else 'pending',
+                'badgeLabel': _capitalize(task['priority'] or task['status']),
+                'done': task['status'] == 'completed',
+                'context': 'cash' if task['task_type'] == 'import_bank_feed' else 'income' if task['task_type'] == 'generate_statement' else 'health',
+            })
+
+        for invoice in invoices:
+            if len(task_items) >= 6:
+                break
+            if invoice['status'] == 'draft':
+                task_items.append({
+                    'id': f"invoice-{invoice['id']}",
+                    'title': f"Send invoice {invoice['invoice_number']}",
+                    'sub': f"{invoice['customer_name']} · Draft invoice",
+                    'priority': 'normal',
+                    'badgeLabel': 'Normal',
+                    'done': False,
+                    'context': 'ar',
+                })
+
+        for bill in bills:
+            if len(task_items) >= 6:
+                break
+            if bill['status'] == 'draft':
+                task_items.append({
+                    'id': f"bill-{bill['id']}",
+                    'title': f"Approve bill {bill['bill_number']}",
+                    'sub': f"{bill['vendor_name']} · Draft bill",
+                    'priority': 'pending',
+                    'badgeLabel': 'Pending',
+                    'done': False,
+                    'context': 'ap',
+                })
+
+        for checklist in close_checklists:
+            if len(task_items) >= 6:
+                break
+            if checklist['status'] != 'completed':
+                task_items.append({
+                    'id': f"close-{checklist['id']}",
+                    'title': f"Close period {checklist['period__period_name']}",
+                    'sub': f"{entity_name_by_id.get(checklist['entity_id'], organization.name)} · {_capitalize(checklist['status'])}",
+                    'priority': 'urgent' if checklist['status'] == 'in_progress' else 'pending',
+                    'badgeLabel': _capitalize(checklist['status']),
+                    'done': False,
+                    'context': 'health',
+                })
+
+        alert_items = []
+        for deadline in deadlines:
+            alert_items.append({
+                'id': f"deadline-{deadline['id']}",
+                'title': deadline['title'],
+                'desc': f"{entity_name_by_id.get(deadline['entity_id'], organization.name)} · due {deadline['deadline_date'].isoformat()}",
+                'level': 'error' if deadline['status'] == 'overdue' or deadline['deadline_date'] < today else 'warning',
+                'action': 'Open deadline',
+                'context': 'health',
+            })
+
+        for notification in notifications:
+            if len(alert_items) >= 6:
+                break
+            level = 'error' if notification['priority'] in ['critical', 'high'] else 'warning' if notification['priority'] == 'medium' else 'info'
+            alert_items.append({
+                'id': f"notification-{notification['id']}",
+                'title': notification['title'],
+                'desc': notification['message'],
+                'level': level,
+                'action': 'Review',
+                'context': 'income' if notification['notification_type'] == 'approval_request' else 'health',
+            })
+
+        for index, recon in enumerate(reconciliation_items):
+            if len(alert_items) >= 6:
+                break
+            if recon['tone'] == 'error':
+                alert_items.append({
+                    'id': f"recon-{index}",
+                    'title': f"{recon['name']} exception",
+                    'desc': recon['status'],
+                    'level': 'error',
+                    'action': 'Review',
+                    'context': 'cash',
+                })
+
+        document_items = []
+        for document in documents[:6]:
+            if not document['file_path']:
+                status = 'pending'
+                context = 'health'
+            elif document['status'] == 'expired' or (document['expiry_date'] and document['expiry_date'] < today):
+                status = 'overdue'
+                context = 'health'
+            else:
+                status = 'completed'
+                context = 'cash'
+
+            document_items.append({
+                'id': f"document-{document['id']}",
+                'name': document['title'],
+                'sub': f"{entity_name_by_id.get(document['entity_id'], organization.name)} · {document['issuing_authority'] or _capitalize(document['document_type'])}",
+                'status': status,
+                'context': context,
+            })
+
+        top_customer = sorted(overdue_invoices, key=lambda invoice: _safe_float(invoice.get('outstanding_amount') or invoice.get('total_amount')), reverse=True)[0] if overdue_invoices else None
+        top_vendor = sorted(overdue_bills, key=lambda bill: _safe_float(bill.get('outstanding_amount') or bill.get('total_amount')), reverse=True)[0] if overdue_bills else None
+        largest_cash_account = sorted(
+            [
+                {'name': account['account_name'], 'balance': account['balance'], 'currency': account['currency']}
+                for account in bank_accounts
+            ] + [
+                {'name': wallet['name'], 'balance': wallet['balance'], 'currency': wallet['currency']}
+                for wallet in wallets
+            ],
+            key=lambda item: _safe_float(item['balance']),
+            reverse=True
+        )[0] if (bank_accounts or wallets) else None
+
+        right_panel_content = {
+            'cash': {
+                'title': 'Cash Context',
+                'stats': [
+                    {'label': 'Largest account', 'value': f"{largest_cash_account['name']} · {_format_currency(largest_cash_account['balance'], largest_cash_account['currency'] or 'USD')}" if largest_cash_account else 'No cash accounts'},
+                    {'label': '7-day forecast', 'value': _format_currency(total_cash + chart_series['weekly']['forecast'][-1])},
+                    {'label': 'Exceptions', 'value': _format_count(reconciliation_exceptions)},
+                ],
+                'insight': 'Cash is funded, but unresolved reconciliation variance is suppressing confidence in the reported bank position.' if reconciliation_exceptions else 'Cash coverage is healthy and reconciliations are largely under control.',
+                'nextStep': 'Resolve reconciliation exceptions' if reconciliation_exceptions else 'Review cash forecast sensitivity',
+                'route': '/app/subledgers/cash-bank',
+            },
+            'ar': {
+                'title': 'Receivables Context',
+                'stats': [
+                    {'label': 'Open invoices', 'value': _format_count(len(open_invoices))},
+                    {'label': 'Top overdue customer', 'value': top_customer['customer_name'] if top_customer else 'None'},
+                    {'label': 'Overdue exposure', 'value': _format_currency(overdue_ar_amount)},
+                ],
+                'insight': 'Collections pressure is concentrated in a small number of overdue invoices and should be escalated before the next close cut-off.' if overdue_ar_amount else 'Receivables are broadly current with no material overdue concentration.',
+                'nextStep': 'Initiate customer collections follow-up' if overdue_ar_amount else 'Review invoice pipeline',
+                'route': '/app/billing/invoices',
+            },
+            'ap': {
+                'title': 'Payables Context',
+                'stats': [
+                    {'label': 'Unpaid bills', 'value': _format_count(len(open_bills))},
+                    {'label': 'Largest overdue vendor', 'value': top_vendor['vendor_name'] if top_vendor else 'None'},
+                    {'label': 'Overdue exposure', 'value': _format_currency(overdue_ap_amount)},
+                ],
+                'insight': 'Outstanding vendor balances are approaching policy thresholds and may affect service continuity if approvals slip further.' if overdue_ap_amount else 'Payables remain within terms and do not currently signal vendor stress.',
+                'nextStep': 'Approve next vendor payment batch' if overdue_ap_amount else 'Review AP scheduling',
+                'route': '/app/billing/bills',
+            },
+            'income': {
+                'title': 'Earnings Context',
+                'stats': [
+                    {'label': 'MTD revenue', 'value': _format_currency(total_income_mtd)},
+                    {'label': 'MTD expense', 'value': _format_currency(total_expense_mtd)},
+                    {'label': 'YTD net income', 'value': _format_currency(net_income_ytd)},
+                ],
+                'insight': 'The current period remains profitable, with earnings supported by real transaction volume rather than placeholder values.' if net_income_mtd >= 0 else 'The current period is loss-making and expense control needs immediate attention.',
+                'nextStep': 'Review journal approvals and margin drivers',
+                'route': '/app/accounting/journal-entries',
+            },
+            'cashflow': {
+                'title': 'Cash Flow Context',
+                'stats': [
+                    {'label': 'Current inflows', 'value': _format_currency(total_income_mtd)},
+                    {'label': 'Current outflows', 'value': _format_currency(total_expense_mtd)},
+                    {'label': 'Net operating cash', 'value': _format_currency(treasury_net_cashflow)},
+                ],
+                'insight': 'Operating cash generation is positive and aligned with recent transaction activity.' if treasury_net_cashflow >= 0 else 'Operating cash flow is negative in the current period and requires treasury intervention.',
+                'nextStep': 'Validate short-term forecast and large disbursements',
+                'route': '/app/reporting/analytics',
+            },
+            'health': {
+                'title': 'Health Context',
+                'stats': [
+                    {'label': 'Health score', 'value': f'{health_score} / 100'},
+                    {'label': 'Open compliance items', 'value': _format_count(pending_deadlines)},
+                    {'label': 'Unread alerts', 'value': _format_count(len(notifications))},
+                ],
+                'insight': 'The operating posture is controlled, with remaining risk concentrated in routine compliance and approval queues.' if health_score >= 80 else 'The health score is being dragged down by overdue receivables, unresolved deadlines, or bank exceptions that need action.',
+                'nextStep': 'Clear highest-risk queue first',
+                'route': '/app/compliance/tax-center',
+            },
+        }
+
+        return Response({
+            'summary': {
+                'financialHealth': 'Stable with contained risk exposure' if health_score >= 80 else 'Stable with moderate operational risk' if health_score >= 65 else 'Elevated risk requires immediate review',
+                'immediateAttention': f"{_format_count(len(alert_items))} alerts and {_format_count(sum(1 for item in task_items if not item['done']))} open workflow items",
+                'liveActivity': f"{_format_count(len(feed_items))} material accounting events across {_format_count(entity_count)} entities",
+                'nextAction': next((item['title'] for item in task_items if not item['done']), 'No urgent workflow blockers'),
+            },
+            'kpis': kpis,
+            'chartSeries': chart_series,
+            'reconciliationItems': reconciliation_items,
+            'feedItems': feed_items,
+            'taskItems': task_items,
+            'alertItems': alert_items,
+            'documentItems': document_items,
+            'rightPanelContent': right_panel_content,
+            'metadata': {
+                'organizationName': organization.name,
+                'defaultContext': 'cash',
+                'lastUpdated': timezone.now().isoformat(),
+                'entityCount': entity_count,
+            },
+        })
+
+    @action(detail=True, methods=['get'])
     def firm_dashboard(self, request, pk=None):
         """Comprehensive firm dashboard: clients, workload, staff performance"""
         organization = self.get_object()

@@ -287,7 +287,7 @@
 }
 
 .api-key-display code {
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 0.85rem;
   color: #333;
   flex-grow: 1;

@@ -3,13 +3,13 @@
 .staff-hr-module {
   min-height: 100vh;
   background: #f7fafc;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: inherit;
   color: #0b1a2a;
 }
 
 .page-header-hr {
   background: linear-gradient(90deg,#0f172a 0%, #0b1220 100%);
-  padding: 28px 36px;
+  padding: var(--card-padding, 24px) var(--space-2xl, 32px);
   color: #fff;
   box-shadow: 0 6px 24px rgba(2,6,23,0.25);
 }
@@ -18,11 +18,11 @@
 .header-content-hr h1 { margin: 0; font-size: 28px; font-weight: 700; }
 .header-content-hr p { margin: 4px 0 0; color: rgba(255,255,255,0.85); }
 
-.section-navigation-hr { display:flex; gap:12px; padding: 18px 24px; background: #fff; border-bottom:1px solid #e6edf3; }
+.section-navigation-hr { display:flex; gap:var(--space-m, 12px); padding: var(--space-l, 16px) var(--card-padding, 24px); background: #fff; border-bottom:1px solid #e6edf3; }
 .section-navigation-hr .nav-btn { background:none; border:none; padding:10px 14px; border-radius:10px; font-weight:600; color:#334155; display:flex; align-items:center; gap:8px; cursor:pointer; }
 .section-navigation-hr .nav-btn.active { background:linear-gradient(90deg,#eef2ff, #eefbf7); box-shadow:0 4px 12px rgba(16,24,40,0.04); }
 
-.hr-content { max-width:1200px; margin:24px auto; padding:0 16px 80px; }
+.hr-content { max-width: var(--content-max-width, 1400px); margin: var(--space-xl, 24px) auto; padding: 0 var(--space-l, 16px) 80px; }
 
 /* People Directory */
 .hr-people-section .people-controls { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap; }
@@ -105,10 +105,10 @@
 
 /* Modal styles used by StaffHR modals */
 .modal-overlay { position:fixed; inset:0; background:rgba(2,6,23,0.4); display:flex; align-items:center; justify-content:center; z-index:1200; }
-.modal { background:#fff; border-radius:10px; width:560px; max-width:92%; padding:18px; box-shadow:0 10px 40px rgba(2,6,23,0.35); border:1px solid #e6edf3; }
-.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.modal-body { display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow:auto; }
-.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.modal { background:#fff; border-radius:var(--card-radius, 8px); width:560px; max-width:92%; padding:var(--card-padding, 24px); box-shadow:0 10px 40px rgba(2,6,23,0.35); border:var(--card-border, 1px solid #e6edf3); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-m, 12px); }
+.modal-body { display:flex; flex-direction:column; gap:var(--space-s, 8px); max-height:60vh; overflow:auto; }
+.modal-actions { display:flex; justify-content:flex-end; gap:var(--space-s, 8px); margin-top:var(--space-m, 12px); }
 .form-row { display:flex; flex-direction:column; gap:6px; }
 .form-row label { font-weight:700; font-size:13px; color:#0b1a2a; }
 .form-row input, .form-row select, .form-row textarea { padding:8px 10px; border-radius:8px; border:1px solid #e6edf3; }

@@ -202,7 +202,7 @@
 }
 
 .formula-display code {
-  font-family: 'Courier New', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 1.05rem;
   color: #667eea;
   font-weight: 600;
@@ -708,7 +708,7 @@
 }
 
 .endpoint-item code {
-  font-family: 'Courier New', monospace;
+  font-family: 'IBM Plex Mono', monospace;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 0.5rem 1rem;

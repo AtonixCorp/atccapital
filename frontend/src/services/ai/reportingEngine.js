@@ -564,7 +564,7 @@ export function exportAsHTML(reportData) {
   <meta charset="UTF-8">
   <title>${header?.title || 'Financial Report'}</title>
   <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; line-height: 1.6; margin: 40px; }
     h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
     h2 { color: #555; margin-top: 30px; border-left: 4px solid #007bff; padding-left: 10px; }
     h3 { color: #777; }

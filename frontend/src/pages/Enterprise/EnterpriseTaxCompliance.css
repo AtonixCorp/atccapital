@@ -3,19 +3,19 @@
 .enterprise-tax-compliance {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
 }
 
 /* Page Header */
 .page-header-tax {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 32px 40px;
+  padding: var(--card-padding, 24px) var(--space-2xl, 32px);
   border-bottom: 3px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header-content-tax {
-  max-width: 1400px;
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
 }
 
@@ -39,9 +39,9 @@
   background: white;
   border-bottom: 1px solid #e2e8f0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  padding: 20px 24px;
+  padding: var(--card-padding, 24px);
   display: flex;
-  gap: 8px;
+  gap: var(--space-s, 8px);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   backdrop-filter: blur(10px);
@@ -102,8 +102,8 @@
 
 /* Main Content Layout */
 .compliance-main {
-  padding: 32px 24px;
-  max-width: 1400px;
+  padding: var(--space-2xl, 32px) var(--card-padding, 24px);
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
 }
 
@@ -118,14 +118,14 @@
 
 /* Section Headers */
 .section-header {
-  padding: 32px 40px;
+  padding: var(--space-2xl, 32px) var(--card-padding, 24px);
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: var(--space-xl, 24px);
 }
 
 .section-header h2 {
@@ -151,7 +151,7 @@
 
 .header-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-m, 12px);
   align-items: center;
   flex-wrap: wrap;
 }
@@ -356,9 +356,9 @@
 
 /* Overview Section */
 .compliance-overview {
-  max-width: 1400px;
+  max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: var(--space-2xl, 32px) var(--card-padding, 24px);
 }
 
 .overview-header {
@@ -401,8 +401,8 @@
 .overview-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-bottom: 48px;
+  gap: var(--grid-gap, 16px);
+  margin-bottom: var(--space-2xl, 32px);
 }
 
 .stat-card {
@@ -2927,7 +2927,7 @@
 .enterprise-tax-compliance {
   background: var(--bg-base);
   color: var(--text);
-  font-family: 'Open Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
 }
 
 .enterprise-tax-compliance .page-header-tax {

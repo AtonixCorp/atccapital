@@ -10,7 +10,7 @@
   overflow-x: hidden;
   background: var(--atc-gray-100);
   min-height: 100vh;
-  font-family: 'Inter', 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: inherit;
 }
 
 /* ── DASHBOARD HEADER ── */
@@ -751,7 +751,7 @@
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--text);
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
   font-variant-numeric: tabular-nums;
 }
 
@@ -809,7 +809,7 @@
   margin: 10px 0 0;
   color: var(--text);
   font-weight: 600;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
   font-variant-numeric: tabular-nums;
 }
 
@@ -943,7 +943,7 @@
 .amount-expense {
   color: rgba(75, 93, 255, 0.95);
   font-weight: 600;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
   font-variant-numeric: tabular-nums;
 }
 
@@ -977,7 +977,7 @@
 .stat-value {
   color: var(--text);
   font-weight: 600;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: inherit;
   font-variant-numeric: tabular-nums;
 }
 

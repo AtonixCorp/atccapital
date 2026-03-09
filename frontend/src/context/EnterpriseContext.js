@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, useEffect, useMemo } from 'react';
+import React, { createContext, useState, useContext, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from './AuthContext';
 
 const EnterpriseContext = createContext();
@@ -13,6 +13,12 @@ export const useEnterprise = () => {
 
 export const EnterpriseProvider = ({ children }) => {
   const { user } = useAuth();
+  const dashboardCacheRef = useRef(new Map());
+  const dashboardInflightRef = useRef(new Map());
+  const organizationPrefetchRef = useRef(new Map());
+
+  const DASHBOARD_CACHE_TTL_MS = 60 * 1000;
+  const ORG_PREFETCH_THROTTLE_MS = 15 * 1000;
 
   const API_BASE_URL =
     process.env.REACT_APP_API_BASE_URL ||
@@ -28,7 +34,7 @@ export const EnterpriseProvider = ({ children }) => {
   );
 
   const buildAuthHeaders = useCallback(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
     return token ? { Authorization: `Bearer ${token}` } : {};
   }, []);
   
@@ -306,6 +312,48 @@ export const EnterpriseProvider = ({ children }) => {
   }, [apiUrl, buildAuthHeaders]);
 
   /**
+   * Fetch consolidated accounting dashboard for organization with in-memory cache.
+   */
+  const fetchOrganizationAccountingDashboard = useCallback(async (orgId, options = {}) => {
+    if (!orgId) return null;
+
+    const { forceRefresh = false } = options;
+    const cacheKey = String(orgId);
+    const now = Date.now();
+    const cached = dashboardCacheRef.current.get(cacheKey);
+
+    if (!forceRefresh && cached && now - cached.timestamp < DASHBOARD_CACHE_TTL_MS) {
+      return cached.data;
+    }
+
+    if (!forceRefresh && dashboardInflightRef.current.has(cacheKey)) {
+      return dashboardInflightRef.current.get(cacheKey);
+    }
+
+    const requestPromise = fetch(apiUrl(`/api/organizations/${orgId}/accounting_dashboard/`), {
+      headers: buildAuthHeaders(),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch organization accounting dashboard');
+        }
+
+        const data = await response.json();
+        dashboardCacheRef.current.set(cacheKey, {
+          timestamp: Date.now(),
+          data,
+        });
+        return data;
+      })
+      .finally(() => {
+        dashboardInflightRef.current.delete(cacheKey);
+      });
+
+    dashboardInflightRef.current.set(cacheKey, requestPromise);
+    return requestPromise;
+  }, [apiUrl, buildAuthHeaders, DASHBOARD_CACHE_TTL_MS]);
+
+  /**
    * Check if current user has permission
    */
   const hasPermission = useCallback((permissionCode) => {
@@ -357,14 +405,24 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const switchOrganization = useCallback((org) => {
     setCurrentOrganization(org);
-    // Fetch all data for new organization
+    const cacheKey = String(org.id);
+    const now = Date.now();
+    const lastPrefetchAt = organizationPrefetchRef.current.get(cacheKey) || 0;
+
+    if (now - lastPrefetchAt < ORG_PREFETCH_THROTTLE_MS) {
+      return;
+    }
+
+    organizationPrefetchRef.current.set(cacheKey, now);
+
     fetchOrgOverview(org.id);
     fetchEntities(org.id);
     fetchTeamMembers(org.id);
     fetchTaxExposures(org.id);
     fetchComplianceDeadlines(org.id);
     fetchCashflowData(org.id);
-  }, [fetchOrgOverview, fetchEntities, fetchTeamMembers, fetchTaxExposures, fetchComplianceDeadlines, fetchCashflowData]);
+    fetchOrganizationAccountingDashboard(org.id).catch(() => null);
+  }, [fetchOrgOverview, fetchEntities, fetchTeamMembers, fetchTaxExposures, fetchComplianceDeadlines, fetchCashflowData, fetchOrganizationAccountingDashboard, ORG_PREFETCH_THROTTLE_MS]);
 
   /**
    * Create new organization
@@ -1469,6 +1527,7 @@ export const EnterpriseProvider = ({ children }) => {
     fetchTaxExposures,
     fetchComplianceDeadlines,
     fetchCashflowData,
+    fetchOrganizationAccountingDashboard,
     fetchRiskExposureDashboard,
     hasPermission,
     hasRole,

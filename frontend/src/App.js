@@ -43,9 +43,52 @@ import APModule from './pages/Enterprise/Accounting/APModule';
 import Inventory from './pages/Enterprise/Accounting/Inventory';
 import BankReconciliation from './pages/Enterprise/Accounting/BankReconciliation';
 import RevenueRecognition from './pages/Enterprise/Accounting/RevenueRecognition';
-import PeriodClose from './pages/Enterprise/Accounting/PeriodClose';
+import LegacyPeriodClose from './pages/Enterprise/Accounting/PeriodClose';
 import FXModule from './pages/Enterprise/Accounting/FXModule';
 import NotificationsCenter from './pages/Enterprise/Accounting/NotificationsCenter';
+
+// ── New module pages ──────────────────────────────────────────────────────────
+import AppDashboard from './modules/overview/Dashboard';
+import AppNotifications from './modules/overview/Notifications';
+import AppTasks from './modules/overview/Tasks';
+import AppChartOfAccounts from './modules/accounting/coa/ChartOfAccounts';
+import AppGeneralLedger from './modules/accounting/general-ledger/GeneralLedger';
+import AppJournalEntries from './modules/accounting/journals/JournalEntries';
+import AppReconciliation from './modules/accounting/reconciliation/Reconciliation';
+import AppAccountsReceivable from './modules/subledgers/ar/AccountsReceivable';
+import AppAccountsPayable from './modules/subledgers/ap/AccountsPayable';
+import AppCashBank from './modules/subledgers/cash-bank/CashBank';
+import AppFixedAssets from './modules/subledgers/fixed-assets/FixedAssets';
+import AppInventoryModule from './modules/subledgers/inventory/InventoryModule';
+import AppPayroll from './modules/subledgers/payroll/Payroll';
+import AppTaxSubledger from './modules/subledgers/tax/TaxSubledger';
+import AppInvoices from './modules/billing/Invoices';
+import AppBills from './modules/billing/Bills';
+import AppCustomers from './modules/billing/Customers';
+import AppVendors from './modules/billing/Vendors';
+import AppPaymentScheduling from './modules/billing/PaymentScheduling';
+import AppCollections from './modules/billing/Collections';
+import AppStatements from './modules/reporting/Statements';
+import AppTrialBalance from './modules/reporting/TrialBalance';
+import AppAnalytics from './modules/reporting/Analytics';
+import AppBudgets from './modules/budgeting/Budgets';
+import AppForecasts from './modules/budgeting/Forecasts';
+import AppVarianceAnalysis from './modules/budgeting/VarianceAnalysis';
+import AppTaxCenter from './modules/compliance/TaxCenter';
+import AppAuditTrail from './modules/compliance/AuditTrail';
+import AppPeriodClose from './modules/compliance/PeriodClose';
+import AppDocumentVault from './modules/documents/DocumentVault';
+import AppReceipts from './modules/documents/Receipts';
+import AppClientDirectory from './modules/clients/ClientDirectory';
+import AppClientPortal from './modules/clients/ClientPortal';
+import AppAutomationRules from './modules/automation/AutomationRules';
+import AppRecurringEntries from './modules/automation/RecurringEntries';
+import AppAIInsights from './modules/automation/AIInsights';
+import AppAPIKeys from './modules/integrations/APIKeys';
+import AppIntegrationsList from './modules/integrations/IntegrationsList';
+import AppFirmSettings from './modules/settings/FirmSettings';
+import AppTeamPermissions from './modules/settings/TeamPermissions';
+import AppSecurity from './modules/settings/Security';
 import Product from './pages/Product/Product';
 import Features from './pages/Features/Features';
 import Pricing from './pages/Pricing/Pricing';
@@ -192,7 +235,7 @@ function App() {
               } />
               <Route path="/enterprise/entity/:entityId/period-close" element={
                 <ProtectedRoute>
-                  <Layout><PeriodClose /></Layout>
+                  <Layout><LegacyPeriodClose /></Layout>
                 </ProtectedRoute>
               } />
               <Route path="/enterprise/entity/:entityId/fx-accounting" element={
@@ -264,6 +307,72 @@ function App() {
                   <Layout><APIIntegrations /></Layout>
                 </ProtectedRoute>
               } />
+
+              {/* ── New Module Routes ─────────────────────────────────────── */}
+              {/* Overview */}
+              <Route path="/app/overview/dashboard" element={<ProtectedRoute><Layout><AppDashboard /></Layout></ProtectedRoute>} />
+              <Route path="/app/overview/notifications" element={<ProtectedRoute><Layout><AppNotifications /></Layout></ProtectedRoute>} />
+              <Route path="/app/overview/tasks" element={<ProtectedRoute><Layout><AppTasks /></Layout></ProtectedRoute>} />
+
+              {/* Accounting */}
+              <Route path="/app/accounting/chart-of-accounts" element={<ProtectedRoute><Layout><AppChartOfAccounts /></Layout></ProtectedRoute>} />
+              <Route path="/app/accounting/general-ledger" element={<ProtectedRoute><Layout><AppGeneralLedger /></Layout></ProtectedRoute>} />
+              <Route path="/app/accounting/journal-entries" element={<ProtectedRoute><Layout><AppJournalEntries /></Layout></ProtectedRoute>} />
+              <Route path="/app/accounting/reconciliation" element={<ProtectedRoute><Layout><AppReconciliation /></Layout></ProtectedRoute>} />
+
+              {/* Sub-Ledgers */}
+              <Route path="/app/subledgers/accounts-receivable" element={<ProtectedRoute><Layout><AppAccountsReceivable /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/accounts-payable" element={<ProtectedRoute><Layout><AppAccountsPayable /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/cash-bank" element={<ProtectedRoute><Layout><AppCashBank /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/fixed-assets" element={<ProtectedRoute><Layout><AppFixedAssets /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/inventory" element={<ProtectedRoute><Layout><AppInventoryModule /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/payroll" element={<ProtectedRoute><Layout><AppPayroll /></Layout></ProtectedRoute>} />
+              <Route path="/app/subledgers/tax" element={<ProtectedRoute><Layout><AppTaxSubledger /></Layout></ProtectedRoute>} />
+
+              {/* Billing */}
+              <Route path="/app/billing/invoices" element={<ProtectedRoute><Layout><AppInvoices /></Layout></ProtectedRoute>} />
+              <Route path="/app/billing/bills" element={<ProtectedRoute><Layout><AppBills /></Layout></ProtectedRoute>} />
+              <Route path="/app/billing/customers" element={<ProtectedRoute><Layout><AppCustomers /></Layout></ProtectedRoute>} />
+              <Route path="/app/billing/vendors" element={<ProtectedRoute><Layout><AppVendors /></Layout></ProtectedRoute>} />
+              <Route path="/app/billing/payment-scheduling" element={<ProtectedRoute><Layout><AppPaymentScheduling /></Layout></ProtectedRoute>} />
+              <Route path="/app/billing/collections" element={<ProtectedRoute><Layout><AppCollections /></Layout></ProtectedRoute>} />
+
+              {/* Reporting */}
+              <Route path="/app/reporting/statements" element={<ProtectedRoute><Layout><AppStatements /></Layout></ProtectedRoute>} />
+              <Route path="/app/reporting/trial-balance" element={<ProtectedRoute><Layout><AppTrialBalance /></Layout></ProtectedRoute>} />
+              <Route path="/app/reporting/analytics" element={<ProtectedRoute><Layout><AppAnalytics /></Layout></ProtectedRoute>} />
+
+              {/* Budgeting */}
+              <Route path="/app/budgeting/budgets" element={<ProtectedRoute><Layout><AppBudgets /></Layout></ProtectedRoute>} />
+              <Route path="/app/budgeting/forecasts" element={<ProtectedRoute><Layout><AppForecasts /></Layout></ProtectedRoute>} />
+              <Route path="/app/budgeting/variance-analysis" element={<ProtectedRoute><Layout><AppVarianceAnalysis /></Layout></ProtectedRoute>} />
+
+              {/* Compliance */}
+              <Route path="/app/compliance/tax-center" element={<ProtectedRoute><Layout><AppTaxCenter /></Layout></ProtectedRoute>} />
+              <Route path="/app/compliance/audit-trail" element={<ProtectedRoute><Layout><AppAuditTrail /></Layout></ProtectedRoute>} />
+              <Route path="/app/compliance/period-close" element={<ProtectedRoute><Layout><AppPeriodClose /></Layout></ProtectedRoute>} />
+
+              {/* Documents */}
+              <Route path="/app/documents/vault" element={<ProtectedRoute><Layout><AppDocumentVault /></Layout></ProtectedRoute>} />
+              <Route path="/app/documents/receipts" element={<ProtectedRoute><Layout><AppReceipts /></Layout></ProtectedRoute>} />
+
+              {/* Clients */}
+              <Route path="/app/clients/directory" element={<ProtectedRoute><Layout><AppClientDirectory /></Layout></ProtectedRoute>} />
+              <Route path="/app/clients/portal" element={<ProtectedRoute><Layout><AppClientPortal /></Layout></ProtectedRoute>} />
+
+              {/* Automation */}
+              <Route path="/app/automation/rules" element={<ProtectedRoute><Layout><AppAutomationRules /></Layout></ProtectedRoute>} />
+              <Route path="/app/automation/recurring" element={<ProtectedRoute><Layout><AppRecurringEntries /></Layout></ProtectedRoute>} />
+              <Route path="/app/automation/ai-insights" element={<ProtectedRoute><Layout><AppAIInsights /></Layout></ProtectedRoute>} />
+
+              {/* Integrations */}
+              <Route path="/app/integrations/api-keys" element={<ProtectedRoute><Layout><AppAPIKeys /></Layout></ProtectedRoute>} />
+              <Route path="/app/integrations/list" element={<ProtectedRoute><Layout><AppIntegrationsList /></Layout></ProtectedRoute>} />
+
+              {/* Settings */}
+              <Route path="/app/settings/firm" element={<ProtectedRoute><Layout><AppFirmSettings /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/team" element={<ProtectedRoute><Layout><AppTeamPermissions /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/security" element={<ProtectedRoute><Layout><AppSecurity /></Layout></ProtectedRoute>} />
             </Routes>
               </Router>
           </EnterpriseProvider>

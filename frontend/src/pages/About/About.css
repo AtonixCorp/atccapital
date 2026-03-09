@@ -5,7 +5,7 @@
 
 .about-page {
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: inherit;
   background: #fff;
 }
 
