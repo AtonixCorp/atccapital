@@ -483,8 +483,8 @@ button:disabled, .btn:disabled {
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--color-white);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
   z-index: var(--z-modal);
   max-height: 90vh;
   overflow-y: auto;
@@ -515,7 +515,8 @@ button:disabled, .btn:disabled {
 
 .modal-header h2 {
   margin: 0;
-  font-size: var(--font-size-2xl);
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .modal-close {
@@ -555,8 +556,8 @@ button:disabled, .btn:disabled {
 .input-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: var(--space-xs);
+  margin-bottom: 0;
 }
 
 .input-label {
@@ -750,7 +751,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl);
-  padding: var(--space-xl);
+  padding: 0;
 }
 
 .stats-row {

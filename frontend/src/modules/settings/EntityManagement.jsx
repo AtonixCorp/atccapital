@@ -136,6 +136,7 @@ export default function EntityManagement() {
 
       {showModal && (
         <Modal
+          isOpen={true}
           title={editEntity ? 'Edit Entity' : 'Add New Entity'}
           onClose={() => setShowModal(false)}
           footer={
@@ -145,15 +146,15 @@ export default function EntityManagement() {
             </>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Entity Name — full width */}
             <div>
-              <label style={labelStyle}>Entity Name <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Entity Name <span style={{ color: '#dc2626' }}>*</span></label>
               <Input
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Legal entity name"
-                style={inputStyle}
+                style={{ ...inputStyle, marginBottom: 0 }}
               />
             </div>
             {/* Type + Currency — side by side */}
@@ -180,7 +181,7 @@ export default function EntityManagement() {
                   onChange={e => setForm(f => ({ ...f, country: e.target.value.toUpperCase().slice(0, 2) }))}
                   placeholder="US"
                   maxLength={2}
-                  style={{ ...inputStyle, textTransform: 'uppercase', letterSpacing: 2 }}
+                  style={{ ...inputStyle, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 0 }}
                 />
               </div>
               <div>
@@ -189,7 +190,7 @@ export default function EntityManagement() {
                   value={form.taxId}
                   onChange={e => setForm(f => ({ ...f, taxId: e.target.value }))}
                   placeholder="e.g. 12-3456789"
-                  style={inputStyle}
+                  style={{ ...inputStyle, marginBottom: 0 }}
                 />
               </div>
             </div>

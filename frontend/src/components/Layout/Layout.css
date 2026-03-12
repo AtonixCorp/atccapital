@@ -496,7 +496,7 @@
   min-width: 0;
   background: var(--color-white);
   color: var(--color-midnight);
-  padding: 0;
+  padding: 32px 40px;
   overflow-x: hidden;
 }
 
