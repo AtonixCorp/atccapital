@@ -12,6 +12,34 @@ const CURRENCY_OPTIONS = ['USD', 'EUR', 'GBP', 'SGD', 'AED', 'CAD', 'AUD', 'JPY'
 
 const COUNTRY_FLAGS = { US: '🇺🇸', GB: '🇬🇧', SG: '🇸🇬', AE: '🇦🇪', CA: '🇨🇦', DE: '🇩🇪', FR: '🇫🇷', AU: '🇦🇺' };
 
+const labelStyle = {
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 600,
+  color: '#374151',
+  marginBottom: 6,
+  letterSpacing: '0.2px',
+};
+
+const inputStyle = {
+  width: '100%',
+  height: 40,
+  boxSizing: 'border-box',
+};
+
+const selectStyle = {
+  width: '100%',
+  height: 40,
+  padding: '0 12px',
+  fontSize: 13,
+  border: '1px solid var(--border-color-default)',
+  borderRadius: 6,
+  background: 'var(--color-white)',
+  color: 'var(--color-midnight)',
+  boxSizing: 'border-box',
+  cursor: 'pointer',
+};
+
 export default function EntityManagement() {
   const [entities, setEntities] = useState(mockEntities);
   const [showModal, setShowModal] = useState(false);
@@ -117,30 +145,53 @@ export default function EntityManagement() {
             </>
           }
         >
-          <div className="form-grid">
-            <div style={{ gridColumn: 'span 2' }}>
-              <label className="input-label">Entity Name <span className="required">*</span></label>
-              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Legal entity name" />
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {/* Entity Name — full width */}
             <div>
-              <label className="input-label">Type</label>
-              <select className="filter-select" style={{ width: '100%', height: 40 }} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
-                {TYPE_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <label style={labelStyle}>Entity Name <span style={{ color: '#ef4444' }}>*</span></label>
+              <Input
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="Legal entity name"
+                style={inputStyle}
+              />
             </div>
-            <div>
-              <label className="input-label">Functional Currency</label>
-              <select className="filter-select" style={{ width: '100%', height: 40 }} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
-                {CURRENCY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
+            {/* Type + Currency — side by side */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Entity Type</label>
+                <select style={selectStyle} value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                  {TYPE_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Functional Currency</label>
+                <select style={selectStyle} value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
+                  {CURRENCY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="input-label">Country Code</label>
-              <Input value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value.toUpperCase().slice(0, 2) }))} placeholder="US" maxLength={2} />
-            </div>
-            <div>
-              <label className="input-label">Tax ID / Registration</label>
-              <Input value={form.taxId} onChange={e => setForm(f => ({ ...f, taxId: e.target.value }))} placeholder="e.g. 12-3456789" />
+            {/* Country + Tax ID — side by side */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Country Code</label>
+                <Input
+                  value={form.country}
+                  onChange={e => setForm(f => ({ ...f, country: e.target.value.toUpperCase().slice(0, 2) }))}
+                  placeholder="US"
+                  maxLength={2}
+                  style={{ ...inputStyle, textTransform: 'uppercase', letterSpacing: 2 }}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Tax ID / Registration No.</label>
+                <Input
+                  value={form.taxId}
+                  onChange={e => setForm(f => ({ ...f, taxId: e.target.value }))}
+                  placeholder="e.g. 12-3456789"
+                  style={inputStyle}
+                />
+              </div>
             </div>
           </div>
         </Modal>

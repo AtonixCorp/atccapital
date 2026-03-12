@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -25,6 +25,18 @@ const Layout = ({ children }) => {
 
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
   const [expandedMenus, setExpandedMenus] = React.useState({});
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -265,20 +277,10 @@ const Layout = ({ children }) => {
           {renderNavGroup(supportNav)}
         </ul>
 
-        {/* User Footer */}
+        {/* Sidebar toggle button at the bottom */}
         <div className="sidebar-footer">
-          <div className="user-row">
-            <div className="user-avatar">{userInitial}</div>
-            {!sidebarMinimized && (
-              <div className="user-meta">
-                <div className="user-name">{user?.name || 'User'}</div>
-                <div className="user-email">{user?.email || ''}</div>
-              </div>
-            )}
-          </div>
-          <button onClick={handleLogout} className="logout-btn" title="Sign out">
-
-            {!sidebarMinimized && <span>Sign Out</span>}
+          <button className="sidebar-collapse-btn" onClick={toggleSidebar} title={sidebarMinimized ? 'Expand sidebar' : 'Collapse sidebar'}>
+            {sidebarMinimized ? '→' : '←'}
           </button>
         </div>
       </nav>
@@ -295,9 +297,40 @@ const Layout = ({ children }) => {
             )}
           </div>
           <div className="topbar-right">
-            <div className="topbar-user">
-              <div className="topbar-avatar">{userInitial}</div>
-              <span className="topbar-name">{user?.name || 'User'}</span>
+            <div className="profile-menu" ref={profileRef}>
+              <button
+                className="profile-avatar-btn"
+                onClick={() => setProfileOpen(o => !o)}
+                aria-label="Open profile menu"
+                title="Profile"
+              >
+                {userInitial}
+              </button>
+              {profileOpen && (
+                <div className="profile-dropdown">
+                  <div className="profile-dropdown-header">
+                    <div className="profile-dropdown-avatar">{userInitial}</div>
+                    <div>
+                      <div className="profile-dropdown-name">{user?.name || 'User'}</div>
+                      <div className="profile-dropdown-email">{user?.email || ''}</div>
+                    </div>
+                  </div>
+                  <div className="profile-dropdown-divider" />
+                  <NavLink to="/app/settings/firm" className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    Firm Settings
+                  </NavLink>
+                  <NavLink to="/app/settings/security" className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    Security
+                  </NavLink>
+                  <NavLink to="/app/support/help" className="profile-dropdown-item" onClick={() => setProfileOpen(false)}>
+                    Help Center
+                  </NavLink>
+                  <div className="profile-dropdown-divider" />
+                  <button className="profile-dropdown-item profile-dropdown-logout" onClick={handleLogout}>
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
