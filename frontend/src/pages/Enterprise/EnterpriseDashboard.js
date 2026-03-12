@@ -211,16 +211,139 @@ const EnterpriseDashboard = () => {
       )}
 
       {!loading && branchData.length === 0 && (
-        <div className="ed-empty-state">
+        <div className="ed-onboarding">
+          <div className="ed-onboarding-header">
+            <div className="ed-onboarding-kpi-row">
+              <div className="ed-ob-kpi">
+                <div className="ed-ob-kpi-value">0</div>
+                <div className="ed-ob-kpi-label">Active Entities</div>
+              </div>
+              <div className="ed-ob-kpi">
+                <div className="ed-ob-kpi-value">$0</div>
+                <div className="ed-ob-kpi-label">Consolidated Revenue</div>
+              </div>
+              <div className="ed-ob-kpi">
+                <div className="ed-ob-kpi-value">$0</div>
+                <div className="ed-ob-kpi-label">Total Tax Exposure</div>
+              </div>
+              <div className="ed-ob-kpi">
+                <div className="ed-ob-kpi-value">0</div>
+                <div className="ed-ob-kpi-label">Jurisdictions</div>
+              </div>
+            </div>
+          </div>
 
-          <h3>No entities yet</h3>
-          <p>Add entities to see your multi-branch dashboard.</p>
-          <Button
-            variant="primary"
-            size="small"
-            onClick={() => navigate('/app/enterprise/entities')}
-          >Add First Entity
-          </Button>
+          <div className="ed-onboarding-body">
+            <div className="ed-ob-left">
+              <div className="ed-ob-step-label">Getting Started</div>
+              <h2 className="ed-ob-title">Set up your Enterprise Structure</h2>
+              <p className="ed-ob-desc">
+                Add legal entities to unlock multi-branch financial consolidation, regional P&amp;L,
+                tax exposure tracking, and cross-entity reporting.
+              </p>
+              <div className="ed-ob-steps">
+                <div className="ed-ob-step">
+                  <div className="ed-ob-step-num">1</div>
+                  <div>
+                    <div className="ed-ob-step-title">Create an entity</div>
+                    <div className="ed-ob-step-sub">Add a subsidiary, branch, or holding company</div>
+                  </div>
+                </div>
+                <div className="ed-ob-step">
+                  <div className="ed-ob-step-num">2</div>
+                  <div>
+                    <div className="ed-ob-step-title">Assign jurisdiction &amp; currency</div>
+                    <div className="ed-ob-step-sub">Set the operating country and local currency</div>
+                  </div>
+                </div>
+                <div className="ed-ob-step">
+                  <div className="ed-ob-step-num">3</div>
+                  <div>
+                    <div className="ed-ob-step-title">Connect accounting</div>
+                    <div className="ed-ob-step-sub">Import or record transactions for consolidated reporting</div>
+                  </div>
+                </div>
+                <div className="ed-ob-step">
+                  <div className="ed-ob-step-num">4</div>
+                  <div>
+                    <div className="ed-ob-step-title">View consolidated dashboard</div>
+                    <div className="ed-ob-step-sub">Revenue, profit, and tax across all branches appear here</div>
+                  </div>
+                </div>
+              </div>
+              <div className="ed-ob-actions">
+                <Button
+                  variant="primary"
+                  size="small"
+                  onClick={() => navigate('/app/enterprise/entities')}
+                >
+                  Add First Entity
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => navigate('/app/overview/dashboard')}
+                >
+                  Go to Accounting Dashboard
+                </Button>
+              </div>
+            </div>
+
+            <div className="ed-ob-right">
+              <div className="ed-ob-preview-label">Preview — With entities, you will see:</div>
+              <div className="ed-ob-preview-cards">
+                <div className="ed-ob-preview-card">
+                  <div className="ed-ob-preview-row">
+                    <span className="ed-ob-preview-dot cyan" />
+                    <span>Revenue by Branch</span>
+                  </div>
+                  <div className="ed-ob-preview-bar-track">
+                    <div className="ed-ob-preview-bar-fill" style={{ width: '80%', background: 'var(--color-cyan)' }} />
+                  </div>
+                  <div className="ed-ob-preview-bar-track" style={{ marginTop: 6 }}>
+                    <div className="ed-ob-preview-bar-fill" style={{ width: '55%', background: 'var(--color-cyan-dark)' }} />
+                  </div>
+                  <div className="ed-ob-preview-bar-track" style={{ marginTop: 6 }}>
+                    <div className="ed-ob-preview-bar-fill" style={{ width: '35%', background: 'var(--color-silver-dark)' }} />
+                  </div>
+                </div>
+                <div className="ed-ob-preview-card">
+                  <div className="ed-ob-preview-row">
+                    <span className="ed-ob-preview-dot green" />
+                    <span>Regional P&amp;L Breakdown</span>
+                  </div>
+                  <div className="ed-ob-preview-region-list">
+                    <div className="ed-ob-preview-region">
+                      <span>North America</span><span className="pos">+$1.2M</span>
+                    </div>
+                    <div className="ed-ob-preview-region">
+                      <span>Europe</span><span className="pos">+$840K</span>
+                    </div>
+                    <div className="ed-ob-preview-region">
+                      <span>Middle East</span><span className="pos">+$480K</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="ed-ob-preview-card">
+                  <div className="ed-ob-preview-row">
+                    <span className="ed-ob-preview-dot orange" />
+                    <span>Tax Exposure by Jurisdiction</span>
+                  </div>
+                  <div className="ed-ob-preview-region-list">
+                    <div className="ed-ob-preview-region">
+                      <span>US Federal + State</span><span>$142K</span>
+                    </div>
+                    <div className="ed-ob-preview-region">
+                      <span>UK Corporation Tax</span><span>$88K</span>
+                    </div>
+                    <div className="ed-ob-preview-region">
+                      <span>UAE Corporate Tax</span><span>$34K</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

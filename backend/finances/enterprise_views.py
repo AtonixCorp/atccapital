@@ -316,18 +316,35 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                 'id', 'entity_id', 'reference_number', 'description', 'posting_date', 'status', 'created_at'
             )[:20]
         )
-        invoices = list(
-            Invoice.objects.filter(entity__organization=organization).order_by('-invoice_date').values(
-                'id', 'entity_id', 'customer_name', 'invoice_number', 'invoice_date', 'due_date',
-                'total_amount', 'outstanding_amount', 'currency', 'status'
-            )[:50]
-        )
-        bills = list(
-            Bill.objects.filter(entity__organization=organization).order_by('-bill_date').values(
-                'id', 'entity_id', 'vendor_name', 'bill_number', 'bill_date', 'due_date',
-                'total_amount', 'outstanding_amount', 'currency', 'status'
-            )[:50]
-        )
+        invoices = []
+        for inv in Invoice.objects.filter(entity__organization=organization).select_related('customer').order_by('-invoice_date')[:50]:
+            invoices.append({
+                'id': inv.id,
+                'entity_id': inv.entity_id,
+                'customer_name': inv.customer.name if inv.customer else 'N/A',
+                'invoice_number': inv.invoice_number,
+                'invoice_date': inv.invoice_date,
+                'due_date': inv.due_date,
+                'total_amount': inv.total_amount,
+                'outstanding_amount': inv.outstanding_amount,
+                'currency': inv.currency,
+                'status': inv.status,
+            })
+        
+        bills = []
+        for bill in Bill.objects.filter(entity__organization=organization).select_related('vendor').order_by('-bill_date')[:50]:
+            bills.append({
+                'id': bill.id,
+                'entity_id': bill.entity_id,
+                'vendor_name': bill.vendor.name if bill.vendor else 'N/A',
+                'bill_number': bill.bill_number,
+                'bill_date': bill.bill_date,
+                'due_date': bill.due_date,
+                'total_amount': bill.total_amount,
+                'outstanding_amount': bill.outstanding_amount,
+                'currency': bill.currency,
+                'status': bill.status,
+            })
         reconciliations = list(
             BankReconciliation.objects.filter(entity__organization=organization)
             .select_related('bank_account')

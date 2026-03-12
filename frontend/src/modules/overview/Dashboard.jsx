@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, PageHeader } from '../../components/ui';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { useFilters } from '../../context/FilterContext';
 
 const emptyDashboard = {
   summary: {
@@ -66,13 +67,20 @@ const SectionCard = ({ title, actions, children }) => (
   </Card>
 );
 
-const KPIWidget = ({ item, active, onSelect }) => {
+const KPIWidget = ({ item, active, onSelect, onDrillDown }) => {
 
   return (
     <div className={`kpi-widget ${active ? 'active' : ''}`} onClick={() => onSelect(item.id)}>
       <div className="kpi-widget-header">
         <span className="kpi-widget-label">{item.label}</span>
-        <span className="kpi-widget-icon"></span>
+        <button
+          type="button"
+          className="kpi-drilldown-btn"
+          title="Drill down"
+          onClick={(e) => { e.stopPropagation(); onDrillDown(item); }}
+        >
+          ↗
+        </button>
       </div>
       <div className="kpi-widget-value">{item.value}</div>
       <div className="kpi-widget-meta">
@@ -273,15 +281,73 @@ const RightPanel = ({ content, onReset, onOpenDetails }) => (
   </aside>
 );
 
+const DrillDownModal = ({ item, filters, onClose, onNavigate }) => {
+  if (!item) return null;
+  const details = item.details || [];
+  return (
+    <div className="drilldown-overlay" role="dialog" aria-modal="true" aria-label={`${item.label} detail`} onClick={onClose}>
+      <div className="drilldown-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="drilldown-header">
+          <div>
+            <div className="drilldown-title">{item.label}</div>
+            <div className="drilldown-subtitle">
+              As of {filters.dateTo} &middot; {filters.currency} &middot;{' '}
+              {filters.entity === 'all' ? 'All Entities' : `Entity ${filters.entity}`}
+            </div>
+          </div>
+          <button className="drilldown-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <div className="drilldown-value-row">
+          <div className="drilldown-big-value">{item.value}</div>
+          {item.trend && (
+            <span className={`kpi-trend ${item.trend.direction || 'flat'}`}>
+              {item.trend.value}
+            </span>
+          )}
+        </div>
+        {details.length > 0 && (
+          <table className="drilldown-table">
+            <thead>
+              <tr>
+                <th>Account / Component</th>
+                <th className="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {details.map((d, i) => (
+                <tr key={i} className={d.tone || ''}>
+                  <td>{d.label}</td>
+                  <td className="num">{d.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {!details.length && (
+          <p className="drilldown-empty">No breakdown data available. Connect your accounting data to see account-level detail.</p>
+        )}
+        <div className="drilldown-footer">
+          <button className="pill-btn primary" onClick={() => { onNavigate(); onClose(); }}>
+            View Full Ledger
+          </button>
+          <button className="pill-btn" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const OverviewDashboard = () => {
   const navigate = useNavigate();
   const { currentOrganization, fetchOrganizationAccountingDashboard } = useEnterprise();
+  const { filters } = useFilters();
   const [dashboard, setDashboard] = useState(emptyDashboard);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedContext, setSelectedContext] = useState('cash');
   const [activityFilter, setActivityFilter] = useState('All');
   const [cashFlowPeriod, setCashFlowPeriod] = useState('weekly');
+  const [drillDownItem, setDrillDownItem] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -379,9 +445,19 @@ const OverviewDashboard = () => {
         <div className="dashboard-main">
           <section>
             <div className="band-label">Top Band · Financial Health Snapshot</div>
+            <div className="filter-as-of">
+              As of {filters.dateTo} &middot; {filters.currency} &middot;{' '}
+              {filters.entity === 'all' ? 'All Entities' : `Entity ${filters.entity}`}
+            </div>
             <GridContainer className="kpi-grid">
               {(dashboard.kpis || []).map((item) => (
-                <KPIWidget key={item.id} item={item} active={selectedContext === item.id} onSelect={setSelectedContext} />
+                <KPIWidget
+                  key={item.id}
+                  item={item}
+                  active={selectedContext === item.id}
+                  onSelect={setSelectedContext}
+                  onDrillDown={setDrillDownItem}
+                />
               ))}
             </GridContainer>
           </section>
@@ -434,6 +510,15 @@ const OverviewDashboard = () => {
           onOpenDetails={() => navigate(rightPanel.route || '/app/overview/dashboard')}
         />
       </div>
+
+      {drillDownItem && (
+        <DrillDownModal
+          item={drillDownItem}
+          filters={filters}
+          onClose={() => setDrillDownItem(null)}
+          onNavigate={() => navigate(rightPanel.route || '/app/subledgers/cash-bank')}
+        />
+      )}
     </div>
   );
 };

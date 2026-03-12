@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import { FinanceProvider } from './context/FinanceContext';
 import { EnterpriseProvider } from './context/EnterpriseContext';
+import { FilterProvider } from './context/FilterContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -71,6 +72,7 @@ import AppCollections from './modules/billing/Collections';
 import AppStatements from './modules/reporting/Statements';
 import AppTrialBalance from './modules/reporting/TrialBalance';
 import AppAnalytics from './modules/reporting/Analytics';
+import AppRiskExposure from './modules/reporting/RiskExposure';
 import AppBudgets from './modules/budgeting/Budgets';
 import AppForecasts from './modules/budgeting/Forecasts';
 import AppVarianceAnalysis from './modules/budgeting/VarianceAnalysis';
@@ -89,6 +91,11 @@ import AppIntegrationsList from './modules/integrations/IntegrationsList';
 import AppFirmSettings from './modules/settings/FirmSettings';
 import AppTeamPermissions from './modules/settings/TeamPermissions';
 import AppSecurity from './modules/settings/Security';
+import AppEntityManagement from './modules/settings/EntityManagement';
+import AppBranding from './modules/settings/Branding';
+import AppSubscription from './modules/settings/Subscription';
+import AppHelpCenter from './modules/support/HelpCenter';
+import AppSupportTickets from './modules/support/SupportTickets';
 import Product from './pages/Product/Product';
 import Features from './pages/Features/Features';
 import Pricing from './pages/Pricing/Pricing';
@@ -105,6 +112,7 @@ function App() {
         <AuthProvider>
           <FinanceProvider>
             <EnterpriseProvider>
+              <FilterProvider>
               <Router>
             <Routes>
               {/* Public Routes */}
@@ -124,7 +132,7 @@ function App() {
               <Route path="/global-tax" element={<GlobalTax />} />
 
               {/* Redirect legacy personal routes to enterprise */}
-              <Route path="/dashboard" element={<Navigate to="/app/firm/enterprise-branches" replace />} />
+              <Route path="/dashboard" element={<Navigate to="/app/overview/dashboard" replace />} />
 
               {/* Enterprise Routes */}
               <Route path="/app/enterprise/org-overview" element={
@@ -340,6 +348,7 @@ function App() {
               <Route path="/app/reporting/statements" element={<ProtectedRoute><Layout><AppStatements /></Layout></ProtectedRoute>} />
               <Route path="/app/reporting/trial-balance" element={<ProtectedRoute><Layout><AppTrialBalance /></Layout></ProtectedRoute>} />
               <Route path="/app/reporting/analytics" element={<ProtectedRoute><Layout><AppAnalytics /></Layout></ProtectedRoute>} />
+              <Route path="/app/reporting/risk-exposure" element={<ProtectedRoute><Layout><AppRiskExposure /></Layout></ProtectedRoute>} />
 
               {/* Budgeting */}
               <Route path="/app/budgeting/budgets" element={<ProtectedRoute><Layout><AppBudgets /></Layout></ProtectedRoute>} />
@@ -372,8 +381,15 @@ function App() {
               <Route path="/app/settings/firm" element={<ProtectedRoute><Layout><AppFirmSettings /></Layout></ProtectedRoute>} />
               <Route path="/app/settings/team" element={<ProtectedRoute><Layout><AppTeamPermissions /></Layout></ProtectedRoute>} />
               <Route path="/app/settings/security" element={<ProtectedRoute><Layout><AppSecurity /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/entities" element={<ProtectedRoute><Layout><AppEntityManagement /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/branding" element={<ProtectedRoute><Layout><AppBranding /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/subscription" element={<ProtectedRoute><Layout><AppSubscription /></Layout></ProtectedRoute>} />
+              {/* Support */}
+              <Route path="/app/support/help" element={<ProtectedRoute><Layout><AppHelpCenter /></Layout></ProtectedRoute>} />
+              <Route path="/app/support/tickets" element={<ProtectedRoute><Layout><AppSupportTickets /></Layout></ProtectedRoute>} />
             </Routes>
               </Router>
+              </FilterProvider>
           </EnterpriseProvider>
         </FinanceProvider>
       </AuthProvider>

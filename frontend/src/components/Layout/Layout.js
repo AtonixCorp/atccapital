@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import FilterBar from '../FilterBar/FilterBar';
+import './Layout.css';
 
 const BANKING_MODES = [
   { id: 'retail',   label: 'Retail',   short: 'R' },
@@ -14,7 +16,8 @@ const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { entities } = useEnterprise();
+  const location = useLocation();
+  const { entities, currentOrganization } = useEnterprise();
   const firstEntity = (entities && entities.length > 0) ? entities[0] : null;
   const bookkeepingPath = firstEntity
     ? `/enterprise/entity/${firstEntity.id}/bookkeeping`
@@ -35,9 +38,10 @@ const Layout = ({ children }) => {
   //  Navigation definitions
 
   const overviewNav = [
-    { to: '/app/firm/enterprise-branches',    label: 'Dashboard' },
-    { to: '/app/overview/notifications',  label: 'Notifications' },
-    { to: '/app/overview/tasks',          label: 'Tasks' },
+    { to: '/app/overview/dashboard',         label: 'Dashboard' },
+    { to: '/app/firm/enterprise-branches',   label: 'Enterprise Overview' },
+    { to: '/app/overview/notifications',     label: 'Notifications' },
+    { to: '/app/overview/tasks',             label: 'Tasks' },
   ];
 
   const accountingNav = [
@@ -69,9 +73,10 @@ const Layout = ({ children }) => {
   ];
 
   const reportingNav = [
-    { to: '/app/reporting/statements',    label: 'Financial Statements' },
-    { to: '/app/reporting/trial-balance', label: 'Trial Balance' },
-    { to: '/app/reporting/analytics',     label: 'Reports & Analytics' },
+    { to: '/app/reporting/statements',      label: 'Financial Statements' },
+    { to: '/app/reporting/trial-balance',   label: 'Trial Balance' },
+    { to: '/app/reporting/analytics',       label: 'Reports & Analytics' },
+    { to: '/app/reporting/risk-exposure',   label: 'Risk & Exposure' },
   ];
 
   const budgetingNav = [
@@ -191,6 +196,14 @@ const Layout = ({ children }) => {
       {/*  SIDEBAR  */}
       <nav className={`sidebar${sidebarMinimized ? ' minimized' : ''}`} aria-label="Main navigation">
 
+        {/* Brand Header */}
+        <div className="sidebar-header">
+          <div className="sidebar-brand">
+            <span className="sidebar-brand-dot" />
+            {!sidebarMinimized && <span>ATC Capital</span>}
+          </div>
+        </div>
+
         {/* Navigation */}
         <ul className="nav-menu" role="list">
           {/* Overview */}
@@ -275,7 +288,11 @@ const Layout = ({ children }) => {
         {/* Top Bar */}
         <header className="topbar">
           <div className="topbar-left">
+            <button className="topbar-toggle" onClick={toggleSidebar} aria-label="Toggle sidebar">☰</button>
             <h2 className="topbar-title">ATC Capital</h2>
+            {currentOrganization && (
+              <span className="topbar-org-context">{currentOrganization.name}</span>
+            )}
           </div>
           <div className="topbar-right">
             <div className="topbar-user">
@@ -284,6 +301,9 @@ const Layout = ({ children }) => {
             </div>
           </div>
         </header>
+
+        {/* Global Filter Bar — only on app routes */}
+        {location.pathname.startsWith('/app') && <FilterBar />}
 
         <main className="main-content">
           {children}

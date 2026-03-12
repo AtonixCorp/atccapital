@@ -1340,3 +1340,499 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     grid-template-columns: 1fr;
   }
 }
+
+/* =============================================================================
+   KPI DRILL-DOWN MODAL
+   ============================================================================= */
+.kpi-drilldown-btn {
+  background: none;
+  border: 1px solid var(--border-color-default);
+  color: var(--color-cyan-text);
+  font-size: var(--font-size-xs);
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.kpi-drilldown-btn:hover {
+  background: var(--color-cyan);
+  border-color: var(--color-cyan);
+  color: var(--color-white);
+}
+
+.filter-as-of {
+  font-size: var(--font-size-xs);
+  color: var(--color-silver-dark);
+  margin-bottom: var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Drill-down modal overlay */
+.drilldown-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 12, 16, 0.55);
+  z-index: var(--z-modal-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+}
+
+.drilldown-modal {
+  background: var(--color-white);
+  border: 1px solid var(--border-color-default);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-modal);
+}
+
+.drilldown-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--border-color-default);
+  gap: var(--space-base);
+}
+
+.drilldown-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-midnight);
+}
+
+.drilldown-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-silver-dark);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.drilldown-close {
+  background: none;
+  border: none;
+  color: var(--color-silver-dark);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.drilldown-close:hover {
+  color: var(--color-midnight);
+}
+
+.drilldown-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-base);
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--border-color-default);
+}
+
+.drilldown-big-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-midnight);
+}
+
+.drilldown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  flex: 1;
+  overflow-y: auto;
+}
+
+.drilldown-table thead tr {
+  background: var(--color-silver-very-light);
+  border-bottom: 1px solid var(--border-color-default);
+}
+
+.drilldown-table th {
+  padding: var(--space-sm) var(--space-xl);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-silver-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: left;
+}
+
+.drilldown-table th.num,
+.drilldown-table td.num {
+  text-align: right;
+}
+
+.drilldown-table td {
+  padding: var(--space-sm) var(--space-xl);
+  border-bottom: 1px solid var(--color-silver-very-light);
+  color: var(--color-midnight);
+}
+
+.drilldown-table tr.positive td { color: var(--color-success); }
+.drilldown-table tr.negative td { color: var(--color-error); }
+
+.drilldown-empty {
+  padding: var(--space-xl);
+  font-size: var(--font-size-sm);
+  color: var(--color-silver-dark);
+}
+
+.drilldown-footer {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-base) var(--space-xl);
+  border-top: 1px solid var(--border-color-default);
+  justify-content: flex-end;
+}
+
+/* =============================================================================
+   FINANCIAL STATEMENTS MODULE
+   ============================================================================= */
+.stmt-filter-strip {
+  display: flex;
+  gap: var(--space-xl);
+  font-size: var(--font-size-sm);
+  color: var(--color-silver-dark);
+  padding: var(--space-sm) 0;
+  margin-bottom: var(--space-base);
+  border-bottom: 1px solid var(--border-color-default);
+}
+
+.stmt-filter-strip strong {
+  color: var(--color-midnight);
+  font-weight: var(--font-weight-semibold);
+}
+
+.statement-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border-color-default);
+  margin-bottom: var(--space-xl);
+  gap: 0;
+}
+
+.stmt-tab {
+  padding: var(--space-sm) var(--space-xl);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family);
+  color: var(--color-silver-dark);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.stmt-tab:hover {
+  color: var(--color-midnight);
+}
+
+.stmt-tab.active {
+  color: var(--color-cyan-text);
+  border-bottom-color: var(--color-cyan);
+  font-weight: var(--font-weight-semibold);
+}
+
+.stmt-table-wrap {
+  font-size: var(--font-size-sm);
+}
+
+.stmt-header-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 2px solid var(--color-midnight);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-silver-dark);
+}
+
+.stmt-col-account {
+  flex: 1;
+}
+
+.stmt-col-num {
+  width: 160px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.stmt-section {
+  margin-top: var(--space-base);
+}
+
+.stmt-category {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-midnight);
+  padding: var(--space-sm) 0 var(--space-xs);
+  border-top: 1px solid var(--border-color-default);
+}
+
+.stmt-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-silver-very-light);
+  color: var(--color-midnight);
+}
+
+.stmt-row.bold {
+  font-weight: var(--font-weight-bold);
+  border-top: 1px solid var(--color-midnight);
+  padding-top: var(--space-sm);
+}
+
+/* =============================================================================
+   MODULE PAGE SHARED
+   ============================================================================= */
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-base);
+}
+
+.report-card-link {
+  border: 1px solid var(--border-color-default);
+  padding: var(--space-base);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.report-card-link:hover {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan-very-light);
+}
+
+.report-card-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-midnight);
+  margin-bottom: 4px;
+}
+
+.report-card-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-silver-dark);
+}
+
+/* =============================================================================
+   RISK & EXPOSURE MODULE
+   ============================================================================= */
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.risk-table thead tr {
+  background: var(--color-silver-very-light);
+  border-bottom: 2px solid var(--color-midnight);
+}
+
+.risk-table th {
+  padding: var(--space-sm) var(--space-base);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-silver-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: left;
+}
+
+.risk-table th.num,
+.risk-table td.num {
+  text-align: right;
+}
+
+.risk-table td {
+  padding: var(--space-sm) var(--space-base);
+  border-bottom: 1px solid var(--color-silver-very-light);
+  color: var(--color-midnight);
+  vertical-align: middle;
+}
+
+.risk-table td.positive { color: var(--color-success); }
+.risk-table td.negative { color: var(--color-error); }
+.risk-table td.warn     { color: var(--color-warning); }
+
+.risk-total-row td {
+  border-top: 2px solid var(--color-midnight);
+  background: var(--color-silver-very-light);
+  padding-top: var(--space-sm);
+}
+
+.risk-disclaimer {
+  font-size: var(--font-size-xs);
+  color: var(--color-silver-dark);
+  margin-top: var(--space-base);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color-default);
+}
+
+.risk-dir-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.risk-dir-badge.long  { background: var(--color-success-light); color: var(--color-success); }
+.risk-dir-badge.short { background: var(--color-error-light);   color: var(--color-error); }
+.risk-dir-badge.flat  { background: var(--color-silver-very-light); color: var(--color-silver-dark); }
+
+.risk-tier-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+
+.risk-tier-badge.tier-a { background: var(--color-success-light); color: var(--color-success); }
+.risk-tier-badge.tier-b { background: var(--color-warning-light); color: var(--color-warning); }
+.risk-tier-badge.tier-c { background: var(--color-error-light);   color: var(--color-error); }
+
+.conc-bar-track {
+  height: 8px;
+  background: var(--color-silver-very-light);
+  width: 120px;
+}
+
+.conc-bar-fill {
+  height: 100%;
+}
+
+.conc-bar-fill.a { background: var(--color-success); }
+.conc-bar-fill.b { background: var(--color-warning); }
+.conc-bar-fill.c { background: var(--color-error); }
+
+/* =============================================================================
+   AUDIT TRAIL
+   ============================================================================= */
+.audit-filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+}
+
+.audit-table td {
+  vertical-align: top;
+}
+
+
+
+
+
+/* =============================================================================
+   RISK & EXPOSURE MODULE
+   ============================================================================= */
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.risk-table thead tr {
+  background: var(--color-midnight);
+}
+
+.risk-table th {
+  padding: var(--space-sm) var(--space-base);
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-silver);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.risk-table td {
+  padding: var(--space-sm) var(--space-base);
+  color: var(--color-midnight);
+  border-bottom: 1px solid var(--border-color-default);
+  font-variant-numeric: tabular-nums;
+}
+
+.risk-table tr:hover td { background: var(--color-silver-very-light); }
+
+.risk-table td.warn { background: #FFFBEB; }
+
+.risk-total-row td {
+  font-weight: var(--font-weight-bold);
+  background: var(--color-silver-very-light);
+  border-top: 2px solid var(--border-color-default);
+}
+
+.risk-dir-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.risk-dir-badge.long  { background: #D1FAE5; color: #065F46; }
+.risk-dir-badge.short { background: #FEE2E2; color: #991B1B; }
+.risk-dir-badge.flat  { background: var(--color-silver-very-light); color: var(--color-silver-dark); }
+
+.risk-tier-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.risk-tier-badge.tier-a { background: #D1FAE5; color: #065F46; }
+.risk-tier-badge.tier-b { background: #FEF3C7; color: #92400E; }
+.risk-tier-badge.tier-c { background: #FEE2E2; color: #991B1B; }
+
+.conc-bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--color-silver-very-light);
+  border: 1px solid var(--border-color-default);
+}
+
+.conc-bar-fill {
+  height: 100%;
+}
+
+.conc-bar-fill.a { background: var(--color-success); }
+.conc-bar-fill.b { background: var(--color-warning); }
+.conc-bar-fill.c { background: var(--color-error); }
+
+.risk-disclaimer {
+  font-size: var(--font-size-xs);
+  color: var(--color-silver-dark);
+  padding: var(--space-sm) 0;
+  font-style: italic;
+}
