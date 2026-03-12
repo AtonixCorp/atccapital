@@ -113,9 +113,9 @@
   --border-width-base: 1.5px;
   --border-width-thick: 2px;
   
-  --border-color-default: var(--color-silver-light);     /* #E5E7EB */
-  --border-color-active: var(--color-cyan-dark);           /* accessible cyan for borders */
-  --border-color-error: var(--color-error);               /* #EF4444 */
+  --border-color-default: #E5E7EB;                        /* card/table borders */
+  --border-color-active: var(--primary-600);              /* focus */
+  --border-color-error: var(--error-600);                 /* validation errors */
   
   /* === SHADOWS — Minimal institutional depth === */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -158,8 +158,8 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-regular);
-  line-height: 1.6;
-  color: var(--color-midnight);
+  line-height: 1.43;
+  color: #111827;
   background: var(--color-white);
 }
 
@@ -268,8 +268,8 @@ input[type="search"]:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--border-color-active);
-  box-shadow: 0 0 0 3px var(--color-cyan-light);
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px var(--primary-100);
 }
 
 textarea {
@@ -317,24 +317,34 @@ button, .btn {
 }
 
 .btn-secondary, .btn.btn-secondary {
-  background: transparent;
-  color: var(--color-cyan-text);
-  border: 1.5px solid var(--color-cyan);
+  background: var(--color-white);
+  color: var(--primary-600);
+  border: 1px solid var(--primary-600);
 }
 
 .btn-secondary:hover, .btn.btn-secondary:hover {
-  background: var(--color-cyan-light);
+  background: var(--primary-100);
 }
 
 .btn-outline, .btn.btn-outline {
   background: transparent;
-  color: var(--color-midnight);
-  border: 1px solid var(--border-color-default);
+  color: #374151;
+  border: 1px solid #D1D5DB;
 }
 
 .btn-outline:hover, .btn.btn-outline:hover {
-  background: var(--color-silver-white);
-  border-color: var(--color-midnight);
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+.btn-danger, .btn.btn-danger {
+  background: var(--error-600);
+  color: var(--color-white);
+  border: 1px solid transparent;
+}
+
+.btn-danger:hover, .btn.btn-danger:hover {
+  background: #B91C1C;
 }
 
 .btn-ghost, .btn.btn-ghost {
@@ -378,13 +388,13 @@ button:disabled, .btn:disabled {
    ============================================================================= */
 .card {
   background: var(--color-white);
-  border: 1px solid var(--border-color-default);
+  border: 1px solid #E5E7EB;
   border-radius: var(--radius-lg);
-  padding: var(--space-2xl);
+  padding: 24px;
 }
 
 .card:hover {
-  border-color: var(--color-silver-dark);
+  border-color: #D1D5DB;
 }
 
 .card-header {
@@ -419,7 +429,7 @@ button:disabled, .btn:disabled {
 .ui-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-sm);
+  font-size: 14px;
 }
 
 .ui-table thead {
@@ -589,20 +599,21 @@ input.error {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-2xl);
-  margin-bottom: var(--space-3xl);
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .page-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-midnight);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  color: #111827;
   margin: 0 0 var(--space-sm) 0;
 }
 
 .page-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--color-silver-dark);
+  font-size: 14px;
+  color: #6B7280;
   margin: 0;
 }
 
@@ -610,6 +621,15 @@ input.error {
   display: flex;
   gap: var(--space-base);
   align-items: center;
+}
+
+/* Section title — use on card/panel headings */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+  color: #111827;
+  margin: 0;
 }
 
 /* =============================================================================
