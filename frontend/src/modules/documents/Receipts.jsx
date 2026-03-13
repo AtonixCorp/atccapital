@@ -22,8 +22,22 @@ const columns = [
   )},
 ];
 
+const BLANK_RECEIPT = { merchant: '', date: '', amount: '', category: '', notes: '' };
+
 export default function Receipts() {
   const [showModal, setShowModal] = useState(false);
+  const [receiptList, setReceiptList] = useState(mockReceipts);
+  const [form, setForm] = useState(BLANK_RECEIPT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.merchant.trim()) return;
+    const id = `REC-${String(receiptList.length + 1).padStart(3, '0')}`;
+    const amtFmt = form.amount ? `$${parseFloat(form.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00';
+    setReceiptList(prev => [...prev, { id, merchant: form.merchant, date: form.date || '—', amount: amtFmt, category: form.category || '—', status: 'Pending', bill: '—' }]);
+    setForm(BLANK_RECEIPT);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -52,24 +66,24 @@ export default function Receipts() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockReceipts} />
+        <Table columns={columns} data={receiptList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Upload Receipt" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_RECEIPT); }} title="Upload Receipt" size="medium">
         <div className="form-grid">
-          <Input label="Merchant" required />
-          <Input label="Date" type="date" required />
-          <Input label="Amount" type="number" required />
-          <Input label="Category" placeholder="Technology, Travel, Meals..." />
-          <Input label="Notes" />
+          <Input label="Merchant" required value={form.merchant} onChange={set('merchant')} />
+          <Input label="Date" type="date" required value={form.date} onChange={set('date')} />
+          <Input label="Amount" type="number" required value={form.amount} onChange={set('amount')} />
+          <Input label="Category" placeholder="Technology, Travel, Meals..." value={form.category} onChange={set('category')} />
+          <Input label="Notes" value={form.notes} onChange={set('notes')} />
         </div>
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-midnight)', display: 'block', marginBottom: 6 }}>Receipt Image / PDF</label>
           <input type="file" accept="image/*,.pdf" style={{ fontSize: 13 }} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Upload Receipt</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_RECEIPT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.merchant.trim()}>Upload Receipt</Button>
         </div>
       </Modal>
     </div>

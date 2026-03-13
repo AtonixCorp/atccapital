@@ -8,7 +8,7 @@ const Table = ({ columns, data, onRowClick, actions }) => {
           <tr>
             {columns.map(col => (
               <th key={col.key} style={{ width: col.width }}>
-                {col.label}
+                {col.header || col.label}
               </th>
             ))}
             {actions && <th>Actions</th>}

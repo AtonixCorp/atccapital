@@ -20,8 +20,21 @@ const columns = [
   )},
 ];
 
+const BLANK_CLIENT = { name: '', industry: '', engagement: '', contactName: '', email: '', phone: '', address: '', taxId: '' };
+
 export default function ClientDirectory() {
   const [showModal, setShowModal] = useState(false);
+  const [clientList, setClientList] = useState(mockClients);
+  const [form, setForm] = useState(BLANK_CLIENT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim()) return;
+    const id = `CLI-${String(clientList.length + 1).padStart(3, '0')}`;
+    setClientList(prev => [...prev, { id, name: form.name, industry: form.industry || '—', entities: 0, engagement: form.engagement || '—', contact: form.contactName || '—', email: form.email || '—', status: 'Active' }]);
+    setForm(BLANK_CLIENT);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -50,23 +63,23 @@ export default function ClientDirectory() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockClients} />
+        <Table columns={columns} data={clientList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Client" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_CLIENT); }} title="Add Client" size="medium">
         <div className="form-grid">
-          <Input label="Client Name" required />
-          <Input label="Industry" />
-          <Input label="Engagement Type" placeholder="Full Service, Tax Only, Bookkeeping..." />
-          <Input label="Primary Contact Name" required />
-          <Input label="Primary Contact Email" type="email" required />
-          <Input label="Phone" type="tel" />
-          <Input label="Address" />
-          <Input label="Tax ID" />
+          <Input label="Client Name" required value={form.name} onChange={set('name')} />
+          <Input label="Industry" value={form.industry} onChange={set('industry')} />
+          <Input label="Engagement Type" placeholder="Full Service, Tax Only, Bookkeeping..." value={form.engagement} onChange={set('engagement')} />
+          <Input label="Primary Contact Name" required value={form.contactName} onChange={set('contactName')} />
+          <Input label="Primary Contact Email" type="email" required value={form.email} onChange={set('email')} />
+          <Input label="Phone" type="tel" value={form.phone} onChange={set('phone')} />
+          <Input label="Address" value={form.address} onChange={set('address')} />
+          <Input label="Tax ID" value={form.taxId} onChange={set('taxId')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Add Client</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_CLIENT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim()}>Add Client</Button>
         </div>
       </Modal>
     </div>

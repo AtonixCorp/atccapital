@@ -19,8 +19,21 @@ const columns = [
   )},
 ];
 
+const BLANK_VENDOR = { companyName: '', contactName: '', email: '', phone: '', category: '', taxId: '', paymentTerms: 'Net 30', bankInfo: '' };
+
 export default function Vendors() {
   const [showModal, setShowModal] = useState(false);
+  const [vendorList, setVendorList] = useState(mockVendors);
+  const [form, setForm] = useState(BLANK_VENDOR);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.companyName.trim()) return;
+    const id = `V-${String(vendorList.length + 1).padStart(3, '0')}`;
+    setVendorList(prev => [...prev, { id, name: form.companyName, email: form.email || '—', category: form.category || '—', balance: '$0.00', status: 'Active' }]);
+    setForm(BLANK_VENDOR);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -49,23 +62,23 @@ export default function Vendors() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockVendors} />
+        <Table columns={columns} data={vendorList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Vendor" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_VENDOR); }} title="Add Vendor" size="medium">
         <div className="form-grid">
-          <Input label="Company Name" required />
-          <Input label="Contact Name" />
-          <Input label="Email" type="email" />
-          <Input label="Phone" type="tel" />
-          <Input label="Category" placeholder="e.g. Technology, Supplies..." />
-          <Input label="Tax ID / W-9" />
-          <Input label="Payment Terms" placeholder="e.g. Net 30" />
-          <Input label="Bank / ACH Info" />
+          <Input label="Company Name" required value={form.companyName} onChange={set('companyName')} />
+          <Input label="Contact Name" value={form.contactName} onChange={set('contactName')} />
+          <Input label="Email" type="email" value={form.email} onChange={set('email')} />
+          <Input label="Phone" type="tel" value={form.phone} onChange={set('phone')} />
+          <Input label="Category" placeholder="e.g. Technology, Supplies..." value={form.category} onChange={set('category')} />
+          <Input label="Tax ID / W-9" value={form.taxId} onChange={set('taxId')} />
+          <Input label="Payment Terms" placeholder="e.g. Net 30" value={form.paymentTerms} onChange={set('paymentTerms')} />
+          <Input label="Bank / ACH Info" value={form.bankInfo} onChange={set('bankInfo')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Save Vendor</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_VENDOR); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.companyName.trim()}>Save Vendor</Button>
         </div>
       </Modal>
     </div>

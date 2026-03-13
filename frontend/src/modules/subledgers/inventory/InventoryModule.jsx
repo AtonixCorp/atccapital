@@ -22,8 +22,29 @@ const columns = [
   )},
 ];
 
+const BLANK_ITEM = { name: '', sku: '', category: '', unitCost: '', qty: '', reorderLevel: '', method: '', glAccount: '' };
+
 export default function InventoryModule() {
   const [showModal, setShowModal] = useState(false);
+  const [inventoryList, setInventoryList] = useState(mockInventory);
+  const [form, setForm] = useState(BLANK_ITEM);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim() || !form.sku.trim()) return;
+    const costNum = parseFloat(form.unitCost) || 0;
+    const qtyNum = parseInt(form.qty) || 0;
+    const costFmt = `$${costNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    const totalFmt = `$${(costNum * qtyNum).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    const status = qtyNum === 0 ? 'Out of Stock' : qtyNum <= (parseInt(form.reorderLevel) || 5) ? 'Low Stock' : 'In Stock';
+    setInventoryList(prev => [...prev, {
+      sku: form.sku, name: form.name, category: form.category || '—',
+      qty: qtyNum, unitCost: costFmt, totalValue: totalFmt,
+      reorderLevel: parseInt(form.reorderLevel) || 0, status,
+    }]);
+    setForm(BLANK_ITEM);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -55,23 +76,23 @@ export default function InventoryModule() {
       </div>
 
       <Card title="Inventory Register">
-        <Table columns={columns} data={mockInventory} />
+        <Table columns={columns} data={inventoryList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Inventory Item" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_ITEM); }} title="Add Inventory Item" size="medium">
         <div className="form-grid">
-          <Input label="Item Name" required />
-          <Input label="SKU / Code" required />
-          <Input label="Category" />
-          <Input label="Unit Cost" type="number" required />
-          <Input label="Opening Quantity" type="number" />
-          <Input label="Reorder Level" type="number" />
-          <Input label="Valuation Method" placeholder="FIFO / LIFO / Average Cost" />
-          <Input label="GL Account" />
+          <Input label="Item Name" required value={form.name} onChange={set('name')} />
+          <Input label="SKU / Code" required value={form.sku} onChange={set('sku')} />
+          <Input label="Category" value={form.category} onChange={set('category')} />
+          <Input label="Unit Cost" type="number" required value={form.unitCost} onChange={set('unitCost')} />
+          <Input label="Opening Quantity" type="number" value={form.qty} onChange={set('qty')} />
+          <Input label="Reorder Level" type="number" value={form.reorderLevel} onChange={set('reorderLevel')} />
+          <Input label="Valuation Method" placeholder="FIFO / LIFO / Average Cost" value={form.method} onChange={set('method')} />
+          <Input label="GL Account" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Add Item</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_ITEM); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim() || !form.sku.trim()}>Add Item</Button>
         </div>
       </Modal>
     </div>

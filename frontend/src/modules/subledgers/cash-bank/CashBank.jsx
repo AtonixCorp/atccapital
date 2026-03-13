@@ -21,8 +21,27 @@ const columns = [
   )},
 ];
 
+const BLANK_ACCOUNT = { accountName: '', bankName: '', accountNumber: '', accountType: '', currency: 'USD', glAccount: '' };
+
 export default function CashBank() {
   const [showModal, setShowModal] = useState(false);
+  const [accountList, setAccountList] = useState(mockAccounts);
+  const [form, setForm] = useState(BLANK_ACCOUNT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.accountName.trim() || !form.bankName.trim()) return;
+    setAccountList(prev => [...prev, {
+      account: `${form.accountName} - ${form.bankName} ${form.accountNumber}`,
+      type: form.accountType || 'Checking',
+      balance: '$0.00',
+      lastReconciled: '—',
+      transactions: 0,
+      status: 'Pending',
+    }]);
+    setForm(BLANK_ACCOUNT);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -54,21 +73,21 @@ export default function CashBank() {
       </div>
 
       <Card title="Bank Accounts">
-        <Table columns={columns} data={mockAccounts} />
+        <Table columns={columns} data={accountList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Bank Account" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_ACCOUNT); }} title="Add Bank Account" size="medium">
         <div className="form-grid">
-          <Input label="Account Name" required />
-          <Input label="Bank Name" required />
-          <Input label="Account Number (last 4)" required />
-          <Input label="Account Type" placeholder="Checking / Savings / Investment" />
-          <Input label="Currency" placeholder="USD" />
-          <Input label="GL Account Code" />
+          <Input label="Account Name" required value={form.accountName} onChange={set('accountName')} />
+          <Input label="Bank Name" required value={form.bankName} onChange={set('bankName')} />
+          <Input label="Account Number (last 4)" required value={form.accountNumber} onChange={set('accountNumber')} />
+          <Input label="Account Type" placeholder="Checking / Savings / Investment" value={form.accountType} onChange={set('accountType')} />
+          <Input label="Currency" placeholder="USD" value={form.currency} onChange={set('currency')} />
+          <Input label="GL Account Code" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Add Account</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_ACCOUNT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.accountName.trim() || !form.bankName.trim()}>Add Account</Button>
         </div>
       </Modal>
     </div>

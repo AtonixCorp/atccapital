@@ -24,8 +24,27 @@ const columns = [
   )},
 ];
 
+const BLANK_ASSET = { name: '', category: '', acquisitionDate: '', cost: '', method: '', usefulLife: '', salvageValue: '', glAccount: '' };
+
 export default function FixedAssets() {
   const [showModal, setShowModal] = useState(false);
+  const [assetList, setAssetList] = useState(mockAssets);
+  const [form, setForm] = useState(BLANK_ASSET);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim() || !form.cost.trim()) return;
+    const costFmt = `$${parseFloat(form.cost).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    const nextId = `FA-${String(assetList.length + 1).padStart(3, '0')}`;
+    setAssetList(prev => [...prev, {
+      id: nextId, name: form.name, category: form.category || '—',
+      cost: costFmt, accumulated: '$0.00', netBook: costFmt,
+      method: form.method || 'Straight-line', life: form.usefulLife ? `${form.usefulLife} yrs` : '—',
+      status: 'Active',
+    }]);
+    setForm(BLANK_ASSET);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -61,23 +80,23 @@ export default function FixedAssets() {
       </div>
 
       <Card title="Asset Register">
-        <Table columns={columns} data={mockAssets} />
+        <Table columns={columns} data={assetList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Fixed Asset" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_ASSET); }} title="Add Fixed Asset" size="medium">
         <div className="form-grid">
-          <Input label="Asset Name" required />
-          <Input label="Category" required />
-          <Input label="Acquisition Date" type="date" required />
-          <Input label="Cost" type="number" required />
-          <Input label="Depreciation Method" placeholder="Straight-line / Declining Balance" />
-          <Input label="Useful Life (years)" type="number" />
-          <Input label="Salvage Value" type="number" />
-          <Input label="GL Account" />
+          <Input label="Asset Name" required value={form.name} onChange={set('name')} />
+          <Input label="Category" required value={form.category} onChange={set('category')} />
+          <Input label="Acquisition Date" type="date" required value={form.acquisitionDate} onChange={set('acquisitionDate')} />
+          <Input label="Cost" type="number" required value={form.cost} onChange={set('cost')} />
+          <Input label="Depreciation Method" placeholder="Straight-line / Declining Balance" value={form.method} onChange={set('method')} />
+          <Input label="Useful Life (years)" type="number" value={form.usefulLife} onChange={set('usefulLife')} />
+          <Input label="Salvage Value" type="number" value={form.salvageValue} onChange={set('salvageValue')} />
+          <Input label="GL Account" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Add Asset</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_ASSET); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim() || !form.cost.trim()}>Add Asset</Button>
         </div>
       </Modal>
     </div>

@@ -21,8 +21,28 @@ const columns = [
   )},
 ];
 
+const BLANK_ENTRY = { name: '', type: '', frequency: '', startDate: '', amount: '', glAccount: '' };
+
 export default function RecurringEntries() {
   const [showModal, setShowModal] = useState(false);
+  const [recurringList, setRecurringList] = useState(mockRecurring);
+  const [form, setForm] = useState(BLANK_ENTRY);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim() || !form.frequency.trim()) return;
+    const amtNum = parseFloat(form.amount) || 0;
+    setRecurringList(prev => [...prev, {
+      name: form.name,
+      type: form.type || 'Journal Entry',
+      frequency: form.frequency,
+      nextRun: form.startDate || '—',
+      amount: amtNum ? `$${amtNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—',
+      status: 'Active',
+    }]);
+    setForm(BLANK_ENTRY);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -51,21 +71,21 @@ export default function RecurringEntries() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockRecurring} />
+        <Table columns={columns} data={recurringList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="New Recurring Entry" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_ENTRY); }} title="New Recurring Entry" size="medium">
         <div className="form-grid">
-          <Input label="Entry Name" required />
-          <Input label="Type" placeholder="Journal Entry, Bill, Expense..." />
-          <Input label="Frequency" placeholder="Daily / Weekly / Monthly / Annual" required />
-          <Input label="Start Date" type="date" required />
-          <Input label="Amount" type="number" required />
-          <Input label="GL Account" />
+          <Input label="Entry Name" required value={form.name} onChange={set('name')} />
+          <Input label="Type" placeholder="Journal Entry, Bill, Expense..." value={form.type} onChange={set('type')} />
+          <Input label="Frequency" placeholder="Daily / Weekly / Monthly / Annual" required value={form.frequency} onChange={set('frequency')} />
+          <Input label="Start Date" type="date" required value={form.startDate} onChange={set('startDate')} />
+          <Input label="Amount" type="number" required value={form.amount} onChange={set('amount')} />
+          <Input label="GL Account" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create Entry</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_ENTRY); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim() || !form.frequency.trim()}>Create Entry</Button>
         </div>
       </Modal>
     </div>

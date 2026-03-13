@@ -18,8 +18,22 @@ const columns = [
   )},
 ];
 
+const BLANK_KEY = { keyName: '', permissions: '', ipAllowlist: '', expiryDate: '' };
+
 export default function APIKeys() {
   const [showModal, setShowModal] = useState(false);
+  const [keyList, setKeyList] = useState(mockKeys);
+  const [form, setForm] = useState(BLANK_KEY);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.keyName.trim()) return;
+    const rand = Math.random().toString(36).slice(2, 6);
+    const today = new Date().toISOString().slice(0, 10);
+    setKeyList(prev => [...prev, { id: `key_live_***${rand}`, name: form.keyName, created: today, lastUsed: '—', permissions: form.permissions || 'Read Only', status: 'Active' }]);
+    setForm(BLANK_KEY);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -40,19 +54,19 @@ export default function APIKeys() {
       </Card>
 
       <Card>
-        <Table columns={columns} data={mockKeys} />
+        <Table columns={columns} data={keyList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Generate API Key" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_KEY); }} title="Generate API Key" size="medium">
         <div className="form-grid">
-          <Input label="Key Name / Label" required placeholder="e.g. Production Integration" />
-          <Input label="Permissions" placeholder="Read Only / Read + Write" />
-          <Input label="IP Allowlist (optional)" placeholder="Comma-separated IP addresses" />
-          <Input label="Expiry Date (optional)" type="date" />
+          <Input label="Key Name / Label" required placeholder="e.g. Production Integration" value={form.keyName} onChange={set('keyName')} />
+          <Input label="Permissions" placeholder="Read Only / Read + Write" value={form.permissions} onChange={set('permissions')} />
+          <Input label="IP Allowlist (optional)" placeholder="Comma-separated IP addresses" value={form.ipAllowlist} onChange={set('ipAllowlist')} />
+          <Input label="Expiry Date (optional)" type="date" value={form.expiryDate} onChange={set('expiryDate')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Generate Key</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_KEY); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.keyName.trim()}>Generate Key</Button>
         </div>
       </Modal>
     </div>

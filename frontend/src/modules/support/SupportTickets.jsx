@@ -127,6 +127,7 @@ export default function SupportTickets() {
       {/* Create Ticket Modal */}
       {showModal && (
         <Modal
+          isOpen={true}
           title="Submit New Support Ticket"
           onClose={() => { setShowModal(false); setForm(BLANK_FORM); }}
           footer={
@@ -172,6 +173,7 @@ export default function SupportTickets() {
       {/* View Ticket Detail */}
       {viewTicket && (
         <Modal
+          isOpen={true}
           title={viewTicket.id}
           onClose={() => setViewTicket(null)}
           footer={<Button variant="secondary" onClick={() => setViewTicket(null)}>Close</Button>}

@@ -22,8 +22,25 @@ const columns = [
   )},
 ];
 
+const BLANK_AR = { customer: '', invoice: '', invoiceDate: '', dueDate: '', amount: '', glAccount: '' };
+
 export default function AccountsReceivable() {
   const [showModal, setShowModal] = useState(false);
+  const [arList, setArList] = useState(mockAR);
+  const [form, setForm] = useState(BLANK_AR);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.customer.trim() || !form.invoice.trim()) return;
+    const amtFmt = form.amount ? `$${parseFloat(form.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00';
+    setArList(prev => [...prev, {
+      invoice: form.invoice, customer: form.customer,
+      invoiceDate: form.invoiceDate || '—', dueDate: form.dueDate || '—',
+      original: amtFmt, balance: amtFmt, aging: '0-30', status: 'Current',
+    }]);
+    setForm(BLANK_AR);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -59,21 +76,21 @@ export default function AccountsReceivable() {
       </div>
 
       <Card title="AR Ledger">
-        <Table columns={columns} data={mockAR} />
+        <Table columns={columns} data={arList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Record Receivable" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_AR); }} title="Record Receivable" size="medium">
         <div className="form-grid">
-          <Input label="Customer" required />
-          <Input label="Invoice Number" required />
-          <Input label="Invoice Date" type="date" required />
-          <Input label="Due Date" type="date" required />
-          <Input label="Amount" type="number" required />
-          <Input label="GL Account" />
+          <Input label="Customer" required value={form.customer} onChange={set('customer')} />
+          <Input label="Invoice Number" required value={form.invoice} onChange={set('invoice')} />
+          <Input label="Invoice Date" type="date" required value={form.invoiceDate} onChange={set('invoiceDate')} />
+          <Input label="Due Date" type="date" required value={form.dueDate} onChange={set('dueDate')} />
+          <Input label="Amount" type="number" required value={form.amount} onChange={set('amount')} />
+          <Input label="GL Account" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Save</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_AR); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.customer.trim() || !form.invoice.trim()}>Save</Button>
         </div>
       </Modal>
     </div>

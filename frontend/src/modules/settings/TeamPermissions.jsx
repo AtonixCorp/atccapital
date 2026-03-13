@@ -23,8 +23,21 @@ const columns = [
   )},
 ];
 
+const BLANK_TEAM = { name: '', email: '', role: 'Editor', entities: '' };
+
 export default function TeamPermissions() {
   const [showModal, setShowModal] = useState(false);
+  const [teamList, setTeamList] = useState(mockTeam);
+  const [form, setForm] = useState(BLANK_TEAM);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim() || !form.email.trim()) return;
+    const id = `USR-${String(teamList.length + 1).padStart(3, '0')}`;
+    setTeamList(prev => [...prev, { id, name: form.name, email: form.email, role: form.role, entities: form.entities || 'All', lastLogin: '—', status: 'Active' }]);
+    setForm(BLANK_TEAM);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -53,27 +66,27 @@ export default function TeamPermissions() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockTeam} />
+        <Table columns={columns} data={teamList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Invite Team Member" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_TEAM); }} title="Invite Team Member" size="medium">
         <div className="form-grid">
-          <Input label="Full Name" required />
-          <Input label="Email Address" type="email" required />
+          <Input label="Full Name" required value={form.name} onChange={set('name')} />
+          <Input label="Email Address" type="email" required value={form.email} onChange={set('email')} />
           <div>
             <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-midnight)', display: 'block', marginBottom: 6 }}>Role</label>
-            <select style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            <select value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
               <option>Admin</option>
               <option>Manager</option>
               <option>Editor</option>
               <option>Viewer</option>
             </select>
           </div>
-          <Input label="Entity Access" placeholder="Entity names or 'All'" />
+          <Input label="Entity Access" placeholder="Entity names or 'All'" value={form.entities} onChange={set('entities')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Send Invitation</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_TEAM); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim() || !form.email.trim()}>Send Invitation</Button>
         </div>
       </Modal>
     </div>

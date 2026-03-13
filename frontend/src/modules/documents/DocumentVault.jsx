@@ -17,11 +17,25 @@ const columns = [
   { key: 'tags', header: 'Tags' },
 ];
 
+const BLANK_DOC = { name: '', type: '', tags: '', notes: '' };
+
 export default function DocumentVault() {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState('');
+  const [docList, setDocList] = useState(mockDocs);
+  const [form, setForm] = useState(BLANK_DOC);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
 
-  const filtered = mockDocs.filter((d) =>
+  const handleCreate = () => {
+    if (!form.name.trim()) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const id = `DOC-${String(docList.length + 1).padStart(3, '0')}`;
+    setDocList(prev => [...prev, { id, name: form.name, type: form.type || '—', size: '—', uploaded: today, uploader: 'You', tags: form.tags || '' }]);
+    setForm(BLANK_DOC);
+    setShowModal(false);
+  };
+
+  const filtered = docList.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase()) ||
     d.type.toLowerCase().includes(search.toLowerCase()) ||
     d.tags.toLowerCase().includes(search.toLowerCase())
@@ -73,12 +87,12 @@ export default function DocumentVault() {
         <Table columns={columns} data={filtered} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Upload Document" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_DOC); }} title="Upload Document" size="medium">
         <div className="form-grid">
-          <Input label="Document Name" required />
-          <Input label="Document Type" placeholder="Audit, Contract, Tax, Legal..." />
-          <Input label="Tags" placeholder="Comma-separated tags" />
-          <Input label="Notes" />
+          <Input label="Document Name" required value={form.name} onChange={set('name')} />
+          <Input label="Document Type" placeholder="Audit, Contract, Tax, Legal..." value={form.type} onChange={set('type')} />
+          <Input label="Tags" placeholder="Comma-separated tags" value={form.tags} onChange={set('tags')} />
+          <Input label="Notes" value={form.notes} onChange={set('notes')} />
         </div>
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-midnight)', display: 'block', marginBottom: 6 }}>File
@@ -86,8 +100,8 @@ export default function DocumentVault() {
           <input type="file" style={{ fontSize: 13 }} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Upload</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_DOC); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim()}>Upload</Button>
         </div>
       </Modal>
     </div>

@@ -1,8 +1,20 @@
 import React from 'react';
 import { Button, Card, PageHeader, Input, Modal, Table } from '../../../components/ui';
 
+const BLANK_ACCOUNT = { code: '', name: '', type: '' };
+
 const ChartOfAccounts = () => {
   const [showModal, setShowModal] = React.useState(false);
+  const [data, setData] = React.useState([]);
+  const [form, setForm] = React.useState(BLANK_ACCOUNT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.code.trim() || !form.name.trim()) return;
+    setData(prev => [...prev, { ...form, balance: '$0.00', status: 'Active' }]);
+    setForm(BLANK_ACCOUNT);
+    setShowModal(false);
+  };
 
   const columns = [
     { key: 'code', label: 'Account Code', width: '20%' },
@@ -11,8 +23,6 @@ const ChartOfAccounts = () => {
     { key: 'balance', label: 'Balance', width: '15%' },
     { key: 'status', label: 'Status', width: '15%' },
   ];
-
-  const data = [];
 
   return (
     <div className="coa-page">
@@ -39,17 +49,17 @@ const ChartOfAccounts = () => {
 
       <Modal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={() => { setShowModal(false); setForm(BLANK_ACCOUNT); }}
         title="Create Account"
         size="large"
       >
-        <Input label="Account Code" required />
-        <Input label="Account Name" required />
-        <Input label="Account Type" required />
+        <Input label="Account Code" required value={form.code} onChange={set('code')} />
+        <Input label="Account Name" required value={form.name} onChange={set('name')} />
+        <Input label="Account Type" required value={form.type} onChange={set('type')} />
 
         <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create Account</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_ACCOUNT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.code.trim() || !form.name.trim()}>Create Account</Button>
         </div>
       </Modal>
     </div>

@@ -15,7 +15,7 @@
 
 /* Professional Enterprise Sidebar */
 .sidebar {
-  width: 280px;
+  width: 260px;
   background: var(--color-white);
   color: var(--color-midnight);
   position: fixed;
@@ -132,12 +132,13 @@
 .nav-link {
   display: flex;
   align-items: center;
-  padding: var(--space-base) var(--space-lg);
-  margin: 1px var(--space-sm);
+  padding: 0 16px;
+  min-height: 44px;
+  margin: 1px 8px;
   color: #374151;
   text-decoration: none;
   transition: background var(--transition-fast), color var(--transition-fast);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-md);
   position: relative;
@@ -145,8 +146,9 @@
 
 .sidebar.minimized .nav-link {
   justify-content: center;
-  padding: var(--space-base) var(--space-sm);
-  margin: 2px 4px;
+  padding: 0 8px;
+  min-height: 44px;
+  margin: 1px 4px;
 }
 
 .nav-link:hover {
@@ -212,7 +214,7 @@
 }
 
 .nav-section-label {
-  padding: var(--space-sm) var(--space-xl) var(--space-xs);
+  padding: 8px 16px 4px;
   font-size: 11px;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.08em;
@@ -221,15 +223,45 @@
   list-style: none;
 }
 
+.nav-section-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  transition: color 0.15s;
+}
+
+.nav-section-toggle:hover {
+  color: #374151;
+}
+
+.section-chevron {
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  transform: rotate(0deg);
+}
+
+.section-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
 .nav-icon {
-  margin-right: var(--space-base);
-  font-size: 16px;
-  min-width: 16px;
+  margin-right: 12px;
+  font-size: 20px;
+  width: 20px;
+  min-width: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #6B7280;
   transition: color var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .nav-link:hover .nav-icon,
@@ -239,7 +271,7 @@
 
 /* ── MAIN WRAPPER — right-side app shell ── */
 .main-wrapper {
-  margin-left: 280px;
+  margin-left: 260px;
   flex: 1;
   min-height: 100vh;
   display: flex;
@@ -264,7 +296,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-2xl);
+  padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 40;
@@ -495,8 +527,9 @@
   min-width: 0;
   background: var(--color-white);
   color: var(--color-midnight);
-  padding: 32px 40px;
+  padding: 32px;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Layout-scoped enterprise primitives */
@@ -519,7 +552,7 @@
   border: 1px solid #E5E7EB;
   border-radius: var(--radius-lg);
   padding: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .layout .card:hover {

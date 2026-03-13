@@ -23,8 +23,37 @@ const columns = [
   )},
 ];
 
+const BLANK_FORM = { name: '', employeeId: '', role: '', department: '', salary: '', frequency: 'Monthly', taxPct: '', startDate: '' };
+
 export default function Payroll() {
   const [showModal, setShowModal] = useState(false);
+  const [employees, setEmployees] = useState(mockPayroll);
+  const [form, setForm] = useState(BLANK_FORM);
+
+  const handleAdd = () => {
+    if (!form.name.trim() || !form.employeeId.trim()) return;
+    const annualSalary = parseFloat(form.salary) || 0;
+    const gross = `$${(annualSalary / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const deductAmt = annualSalary / 12 * (parseFloat(form.taxPct) || 0) / 100;
+    const netAmt = annualSalary / 12 - deductAmt;
+    const today = new Date();
+    const period = today.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    setEmployees(prev => [...prev, {
+      id: form.employeeId,
+      name: form.name,
+      role: form.role,
+      department: form.department,
+      gross,
+      deductions: `$${deductAmt.toFixed(2)}`,
+      net: `$${netAmt.toFixed(2)}`,
+      period,
+      status: 'Pending',
+    }]);
+    setForm(BLANK_FORM);
+    setShowModal(false);
+  };
+
+  const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
 
   return (
     <div className="module-page">
@@ -59,24 +88,24 @@ export default function Payroll() {
         </Card>
       </div>
 
-      <Card title="Payroll Records — January 2025">
-        <Table columns={columns} data={mockPayroll} />
+      <Card title="Payroll Records">
+        <Table columns={columns} data={employees} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Employee" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_FORM); }} title="Add Employee" size="medium">
         <div className="form-grid">
-          <Input label="Full Name" required />
-          <Input label="Employee ID" required />
-          <Input label="Role / Title" required />
-          <Input label="Department" />
-          <Input label="Annual Salary" type="number" required />
-          <Input label="Pay Frequency" placeholder="Monthly / Bi-weekly / Weekly" />
-          <Input label="Tax Withholding %" type="number" />
-          <Input label="Start Date" type="date" />
+          <Input label="Full Name" required value={form.name} onChange={set('name')} />
+          <Input label="Employee ID" required value={form.employeeId} onChange={set('employeeId')} />
+          <Input label="Role / Title" required value={form.role} onChange={set('role')} />
+          <Input label="Department" value={form.department} onChange={set('department')} />
+          <Input label="Annual Salary" type="number" required value={form.salary} onChange={set('salary')} />
+          <Input label="Pay Frequency" placeholder="Monthly / Bi-weekly / Weekly" value={form.frequency} onChange={set('frequency')} />
+          <Input label="Tax Withholding %" type="number" value={form.taxPct} onChange={set('taxPct')} />
+          <Input label="Start Date" type="date" value={form.startDate} onChange={set('startDate')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Add Employee</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_FORM); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleAdd} disabled={!form.name.trim() || !form.employeeId.trim()}>Add Employee</Button>
         </div>
       </Modal>
     </div>

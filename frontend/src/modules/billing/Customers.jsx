@@ -25,8 +25,21 @@ const columns = [
   )},
 ];
 
+const BLANK_CUSTOMER = { companyName: '', contactName: '', email: '', phone: '', address: '', taxId: '', paymentTerms: 'Net 30', currency: 'USD' };
+
 export default function Customers() {
   const [showModal, setShowModal] = useState(false);
+  const [customerList, setCustomerList] = useState(mockCustomers);
+  const [form, setForm] = useState(BLANK_CUSTOMER);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.companyName.trim()) return;
+    const id = `C-${String(customerList.length + 1).padStart(3, '0')}`;
+    setCustomerList(prev => [...prev, { id, name: form.companyName, email: form.email || '—', phone: form.phone || '—', balance: '$0.00', status: 'Active' }]);
+    setForm(BLANK_CUSTOMER);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -55,23 +68,23 @@ export default function Customers() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockCustomers} />
+        <Table columns={columns} data={customerList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Customer" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_CUSTOMER); }} title="Add Customer" size="medium">
         <div className="form-grid">
-          <Input label="Company Name" required />
-          <Input label="Contact Name" />
-          <Input label="Email" type="email" required />
-          <Input label="Phone" type="tel" />
-          <Input label="Address" />
-          <Input label="Tax ID / VAT Number" />
-          <Input label="Payment Terms" placeholder="e.g. Net 30" />
-          <Input label="Currency" placeholder="USD" />
+          <Input label="Company Name" required value={form.companyName} onChange={set('companyName')} />
+          <Input label="Contact Name" value={form.contactName} onChange={set('contactName')} />
+          <Input label="Email" type="email" required value={form.email} onChange={set('email')} />
+          <Input label="Phone" type="tel" value={form.phone} onChange={set('phone')} />
+          <Input label="Address" value={form.address} onChange={set('address')} />
+          <Input label="Tax ID / VAT Number" value={form.taxId} onChange={set('taxId')} />
+          <Input label="Payment Terms" placeholder="e.g. Net 30" value={form.paymentTerms} onChange={set('paymentTerms')} />
+          <Input label="Currency" placeholder="USD" value={form.currency} onChange={set('currency')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Save Customer</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_CUSTOMER); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.companyName.trim()}>Save Customer</Button>
         </div>
       </Modal>
     </div>

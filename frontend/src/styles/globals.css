@@ -722,6 +722,10 @@ input.error {
     width: 95%;
   }
 
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
   button, .btn {
     padding: var(--space-sm) var(--space-lg);
   }
@@ -777,7 +781,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .stats-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-base);
+  gap: 24px;
 }
 
 .stat-card {

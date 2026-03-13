@@ -71,6 +71,7 @@ const Tasks = () => {
 
       {showModal && (
         <Modal
+          isOpen={true}
           title="Create New Task"
           onClose={() => { setShowModal(false); setForm({ title: '', priority: 'Medium', due_date: '' }); }}
           footer={<>

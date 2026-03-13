@@ -24,8 +24,23 @@ const columns = [
   )},
 ];
 
+const BLANK_BUDGET = { name: '', fiscalYear: '', startDate: '', endDate: '', amount: '', department: '' };
+
 export default function Budgets() {
   const [showModal, setShowModal] = useState(false);
+  const [budgetList, setBudgetList] = useState(mockBudgets);
+  const [form, setForm] = useState(BLANK_BUDGET);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim()) return;
+    const amtNum = parseFloat(form.amount) || 0;
+    const total = amtNum ? `$${amtNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00';
+    const period = form.startDate && form.endDate ? `${form.startDate} to ${form.endDate}` : form.fiscalYear || '—';
+    setBudgetList(prev => [...prev, { name: form.name, period, total, spent: '$0.00', remaining: total, pct: 0, status: 'Active' }]);
+    setForm(BLANK_BUDGET);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -61,21 +76,21 @@ export default function Budgets() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockBudgets} />
+        <Table columns={columns} data={budgetList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Budget" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_BUDGET); }} title="Create Budget" size="medium">
         <div className="form-grid">
-          <Input label="Budget Name" required />
-          <Input label="Fiscal Year" required placeholder="2025" />
-          <Input label="Start Date" type="date" required />
-          <Input label="End Date" type="date" required />
-          <Input label="Total Amount" type="number" required />
-          <Input label="Department / Entity" />
+          <Input label="Budget Name" required value={form.name} onChange={set('name')} />
+          <Input label="Fiscal Year" required placeholder="2025" value={form.fiscalYear} onChange={set('fiscalYear')} />
+          <Input label="Start Date" type="date" required value={form.startDate} onChange={set('startDate')} />
+          <Input label="End Date" type="date" required value={form.endDate} onChange={set('endDate')} />
+          <Input label="Total Amount" type="number" required value={form.amount} onChange={set('amount')} />
+          <Input label="Department / Entity" value={form.department} onChange={set('department')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create Budget</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_BUDGET); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim()}>Create Budget</Button>
         </div>
       </Modal>
     </div>

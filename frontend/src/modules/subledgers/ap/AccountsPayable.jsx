@@ -22,8 +22,25 @@ const columns = [
   )},
 ];
 
+const BLANK_AP = { vendor: '', bill: '', billDate: '', dueDate: '', amount: '', glAccount: '' };
+
 export default function AccountsPayable() {
   const [showModal, setShowModal] = useState(false);
+  const [apList, setApList] = useState(mockAP);
+  const [form, setForm] = useState(BLANK_AP);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.vendor.trim() || !form.bill.trim()) return;
+    const amtFmt = form.amount ? `$${parseFloat(form.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00';
+    setApList(prev => [...prev, {
+      bill: form.bill, vendor: form.vendor,
+      billDate: form.billDate || '—', dueDate: form.dueDate || '—',
+      original: amtFmt, balance: amtFmt, aging: '0-30', status: 'Pending',
+    }]);
+    setForm(BLANK_AP);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -59,21 +76,21 @@ export default function AccountsPayable() {
       </div>
 
       <Card title="AP Ledger">
-        <Table columns={columns} data={mockAP} />
+        <Table columns={columns} data={apList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Record Bill" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_AP); }} title="Record Bill" size="medium">
         <div className="form-grid">
-          <Input label="Vendor" required />
-          <Input label="Bill Number" required />
-          <Input label="Bill Date" type="date" required />
-          <Input label="Due Date" type="date" required />
-          <Input label="Amount" type="number" required />
-          <Input label="GL Account" />
+          <Input label="Vendor" required value={form.vendor} onChange={set('vendor')} />
+          <Input label="Bill Number" required value={form.bill} onChange={set('bill')} />
+          <Input label="Bill Date" type="date" required value={form.billDate} onChange={set('billDate')} />
+          <Input label="Due Date" type="date" required value={form.dueDate} onChange={set('dueDate')} />
+          <Input label="Amount" type="number" required value={form.amount} onChange={set('amount')} />
+          <Input label="GL Account" value={form.glAccount} onChange={set('glAccount')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Save</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_AP); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.vendor.trim() || !form.bill.trim()}>Save</Button>
         </div>
       </Modal>
     </div>

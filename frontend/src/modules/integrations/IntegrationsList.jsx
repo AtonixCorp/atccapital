@@ -23,8 +23,21 @@ const columns = [
   )},
 ];
 
+const BLANK_INT = { name: '', type: '', apiKey: '', apiSecret: '', webhookUrl: '' };
+
 export default function IntegrationsList() {
   const [showModal, setShowModal] = useState(false);
+  const [intList, setIntList] = useState(integrations);
+  const [form, setForm] = useState(BLANK_INT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim()) return;
+    const id = `INT-${String(intList.length + 1).padStart(3, '0')}`;
+    setIntList(prev => [...prev, { id, name: form.name, type: form.type || '—', method: 'API Key', lastSync: '—', status: 'Connected' }]);
+    setForm(BLANK_INT);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -53,20 +66,20 @@ export default function IntegrationsList() {
       </div>
 
       <Card>
-        <Table columns={columns} data={integrations} />
+        <Table columns={columns} data={intList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Integration" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_INT); }} title="Add Integration" size="medium">
         <div className="form-grid">
-          <Input label="Integration Name" required placeholder="e.g. Chase Bank" />
-          <Input label="Integration Type" placeholder="Banking, Payroll, CRM, Payment..." />
-          <Input label="API Key / Client ID" />
-          <Input label="API Secret / Client Secret" type="password" />
-          <Input label="Webhook URL (if applicable)" />
+          <Input label="Integration Name" required placeholder="e.g. Chase Bank" value={form.name} onChange={set('name')} />
+          <Input label="Integration Type" placeholder="Banking, Payroll, CRM, Payment..." value={form.type} onChange={set('type')} />
+          <Input label="API Key / Client ID" value={form.apiKey} onChange={set('apiKey')} />
+          <Input label="API Secret / Client Secret" type="password" value={form.apiSecret} onChange={set('apiSecret')} />
+          <Input label="Webhook URL (if applicable)" value={form.webhookUrl} onChange={set('webhookUrl')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Connect</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_INT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim()}>Connect</Button>
         </div>
       </Modal>
     </div>

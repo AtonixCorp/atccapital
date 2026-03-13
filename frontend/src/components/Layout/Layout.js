@@ -25,6 +25,7 @@ const Layout = ({ children }) => {
 
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
   const [expandedMenus, setExpandedMenus] = React.useState({});
+  const [collapsedSections, setCollapsedSections] = React.useState({});
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
 
@@ -44,6 +45,10 @@ const Layout = ({ children }) => {
   };
 
   const toggleSidebar = () => setSidebarMinimized(!sidebarMinimized);
+
+  const toggleSection = (label) => {
+    setCollapsedSections(prev => ({ ...prev, [label]: !prev[label] }));
+  };
 
   const userInitial = (user?.name || user?.email || 'U').charAt(0).toUpperCase();
 
@@ -203,6 +208,21 @@ const Layout = ({ children }) => {
       );
     });
 
+  const renderSection = (label, navItems) => {
+    const isCollapsed = collapsedSections[label] === true;
+    return (
+      <React.Fragment key={label}>
+        {!sidebarMinimized && (
+          <li className="nav-section-label nav-section-toggle" onClick={() => toggleSection(label)}>
+            <span>{label}</span>
+            <span className={`section-chevron${isCollapsed ? ' collapsed' : ''}`}>▾</span>
+          </li>
+        )}
+        {!isCollapsed && renderNavGroup(navItems)}
+      </React.Fragment>
+    );
+  };
+
   return (
     <div className="layout">
       {/*  SIDEBAR  */}
@@ -218,63 +238,40 @@ const Layout = ({ children }) => {
 
         {/* Navigation */}
         <ul className="nav-menu" role="list">
-          {/* Overview */}
-          {!sidebarMinimized && <li className="nav-section-label">Overview</li>}
-          {renderNavGroup(overviewNav)}
+          {renderSection('Overview', overviewNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Accounting Core */}
-          {!sidebarMinimized && <li className="nav-section-label">Accounting</li>}
-          {renderNavGroup(accountingNav)}
+          {renderSection('Accounting', accountingNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Billing & Payments */}
-          {!sidebarMinimized && <li className="nav-section-label">Billing & Payments</li>}
-          {renderNavGroup(billingNav)}
+          {renderSection('Billing & Payments', billingNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Financial Reporting */}
-          {!sidebarMinimized && <li className="nav-section-label">Financial Reporting</li>}
-          {renderNavGroup(reportingNav)}
+          {renderSection('Financial Reporting', reportingNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Budgeting & Forecasting */}
-          {!sidebarMinimized && <li className="nav-section-label">Budgeting & Forecasting</li>}
-          {renderNavGroup(budgetingNav)}
+          {renderSection('Budgeting & Forecasting', budgetingNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Tax & Compliance */}
-          {!sidebarMinimized && <li className="nav-section-label">Tax & Compliance</li>}
-          {renderNavGroup(complianceNav)}
+          {renderSection('Tax & Compliance', complianceNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Document Management */}
-          {!sidebarMinimized && <li className="nav-section-label">Document Management</li>}
-          {renderNavGroup(documentsNav)}
+          {renderSection('Document Management', documentsNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Client Management */}
-          {!sidebarMinimized && <li className="nav-section-label">Client Management</li>}
-          {renderNavGroup(clientsNav)}
+          {renderSection('Client Management', clientsNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Automation */}
-          {!sidebarMinimized && <li className="nav-section-label">Automation</li>}
-          {renderNavGroup(automationNav)}
+          {renderSection('Automation', automationNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Integrations */}
-          {!sidebarMinimized && <li className="nav-section-label">Integrations</li>}
-          {renderNavGroup(integrationsNav)}
+          {renderSection('Integrations', integrationsNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Settings */}
-          {!sidebarMinimized && <li className="nav-section-label">Settings</li>}
-          {renderNavGroup(settingsNav)}
+          {renderSection('Settings', settingsNav)}
           <li className="nav-divider" role="separator" />
 
-          {/* Support */}
-          {renderNavGroup(supportNav)}
+          {renderSection('Support', supportNav)}
         </ul>
 
         {/* Sidebar toggle button at the bottom */}
@@ -290,7 +287,6 @@ const Layout = ({ children }) => {
         {/* Top Bar */}
         <header className="topbar">
           <div className="topbar-left">
-            <button className="topbar-toggle" onClick={toggleSidebar} aria-label="Toggle sidebar">☰</button>
             <h2 className="topbar-title">ATC Capital</h2>
             {currentOrganization && (
               <span className="topbar-org-context">{currentOrganization.name}</span>

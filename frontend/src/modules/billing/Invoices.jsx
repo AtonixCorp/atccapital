@@ -32,11 +32,24 @@ const columns = [
   },
 ];
 
+const BLANK_INVOICE = { customer: '', invoiceDate: '', dueDate: '', reference: '' };
+
 export default function Invoices() {
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [invoiceList, setInvoiceList] = useState(mockInvoices);
+  const [form, setForm] = useState(BLANK_INVOICE);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
 
-  const filtered = filter === 'all' ? mockInvoices : mockInvoices.filter((i) => i.status === filter);
+  const handleCreate = () => {
+    if (!form.customer.trim()) return;
+    const id = `INV-${String(invoiceList.length + 1).padStart(4, '0')}`;
+    setInvoiceList(prev => [...prev, { id, customer: form.customer, issued: form.invoiceDate || '—', due: form.dueDate || '—', amount: '$0.00', status: 'draft' }]);
+    setForm(BLANK_INVOICE);
+    setShowModal(false);
+  };
+
+  const filtered = filter === 'all' ? invoiceList : invoiceList.filter((i) => i.status === filter);
   const totalOutstanding = '$16,700.00';
   const totalOverdue = '$4,200.00';
   const totalDraft = '$8,750.00';
@@ -86,16 +99,16 @@ export default function Invoices() {
         <Table columns={columns} data={filtered} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Invoice" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_INVOICE); }} title="Create Invoice" size="medium">
         <div className="form-grid">
-          <Input label="Customer" required placeholder="Select customer..." />
-          <Input label="Invoice Date" type="date" required />
-          <Input label="Due Date" type="date" required />
-          <Input label="Reference" placeholder="PO number or reference..." />
+          <Input label="Customer" required placeholder="Select customer..." value={form.customer} onChange={set('customer')} />
+          <Input label="Invoice Date" type="date" required value={form.invoiceDate} onChange={set('invoiceDate')} />
+          <Input label="Due Date" type="date" required value={form.dueDate} onChange={set('dueDate')} />
+          <Input label="Reference" placeholder="PO number or reference..." value={form.reference} onChange={set('reference')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create Invoice</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_INVOICE); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.customer.trim()}>Create Invoice</Button>
         </div>
       </Modal>
     </div>

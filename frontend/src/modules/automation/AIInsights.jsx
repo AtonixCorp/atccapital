@@ -48,7 +48,9 @@ export default function AIInsights() {
                 width: 44, height: 44, borderRadius: '50%', background: `${ins.color}20`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
-                <ins.icon style={{ color: ins.color, fontSize: 20 }} />
+                <span style={{ color: ins.color, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>
+                  {ins.type === 'anomaly' ? '⚠' : ins.type === 'forecast' ? '◈' : '✦'}
+                </span>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-midnight)', marginBottom: 6 }}>{ins.title}</div>

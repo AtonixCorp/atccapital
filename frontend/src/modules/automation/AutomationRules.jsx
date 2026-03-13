@@ -21,8 +21,21 @@ const columns = [
   )},
 ];
 
+const BLANK_RULE = { name: '', trigger: '', action: '', schedule: '' };
+
 export default function AutomationRules() {
   const [showModal, setShowModal] = useState(false);
+  const [rules, setRules] = useState(mockRules);
+  const [form, setForm] = useState(BLANK_RULE);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.name.trim() || !form.trigger.trim()) return;
+    const id = `AUTO-${String(rules.length + 1).padStart(3, '0')}`;
+    setRules(prev => [...prev, { ...form, id, runs: 0, lastRun: '—', status: 'Active' }]);
+    setForm(BLANK_RULE);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -51,19 +64,19 @@ export default function AutomationRules() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockRules} />
+        <Table columns={columns} data={rules} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Automation Rule" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_RULE); }} title="Create Automation Rule" size="medium">
         <div className="form-grid">
-          <Input label="Rule Name" required />
-          <Input label="Trigger Event" required placeholder="e.g. Invoice overdue by 7 days..." />
-          <Input label="Action" required placeholder="e.g. Send email, Create journal entry..." />
-          <Input label="Schedule" placeholder="e.g. Daily, Weekly, On trigger..." />
+          <Input label="Rule Name" required value={form.name} onChange={set('name')} />
+          <Input label="Trigger Event" required placeholder="e.g. Invoice overdue by 7 days..." value={form.trigger} onChange={set('trigger')} />
+          <Input label="Action" required placeholder="e.g. Send email, Create journal entry..." value={form.action} onChange={set('action')} />
+          <Input label="Schedule" placeholder="e.g. Daily, Weekly, On trigger..." value={form.schedule} onChange={set('schedule')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create & Activate</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_RULE); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.name.trim() || !form.trigger.trim()}>Create & Activate</Button>
         </div>
       </Modal>
     </div>

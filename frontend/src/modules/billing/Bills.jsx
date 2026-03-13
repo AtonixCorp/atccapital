@@ -23,8 +23,22 @@ const columns = [
   )},
 ];
 
+const BLANK_BILL = { vendor: '', billDate: '', dueDate: '', amount: '', category: '', reference: '' };
+
 export default function Bills() {
   const [showModal, setShowModal] = useState(false);
+  const [billList, setBillList] = useState(mockBills);
+  const [form, setForm] = useState(BLANK_BILL);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleCreate = () => {
+    if (!form.vendor.trim()) return;
+    const id = `BILL-${String(billList.length + 1).padStart(4, '0')}`;
+    const amtFmt = form.amount ? `$${parseFloat(form.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00';
+    setBillList(prev => [...prev, { id, vendor: form.vendor, category: form.category || '—', due: form.dueDate || '—', amount: amtFmt, status: 'pending' }]);
+    setForm(BLANK_BILL);
+    setShowModal(false);
+  };
 
   return (
     <div className="module-page">
@@ -56,21 +70,21 @@ export default function Bills() {
       </div>
 
       <Card>
-        <Table columns={columns} data={mockBills} />
+        <Table columns={columns} data={billList} />
       </Card>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Bill" size="medium">
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_BILL); }} title="Create Bill" size="medium">
         <div className="form-grid">
-          <Input label="Vendor" required placeholder="Select vendor..." />
-          <Input label="Bill Date" type="date" required />
-          <Input label="Due Date" type="date" required />
-          <Input label="Amount" type="number" required placeholder="0.00" />
-          <Input label="Category" placeholder="Expense category..." />
-          <Input label="Reference" placeholder="Vendor invoice number..." />
+          <Input label="Vendor" required placeholder="Select vendor..." value={form.vendor} onChange={set('vendor')} />
+          <Input label="Bill Date" type="date" required value={form.billDate} onChange={set('billDate')} />
+          <Input label="Due Date" type="date" required value={form.dueDate} onChange={set('dueDate')} />
+          <Input label="Amount" type="number" required placeholder="0.00" value={form.amount} onChange={set('amount')} />
+          <Input label="Category" placeholder="Expense category..." value={form.category} onChange={set('category')} />
+          <Input label="Reference" placeholder="Vendor invoice number..." value={form.reference} onChange={set('reference')} />
         </div>
         <div className="modal-footer">
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary">Create Bill</Button>
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_BILL); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!form.vendor.trim()}>Create Bill</Button>
         </div>
       </Modal>
     </div>
