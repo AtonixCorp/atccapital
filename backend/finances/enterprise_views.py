@@ -2295,8 +2295,11 @@ class ChartOfAccountsViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Return COA for user's entities"""
-        entity_id = self.request.query_params.get('entity_id')
         qs = ChartOfAccounts.objects.filter(entity__organization__owner=self.request.user)
+        entity_id = (
+            self.request.query_params.get('entity')
+            or self.request.query_params.get('entity_id')
+        )
         if entity_id:
             qs = qs.filter(entity_id=entity_id)
         return qs

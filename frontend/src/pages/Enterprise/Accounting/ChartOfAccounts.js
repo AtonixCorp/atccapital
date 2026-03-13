@@ -75,6 +75,8 @@ const ChartOfAccounts = () => {
   const handleNew = () => { setEditingAccount(null); setForm(defaultForm); setShowForm(true); };
 
   const handleSave = async () => {
+    if (!form.account_code.trim()) { setError('Account Code is required.'); return; }
+    if (!form.account_name.trim()) { setError('Account Name is required.'); return; }
     setSaving(true); setError('');
     try {
       const payload = { ...form, entity: parseInt(entityId) };
@@ -87,7 +89,13 @@ const ChartOfAccounts = () => {
       setShowForm(false);
       await loadAccounts();
     } catch (e) {
-      setError(e.response?.data?.detail || JSON.stringify(e.response?.data) || 'Failed to save');
+      const errData = e.response?.data;
+      if (errData && typeof errData === 'object') {
+        const msgs = Object.entries(errData).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | ');
+        setError(msgs);
+      } else {
+        setError(e.message || 'Failed to save account.');
+      }
     }
     setSaving(false);
   };
