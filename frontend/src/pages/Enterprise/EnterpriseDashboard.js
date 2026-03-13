@@ -123,6 +123,12 @@ const EnterpriseDashboard = () => {
           >Manage Entities
           </Button>
           <Button
+            variant="secondary"
+            size="small"
+            onClick={() => navigate('/app/overview/dashboard')}
+          >Accounting Dashboard
+          </Button>
+          <Button
             variant="primary"
             size="small"
             onClick={() => {

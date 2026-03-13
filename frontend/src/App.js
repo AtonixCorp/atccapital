@@ -317,7 +317,7 @@ function App() {
 
               {/*  New Module Routes  */}
               {/* Overview */}
-              <Route path="/app/overview/dashboard" element={<ProtectedRoute><Layout><AppDashboard /></Layout></ProtectedRoute>} />
+              <Route path="/app/overview/dashboard" element={<ProtectedRoute><AppDashboard /></ProtectedRoute>} />
               <Route path="/app/overview/notifications" element={<ProtectedRoute><Layout><AppNotifications /></Layout></ProtectedRoute>} />
               <Route path="/app/overview/tasks" element={<ProtectedRoute><Layout><AppTasks /></Layout></ProtectedRoute>} />
 

@@ -1014,6 +1014,81 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* =============================================================================
    OVERVIEW DASHBOARD STYLING
    ============================================================================= */
+
+/* Full-page wrapper — no sidebar */
+.dashboard-fullpage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-white);
+}
+
+/* Standalone topbar for the dashboard full-page */
+.dashboard-topbar {
+  height: 64px;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--border-color-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+}
+
+.dashboard-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard-back-btn {
+  background: none;
+  border: 1px solid var(--border-color-default);
+  color: var(--color-midnight);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 14px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  font-family: var(--font-family);
+}
+
+.dashboard-back-btn:hover {
+  background: var(--gray-100);
+  border-color: var(--gray-300);
+}
+
+.dashboard-topbar-brand {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-midnight);
+  letter-spacing: -0.2px;
+}
+
+.dashboard-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-topbar-org {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-silver-dark);
+}
+
+/* Inner dashboard content — full width with padding */
+.dashboard-fullpage > .dashboard {
+  flex: 1;
+  padding: 32px;
+  max-width: 100%;
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;

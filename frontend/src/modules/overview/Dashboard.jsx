@@ -408,7 +408,21 @@ const OverviewDashboard = () => {
   }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard-fullpage">
+      {/* Standalone navigation bar — no sidebar on this page */}
+      <div className="dashboard-topbar">
+        <div className="dashboard-topbar-left">
+          <button className="dashboard-back-btn" onClick={() => navigate(-1)} title="Back">
+            ← Back
+          </button>
+          <span className="dashboard-topbar-brand">ATC Capital</span>
+        </div>
+        <div className="dashboard-topbar-right">
+          <span className="dashboard-topbar-org">{currentOrganization.name}</span>
+        </div>
+      </div>
+
+      <div className="dashboard">
       <PageHeader
         title="Accounting Dashboard"
         subtitle={`Financials, activity and workflows — ${dashboard.metadata?.organizationName || currentOrganization.name}`}
@@ -519,6 +533,7 @@ const OverviewDashboard = () => {
           onNavigate={() => navigate(rightPanel.route || '/app/subledgers/cash-bank')}
         />
       )}
+      </div>
     </div>
   );
 };
