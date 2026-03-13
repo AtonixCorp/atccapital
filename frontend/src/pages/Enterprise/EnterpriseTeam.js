@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { teamMembersAPI } from '../../services/api';
 
 const EnterpriseTeam = () => {
   const { currentOrganization } = useEnterprise();
@@ -8,7 +9,8 @@ const EnterpriseTeam = () => {
   const [formData, setFormData] = useState({ email: '', role: 'viewer', entities: [] });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [invitesSent, setInvitesSent] = useState([]);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const roles = [
     { code: 'org_owner', name: 'Organization Owner', description: 'Full access to organization and all entities' },
@@ -18,60 +20,65 @@ const EnterpriseTeam = () => {
     { code: 'advisor', name: 'External Advisor', description: 'Limited access to specific entities only' },
   ];
 
-  useEffect(() => {
-    if (currentOrganization) {
-      setLoading(true);
-      // TODO: Call API endpoint /api/team-members/?organization_id=currentOrganization.id
-      const mockTeam = [
-        { id: 1, name: 'John Smith', email: 'john@example.com', role: 'org_owner', status: 'active', joinedDate: '2024-01-01' },
-        { id: 2, name: 'Sarah Johnson', email: 'sarah@example.com', role: 'cfo', status: 'active', joinedDate: '2024-02-15' },
-        { id: 3, name: 'Mike Davis', email: 'mike@example.com', role: 'analyst', status: 'active', joinedDate: '2024-03-01' },
-        { id: 4, name: 'Lisa Chen', email: 'lisa@example.com', role: 'viewer', status: 'pending', joinedDate: null },
-      ];
-      setTeam(mockTeam);
+  const loadTeam = useCallback(async () => {
+    if (!currentOrganization) return;
+    setLoading(true);
+    setError('');
+    try {
+      const res = await teamMembersAPI.getAll({ organization: currentOrganization.id });
+      setTeam(res.data.results || res.data);
+    } catch (e) {
+      setError('Failed to load team members. Please try again.');
+      console.error(e);
+    } finally {
       setLoading(false);
     }
   }, [currentOrganization]);
 
+  useEffect(() => { loadTeam(); }, [loadTeam]);
+
   const getRoleObj = (code) => roles.find(r => r.code === code);
 
-  const handleAddTeamMember = () => {
+  const handleAddTeamMember = async () => {
     if (!formData.email || !formData.role) {
       alert('Please fill in all required fields');
       return;
     }
-
-    if (editingId) {
-      // Update existing
-      setTeam(team.map(m => m.id === editingId ? {...m, ...formData} : m));
+    setSaving(true);
+    try {
+      if (editingId) {
+        await teamMembersAPI.update(editingId, { role: formData.role });
+      } else {
+        await teamMembersAPI.create({
+          email: formData.email,
+          role: formData.role,
+          organization: currentOrganization?.id,
+        });
+      }
+      setFormData({ email: '', role: 'viewer', entities: [] });
       setEditingId(null);
-    } else {
-      // Add new with pending status
-      const newMember = {
-        id: Date.now(),
-        name: formData.email.split('@')[0],
-        email: formData.email,
-        role: formData.role,
-        status: 'pending',
-        joinedDate: null,
-      };
-      setTeam([...team, newMember]);
-      setInvitesSent([...invitesSent, formData.email]);
+      setShowModal(false);
+      await loadTeam();
+    } catch (e) {
+      alert(e.response?.data?.detail || e.response?.data?.email?.[0] || 'Failed to save team member.');
+    } finally {
+      setSaving(false);
     }
-
-    setFormData({ email: '', role: 'viewer', entities: [] });
-    setShowModal(false);
   };
 
   const handleEditTeamMember = (member) => {
-    setFormData({ email: member.email, role: member.role, entities: [] });
+    setFormData({ email: member.email || member.user_email || '', role: member.role || member.role_code || 'viewer', entities: [] });
     setEditingId(member.id);
     setShowModal(true);
   };
 
-  const handleDeleteTeamMember = (id) => {
-    if (window.confirm('Are you sure you want to remove this team member?')) {
-      setTeam(team.filter(m => m.id !== id));
+  const handleDeleteTeamMember = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this team member?')) return;
+    try {
+      await teamMembersAPI.delete(id);
+      setTeam(prev => prev.filter(m => m.id !== id));
+    } catch (e) {
+      alert('Failed to remove team member.');
     }
   };
 
@@ -137,6 +144,8 @@ const EnterpriseTeam = () => {
       <div className="team-members-section">
         <h2>Team Members ({team.length})</h2>
 
+        {error && <div className="error-banner">{error}</div>}
+
         {loading ? (
           <div className="loading">Loading team...</div>
         ) : team.length === 0 ? (
@@ -148,9 +157,9 @@ const EnterpriseTeam = () => {
             {team.map(member => (
               <div key={member.id} className={`team-card ${member.status}`}>
                 <div className="member-info">
-                  <div className="member-avatar">{member.name.charAt(0)}</div>
+                  <div className="member-avatar">{(member.name || member.user_email || 'U').charAt(0)}</div>
                   <div className="member-details">
-                    <div className="member-name">{member.name}</div>
+                    <div className="member-name">{member.name || member.user_email}</div>
                     <div className="member-email">{member.email}</div>
                   </div>
                 </div>
@@ -232,8 +241,8 @@ const EnterpriseTeam = () => {
             </div>
 
             <div className="modal-actions">
-              <button className="btn-primary" onClick={handleAddTeamMember}>
-                {editingId ? 'Update' : 'Send Invite'}
+              <button className="btn-primary" onClick={handleAddTeamMember} disabled={saving}>
+                {saving ? 'Saving...' : editingId ? 'Update' : 'Send Invite'}
               </button>
               <button className="btn-secondary" onClick={() => setShowModal(false)}>Cancel
               </button>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { useEnterprise } from '../../../context/EnterpriseContext';
 import TransactionForm from './TransactionForm';
 
 const TransactionList = () => {
   const { entityId } = useParams();
-  const navigate = useNavigate();
   const {
     fetchTransactions,
     deleteTransaction,

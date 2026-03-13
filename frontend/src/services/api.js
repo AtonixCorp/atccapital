@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +8,43 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Attach JWT token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
+// Handle 401 — attempt token refresh once, then redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const original = error.config;
+    if (error.response?.status === 401 && !original._retried) {
+      original._retried = true;
+      try {
+        const refresh = localStorage.getItem('refreshToken');
+        if (refresh) {
+          const { data } = await axios.post(`${API_BASE_URL}/token/refresh/`, { refresh });
+          localStorage.setItem('token', data.access);
+          localStorage.setItem('access_token', data.access);
+          original.headers.Authorization = `Bearer ${data.access}`;
+          return api(original);
+        }
+      } catch {
+        // Refresh failed — clear auth and redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Expenses API
 export const expensesAPI = {
@@ -685,6 +722,35 @@ export const clientMarketplaceIntegrationsAPI = {
   create: (data) => api.post('/client-marketplace-integrations/', data),
   update: (id, data) => api.put(`/client-marketplace-integrations/${id}/`, data),
   delete: (id) => api.delete(`/client-marketplace-integrations/${id}/`),
+};
+
+// ============ ENTITY HR APIs ============
+
+// Entity Departments API
+export const entityDepartmentsAPI = {
+  getAll: (params) => api.get('/entity-departments/', { params }),
+  getById: (id) => api.get(`/entity-departments/${id}/`),
+  create: (data) => api.post('/entity-departments/', data),
+  update: (id, data) => api.put(`/entity-departments/${id}/`, data),
+  delete: (id) => api.delete(`/entity-departments/${id}/`),
+};
+
+// Entity Roles API
+export const entityRolesAPI = {
+  getAll: (params) => api.get('/entity-roles/', { params }),
+  getById: (id) => api.get(`/entity-roles/${id}/`),
+  create: (data) => api.post('/entity-roles/', data),
+  update: (id, data) => api.put(`/entity-roles/${id}/`, data),
+  delete: (id) => api.delete(`/entity-roles/${id}/`),
+};
+
+// Entity Staff API
+export const entityStaffAPI = {
+  getAll: (params) => api.get('/entity-staff/', { params }),
+  getById: (id) => api.get(`/entity-staff/${id}/`),
+  create: (data) => api.post('/entity-staff/', data),
+  update: (id, data) => api.put(`/entity-staff/${id}/`, data),
+  delete: (id) => api.delete(`/entity-staff/${id}/`),
 };
 
 export default api;

@@ -1357,10 +1357,27 @@ class EntityStaffViewSet(viewsets.ModelViewSet):
         return EntityStaff.objects.filter(entity__organization__owner=self.request.user)
 
     def perform_create(self, serializer):
-        """Create staff member for entity"""
+        """Create staff member — resolves user by email if user PK not supplied"""
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity)
+
+        user_id = self.request.data.get('user')
+        if not user_id:
+            email = self.request.data.get('email', '')
+            if email:
+                try:
+                    linked_user = User.objects.get(email=email)
+                except User.DoesNotExist:
+                    from rest_framework.exceptions import ValidationError
+                    raise ValidationError({'email': f'No user account found with email "{email}". The staff member must have a registered user account.'})
+            else:
+                linked_user = self.request.user
+        else:
+            linked_user = get_object_or_404(User, id=user_id)
+
+        serializer.save(entity=entity, user=linked_user)
 
 
 class BankAccountViewSet(viewsets.ModelViewSet):
@@ -1370,7 +1387,11 @@ class BankAccountViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return bank accounts for user's entities"""
-        return BankAccount.objects.filter(entity__organization__owner=self.request.user)
+        qs = BankAccount.objects.filter(entity__organization__owner=self.request.user)
+        entity_id = self.request.query_params.get('entity_id') or self.request.query_params.get('entity')
+        if entity_id:
+            qs = qs.filter(entity_id=entity_id)
+        return qs
 
     def perform_create(self, serializer):
         """Create bank account for entity"""

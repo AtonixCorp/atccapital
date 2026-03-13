@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { reportsAPI } from '../../services/api';
 
 const EnterpriseReports = () => {
   const { currentOrganization } = useEnterprise();
@@ -46,33 +47,60 @@ const EnterpriseReports = () => {
     },
   ];
 
-  const handleGenerateReport = () => {
+  const handleGenerateReport = async () => {
     if (!selectedReport || !dateRange.start || !dateRange.end) {
       alert('Please select a report and date range');
       return;
     }
 
     setGenerating(true);
-    // TODO: Call API endpoint /api/reports/{reportId}/generate/
-    // with parameters: organization_id, start_date, end_date, format
-    console.log(`Generating ${selectedReport} report from ${dateRange.start} to ${dateRange.end} in ${format} format`);
-
-    // Simulate generation
-    setTimeout(() => {
-      // Simulate download
+    try {
+      const res = await reportsAPI.create({
+        report_type: selectedReport,
+        organization: currentOrganization?.id,
+        start_date: dateRange.start,
+        end_date: dateRange.end,
+        format,
+      });
+      const reportId = res.data.id;
+      // Trigger async generation then download
+      await reportsAPI.generate(reportId);
+      const dlRes = await reportsAPI.download(reportId);
+      const url = window.URL.createObjectURL(new Blob([dlRes.data]));
       const link = document.createElement('a');
-      link.href = '#';
+      link.href = url;
       link.download = `${selectedReport}-report.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+      document.body.appendChild(link);
       link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      alert(e.response?.data?.detail || 'Report generation failed. Please try again.');
+    } finally {
       setGenerating(false);
-      alert('Report generated successfully!');
-    }, 1500);
+    }
   };
 
-  const handleDownloadSample = (reportId) => {
-    // TODO: Call API endpoint to download sample report
-    console.log(`Downloading sample for ${reportId}`);
-    alert(`Sample ${reportId} report downloaded!`);
+  const handleDownloadSample = async (reportId) => {
+    try {
+      const res = await reportsAPI.getAll({ report_type: reportId });
+      const reports = res.data.results || res.data;
+      if (reports.length > 0) {
+        const dlRes = await reportsAPI.download(reports[0].id);
+        const url = window.URL.createObjectURL(new Blob([dlRes.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${reportId}-sample.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } else {
+        alert('No existing report found for this type. Generate one first.');
+      }
+    } catch (e) {
+      alert('Download failed. Please try again.');
+    }
   };
 
   return (
