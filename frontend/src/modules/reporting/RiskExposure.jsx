@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { PageHeader, Card, Button } from '../../components/ui';
+import { PageHeader, Card, Button, Modal, Input } from '../../components/ui';
 import { useFilters } from '../../context/FilterContext';
+
+const BLANK_REPORT = { dateFrom: '', dateTo: '', currency: 'USD', entity: 'all', reportType: 'all' };
 
 /* ── Mock data ── */
 const fxExposure = [
@@ -48,6 +50,9 @@ const exportCSV = (rows, columns, filename) => {
 export default function RiskExposure() {
   const { filters } = useFilters();
   const [activeTab, setActiveTab] = useState('fx');
+  const [showRunModal, setShowRunModal] = useState(false);
+  const [runForm, setRunForm] = useState(BLANK_REPORT);
+  const setF = f => e => setRunForm(p => ({ ...p, [f]: e.target.value }));
 
   const totalFXExposure = fxExposure.reduce((s, r) => s + r.usdValue, 0);
   const totalUnrealisedPL = fxExposure.reduce((s, r) => s + r.unrealisedPL, 0);
@@ -59,12 +64,48 @@ export default function RiskExposure() {
       exportCSV(
         fxExposure.map((r) => ({ ...r, usdValue: fmtN(r.usdValue), unrealisedPL: fmtN(r.unrealisedPL) })),
         [
-          { key: 'currency', label: 'Currency' },
-          { key: 'direction', label: 'Direction' },
-          { key: 'usdValue', label: 'USD Equivalent' },
-          { key: 'unrealisedPL', label: 'Unrealised P&L' },
+          { key: 'currency',     label: 'Currency'        },
+          { key: 'direction',    label: 'Direction'       },
+          { key: 'usdValue',     label: 'USD Equivalent'  },
+          { key: 'unrealisedPL', label: 'Unrealised P&L'  },
         ],
         'fx-exposure.csv',
+      );
+    } else if (activeTab === 'aging') {
+      exportCSV(
+        arAging.map((r) => ({
+          counterparty: r.counterparty,
+          current:      fmtN(r.current),
+          days30:       fmtN(r.days30),
+          days60:       fmtN(r.days60),
+          days90plus:   fmtN(r.days90plus),
+          total:        fmtN(r.total),
+        })),
+        [
+          { key: 'counterparty', label: 'Counterparty'  },
+          { key: 'current',      label: 'Current'       },
+          { key: 'days30',       label: '1-30 Days'     },
+          { key: 'days60',       label: '31-60 Days'    },
+          { key: 'days90plus',   label: '>60 Days'      },
+          { key: 'total',        label: 'Total'         },
+        ],
+        'ar-aging.csv',
+      );
+    } else if (activeTab === 'conc') {
+      exportCSV(
+        concentration.map((r) => ({
+          name:     r.name,
+          tier:     r.tier,
+          exposure: fmtN(r.exposure),
+          pct:      r.pct.toFixed(1) + '%',
+        })),
+        [
+          { key: 'name',     label: 'Counterparty'    },
+          { key: 'tier',     label: 'Tier'            },
+          { key: 'exposure', label: 'Exposure (USD)'  },
+          { key: 'pct',      label: 'Portfolio %'     },
+        ],
+        'concentration-risk.csv',
       );
     }
   }, [activeTab]);
@@ -77,7 +118,10 @@ export default function RiskExposure() {
           filters.entity === 'all' ? 'All Entities' : `Entity ${filters.entity}`
         }`}
         actions={
-          <Button variant="secondary" size="small" onClick={handleExport}>Export CSV</Button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button variant="secondary" size="small" onClick={handleExport}>Export CSV</Button>
+            <Button variant="primary" size="small" onClick={() => setShowRunModal(true)}>Run Report</Button>
+          </div>
         }
       />
 
@@ -246,6 +290,51 @@ export default function RiskExposure() {
           </p>
         </Card>
       )}
+      <Modal
+        isOpen={showRunModal}
+        onClose={() => { setShowRunModal(false); setRunForm(BLANK_REPORT); }}
+        title="Run Risk & Exposure Report"
+      >
+        <div className="form-grid">
+          <div>
+            <label className="input-label">Report Type</label>
+            <select className="filter-select" style={{ width: '100%', height: 40 }} value={runForm.reportType} onChange={setF('reportType')}>
+              <option value="all">All (FX + AR Aging + Concentration)</option>
+              <option value="fx">FX Exposure Only</option>
+              <option value="aging">AR Aging Only</option>
+              <option value="conc">Concentration Risk Only</option>
+            </select>
+          </div>
+          <div>
+            <label className="input-label">Entity</label>
+            <select className="filter-select" style={{ width: '100%', height: 40 }} value={runForm.entity} onChange={setF('entity')}>
+              <option value="all">All Entities</option>
+              <option value="1">ATC Capital US</option>
+              <option value="2">ATC Capital UK</option>
+            </select>
+          </div>
+          <div>
+            <label className="input-label">Date From</label>
+            <Input type="date" value={runForm.dateFrom} onChange={setF('dateFrom')} />
+          </div>
+          <div>
+            <label className="input-label">Date To</label>
+            <Input type="date" value={runForm.dateTo} onChange={setF('dateTo')} />
+          </div>
+          <div>
+            <label className="input-label">Base Currency</label>
+            <select className="filter-select" style={{ width: '100%', height: 40 }} value={runForm.currency} onChange={setF('currency')}>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+        </div>
+        <div className="modal-footer">
+          <Button variant="secondary" onClick={() => { setShowRunModal(false); setRunForm(BLANK_REPORT); }}>Cancel</Button>
+          <Button variant="primary" onClick={() => { setShowRunModal(false); setRunForm(BLANK_REPORT); }}>Generate Report</Button>
+        </div>
+      </Modal>
     </div>
   );
 }

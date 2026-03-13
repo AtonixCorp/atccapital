@@ -147,7 +147,7 @@ function App() {
               } />
               <Route path="/app/enterprise/entities/:entityId/dashboard" element={
                 <ProtectedRoute>
-                  <Layout><EntityDashboard /></Layout>
+                  <EntityDashboard />
                 </ProtectedRoute>
               } />
               <Route path="/enterprise/entity/:entityId/bookkeeping" element={
@@ -381,7 +381,7 @@ function App() {
               <Route path="/app/settings/firm" element={<ProtectedRoute><Layout><AppFirmSettings /></Layout></ProtectedRoute>} />
               <Route path="/app/settings/team" element={<ProtectedRoute><Layout><AppTeamPermissions /></Layout></ProtectedRoute>} />
               <Route path="/app/settings/security" element={<ProtectedRoute><Layout><AppSecurity /></Layout></ProtectedRoute>} />
-              <Route path="/app/settings/entities" element={<ProtectedRoute><Layout><AppEntityManagement /></Layout></ProtectedRoute>} />
+              <Route path="/app/settings/entities" element={<ProtectedRoute><AppEntityManagement /></ProtectedRoute>} />
               <Route path="/app/settings/branding" element={<ProtectedRoute><Layout><AppBranding /></Layout></ProtectedRoute>} />
               <Route path="/app/settings/subscription" element={<ProtectedRoute><Layout><AppSubscription /></Layout></ProtectedRoute>} />
               {/* Support */}

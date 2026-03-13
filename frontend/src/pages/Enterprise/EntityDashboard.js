@@ -167,7 +167,39 @@ const EntityDashboard = () => {
   const COLORS = ['var(--color-error)', 'var(--color-cyan)', 'var(--color-cyan-dark)', 'var(--color-warning)', 'var(--color-success)'];
 
   return (
-    <div className="entity-dashboard">
+    <div className="entity-dashboard" style={{ minHeight: '100vh', background: '#f4f6fa' }}>
+      {/* Standalone topbar */}
+      <div style={{
+        height: 60, background: '#003B73', display: 'flex', alignItems: 'center',
+        padding: '0 24px', gap: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        position: 'sticky', top: 0, zIndex: 100,
+      }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)',
+            borderRadius: 6, color: '#fff', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', gap: 6, padding: '6px 14px', fontSize: 13, fontWeight: 500,
+          }}
+          onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
+          onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+        >
+          <span style={{ fontSize: 16, lineHeight: 1 }}>&#8592;</span> Back
+        </button>
+        <div style={{ width: 1, height: 28, background: 'rgba(255,255,255,0.2)' }} />
+        <span style={{ color: '#fff', fontWeight: 700, fontSize: 16, letterSpacing: 0.3 }}>ATC Capital</span>
+        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>/</span>
+        <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 600 }}>{entity.name}</span>
+        <div style={{ flex: 1 }} />
+        <span style={{
+          background: entity.status === 'active' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.1)',
+          color: entity.status === 'active' ? '#6EE7B7' : 'rgba(255,255,255,0.6)',
+          border: `1px solid ${entity.status === 'active' ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.2)'}`,
+          borderRadius: 20, padding: '3px 12px', fontSize: 12, fontWeight: 600,
+        }}>{entity.status}</span>
+        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{entity.country} &bull; {entity.entity_type}</span>
+      </div>
+
       <div className="dashboard-header">
         <div className="entity-info">
           <h1>{entity.name}</h1>
@@ -177,9 +209,6 @@ const EntityDashboard = () => {
             <span className={`status ${entity.status}`}>{entity.status}</span>
           </div>
         </div>
-        <button className="btn-back" onClick={() => navigate('/app/enterprise/entities')}>
-          ← Back to Entities
-        </button>
       </div>
 
       {/* Tab Navigation */}

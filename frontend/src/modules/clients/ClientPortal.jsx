@@ -1,74 +1,134 @@
-import React from 'react';
-import { PageHeader, Card } from '../../components/ui';
+import React, { useState } from 'react';
+import { PageHeader, Card, Table, Button, Modal, Input } from '../../components/ui';
 
-const mockPortalClients = [
-  { name: 'Acme Corporation', lastLogin: '2025-01-31 09:45', documentsShared: 12, requestsPending: 2 },
-  { name: 'Globex Holdings', lastLogin: '2025-01-28 14:22', documentsShared: 8, requestsPending: 0 },
+const INITIAL_CLIENTS = [
+  { name: 'Acme Corporation',  email: 'finance@acme.com',    lastLogin: '2025-01-31 09:45', docsShared: 12, requestsPending: 2, status: 'Active'   },
+  { name: 'Globex Holdings',   email: 'cfo@globex.com',      lastLogin: '2025-01-28 14:22', docsShared: 8,  requestsPending: 0, status: 'Active'   },
+  { name: 'Weyland Corp',      email: 'billing@weyland.com', lastLogin: '2025-01-15 11:00', docsShared: 5,  requestsPending: 1, status: 'Inactive' },
 ];
 
+const STATUS_COLORS = { Active: 'var(--color-success)', Inactive: 'var(--color-silver-dark)' };
+
+const BLANK_CLIENT = { name: '', email: '', accessLevel: 'Reports Only' };
+
 export default function ClientPortal() {
+  const [clients, setClients] = useState(INITIAL_CLIENTS);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState(BLANK_CLIENT);
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
+
+  const handleInvite = () => {
+    setClients(prev => [...prev, {
+      name:            form.name,
+      email:           form.email,
+      lastLogin:       'Never',
+      docsShared:      0,
+      requestsPending: 0,
+      status:          'Inactive',
+    }]);
+    setForm(BLANK_CLIENT);
+    setShowModal(false);
+  };
+
+  const totalDocs    = clients.reduce((s, c) => s + c.docsShared, 0);
+  const totalPending = clients.reduce((s, c) => s + c.requestsPending, 0);
+  const activeCount  = clients.filter(c => c.status === 'Active').length;
+
+  const columns = [
+    { key: 'name',            header: 'Client' },
+    { key: 'email',           header: 'Email' },
+    { key: 'lastLogin',       header: 'Last Login' },
+    { key: 'docsShared',      header: 'Docs Shared' },
+    { key: 'requestsPending', header: 'Pending Requests', render: (row) => (
+      <span style={{ color: row.requestsPending > 0 ? 'var(--color-warning)' : 'var(--color-success)', fontWeight: 600 }}>
+        {row.requestsPending}
+      </span>
+    )},
+    { key: 'status', header: 'Status', render: (row) => (
+      <span className="status-badge" style={{ background: STATUS_COLORS[row.status] }}>{row.status}</span>
+    )},
+    { key: '_actions', header: '', render: () => (
+      <Button variant="secondary" size="small">View</Button>
+    )},
+  ];
+
   return (
     <div className="module-page">
       <PageHeader
         title="Client Portal"
         subtitle="Secure portal for clients to view reports, documents, and submit requests"
+        actions={
+          <Button variant="primary" size="small" onClick={() => setShowModal(true)}>Invite Client</Button>
+        }
       />
 
       <div className="stats-row">
         <Card className="stat-card">
           <div className="stat-label">Portal Users</div>
-          <div className="stat-value">2</div>
+          <div className="stat-value">{clients.length}</div>
+        </Card>
+        <Card className="stat-card">
+          <div className="stat-label">Active Users</div>
+          <div className="stat-value" style={{ color: 'var(--color-success)' }}>{activeCount}</div>
         </Card>
         <Card className="stat-card">
           <div className="stat-label">Documents Shared</div>
-          <div className="stat-value">20</div>
+          <div className="stat-value">{totalDocs}</div>
         </Card>
         <Card className="stat-card">
           <div className="stat-label">Pending Requests</div>
-          <div className="stat-value" style={{ color: 'var(--color-warning)' }}>2</div>
+          <div className="stat-value" style={{ color: totalPending > 0 ? 'var(--color-warning)' : 'var(--color-success)' }}>
+            {totalPending}
+          </div>
         </Card>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        {mockPortalClients.map((c, i) => (
-          <Card key={i} title={c.name}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--color-silver-dark)' }}>
-                <span>Last Login</span>
-                <span style={{ color: 'var(--color-midnight)' }}>{c.lastLogin}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--color-silver-dark)' }}>
-                <span>Documents Shared</span>
-                <span style={{ color: 'var(--color-midnight)', fontWeight: 600 }}>{c.documentsShared}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--color-silver-dark)' }}>
-                <span>Pending Document Requests</span>
-                <span style={{ color: c.requestsPending > 0 ? 'var(--color-warning)' : 'var(--color-success)', fontWeight: 600 }}>
-                  {c.requestsPending}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button className="filter-btn active" style={{ flex: 1 }}>
-                  View Documents
-                </button>
-                <button className="filter-btn" style={{ flex: 1 }}>
-                  Reports
-                </button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+      <Card title="Portal Clients">
+        <Table columns={columns} data={clients} />
+      </Card>
 
       <Card title="Portal Security" style={{ marginTop: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', fontSize: 13, color: 'var(--color-midnight)' }}>
+        {[
+          { label: 'Two-Factor Authentication Required', desc: 'All client portal access requires 2FA via email OTP', active: true },
+          { label: 'Document Access Logging', desc: 'All document views and downloads are logged to the audit trail', active: true },
+          { label: 'Session Expiry', desc: 'Portal sessions expire after 4 hours of inactivity', active: true },
+        ].map((item, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid var(--border-color-default)', fontSize: 13 }}>
+            <span style={{ color: 'var(--color-success)', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+            <div>
+              <div style={{ fontWeight: 600, color: 'var(--color-midnight)' }}>{item.label}</div>
+              <div style={{ color: 'var(--color-silver-dark)', marginTop: 2 }}>{item.desc}</div>
+            </div>
+          </div>
+        ))}
+      </Card>
 
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setForm(BLANK_CLIENT); }} title="Invite Client to Portal">
+        <div className="form-grid">
           <div>
-            <div style={{ fontWeight: 600 }}>Two-Factor Authentication Required</div>
-            <div style={{ color: 'var(--color-silver-dark)' }}>All client portal access requires 2FA via email OTP</div>
+            <label className="input-label">Client Name</label>
+            <Input placeholder="Company or person name" value={form.name} onChange={set('name')} />
+          </div>
+          <div>
+            <label className="input-label">Email Address</label>
+            <Input type="email" placeholder="finance@client.com" value={form.email} onChange={set('email')} />
+          </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label className="input-label">Access Level</label>
+            <select className="filter-select" style={{ width: '100%', height: 40 }} value={form.accessLevel} onChange={set('accessLevel')}>
+              <option value="Reports Only">Reports Only</option>
+              <option value="Reports & Documents">Reports &amp; Documents</option>
+              <option value="Full Portal">Full Portal Access</option>
+            </select>
           </div>
         </div>
-      </Card>
+        <div className="modal-footer">
+          <Button variant="secondary" onClick={() => { setShowModal(false); setForm(BLANK_CLIENT); }}>Cancel</Button>
+          <Button variant="primary" onClick={handleInvite} disabled={!form.name.trim() || !form.email.trim()}>
+            Send Invitation
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
