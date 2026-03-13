@@ -737,7 +737,7 @@ class InventoryTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryTransaction
         fields = ['id', 'entity', 'inventory_item', 'inventory_item_sku', 'transaction_type', 'transaction_date', 'quantity_before', 'quantity', 'quantity_after', 'unit_cost', 'total_cost', 'reference_number', 'notes', 'created_by', 'created_by_name', 'created_at']
-        read_only_fields = ['created_at', 'quantity_after']
+        read_only_fields = ['created_at', 'quantity_before', 'quantity_after', 'unit_cost', 'total_cost']
 
 
 class InventoryCostOfGoodsSoldSerializer(serializers.ModelSerializer):

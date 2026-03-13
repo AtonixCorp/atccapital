@@ -23,6 +23,12 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
+    console.error('API request failed', {
+      method: original?.method,
+      url: original?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     if (error.response?.status === 401 && !original._retried) {
       original._retried = true;
       try {
@@ -35,6 +41,7 @@ api.interceptors.response.use(
           return api(original);
         }
       } catch {
+        console.error('Token refresh failed; redirecting to login');
         // Refresh failed — clear auth and redirect to login
         localStorage.removeItem('token');
         localStorage.removeItem('access_token');
@@ -751,6 +758,50 @@ export const entityStaffAPI = {
   create: (data) => api.post('/entity-staff/', data),
   update: (id, data) => api.put(`/entity-staff/${id}/`, data),
   delete: (id) => api.delete(`/entity-staff/${id}/`),
+};
+
+// Task Requests API
+export const taskRequestsAPI = {
+  getAll: (params) => api.get('/task-requests/', { params }),
+  getById: (id) => api.get(`/task-requests/${id}/`),
+  create: (data) => api.post('/task-requests/', data),
+  update: (id, data) => api.put(`/task-requests/${id}/`, data),
+  delete: (id) => api.delete(`/task-requests/${id}/`),
+};
+
+// Bank Accounts API
+export const bankAccountsAPI = {
+  getAll: (params) => api.get('/bank-accounts/', { params }),
+  getById: (id) => api.get(`/bank-accounts/${id}/`),
+  create: (data) => api.post('/bank-accounts/', data),
+  update: (id, data) => api.put(`/bank-accounts/${id}/`, data),
+  delete: (id) => api.delete(`/bank-accounts/${id}/`),
+};
+
+// Recurring Transactions API
+export const recurringTransactionsAPI = {
+  getAll: (params) => api.get('/recurring-transactions/', { params }),
+  getById: (id) => api.get(`/recurring-transactions/${id}/`),
+  create: (data) => api.post('/recurring-transactions/', data),
+  update: (id, data) => api.put(`/recurring-transactions/${id}/`, data),
+  delete: (id) => api.delete(`/recurring-transactions/${id}/`),
+};
+
+// Financial Statements API
+export const financialStatementsAPI = {
+  getAll: (params) => api.get('/financial-statements/', { params }),
+  incomeStatement: (params) => api.get('/financial-statements/income_statement/', { params }),
+  balanceSheet: (params) => api.get('/financial-statements/balance_sheet/', { params }),
+  cashFlow: (params) => api.get('/financial-statements/cash_flow/', { params }),
+};
+
+// Tax Profiles API
+export const taxProfilesAPI = {
+  getAll: (params) => api.get('/tax-profiles/', { params }),
+  getById: (id) => api.get(`/tax-profiles/${id}/`),
+  create: (data) => api.post('/tax-profiles/', data),
+  update: (id, data) => api.put(`/tax-profiles/${id}/`, data),
+  delete: (id) => api.delete(`/tax-profiles/${id}/`),
 };
 
 export default api;

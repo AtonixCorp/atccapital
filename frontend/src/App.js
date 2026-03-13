@@ -106,6 +106,14 @@ import Contact from './pages/Contact/Contact';
 import Privacy from './pages/Privacy/Privacy';
 
 function App() {
+  const renderModuleCrudRoutes = (basePath, Component) => [
+    <Route key={`${basePath}-index`} path={basePath} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-list`} path={`${basePath}/list`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-create`} path={`${basePath}/create`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-edit`} path={`${basePath}/edit/:id`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-view`} path={`${basePath}/view/:id`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+  ];
+
   return (
     <AccessibilityProvider>
       <LanguageProvider>
@@ -317,76 +325,76 @@ function App() {
 
               {/*  New Module Routes  */}
               {/* Overview */}
-              <Route path="/app/overview/dashboard" element={<ProtectedRoute><Layout><AppDashboard /></Layout></ProtectedRoute>} />
-              <Route path="/app/overview/notifications" element={<ProtectedRoute><Layout><AppNotifications /></Layout></ProtectedRoute>} />
-              <Route path="/app/overview/tasks" element={<ProtectedRoute><Layout><AppTasks /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/overview/dashboard', AppDashboard)}
+              {renderModuleCrudRoutes('/app/overview/notifications', AppNotifications)}
+              {renderModuleCrudRoutes('/app/overview/tasks', AppTasks)}
 
               {/* Accounting */}
-              <Route path="/app/accounting/chart-of-accounts" element={<ProtectedRoute><Layout><AppChartOfAccounts /></Layout></ProtectedRoute>} />
-              <Route path="/app/accounting/general-ledger" element={<ProtectedRoute><Layout><AppGeneralLedger /></Layout></ProtectedRoute>} />
-              <Route path="/app/accounting/journal-entries" element={<ProtectedRoute><Layout><AppJournalEntries /></Layout></ProtectedRoute>} />
-              <Route path="/app/accounting/reconciliation" element={<ProtectedRoute><Layout><AppReconciliation /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/accounting/chart-of-accounts', AppChartOfAccounts)}
+              {renderModuleCrudRoutes('/app/accounting/general-ledger', AppGeneralLedger)}
+              {renderModuleCrudRoutes('/app/accounting/journal-entries', AppJournalEntries)}
+              {renderModuleCrudRoutes('/app/accounting/reconciliation', AppReconciliation)}
 
               {/* Sub-Ledgers */}
-              <Route path="/app/subledgers/accounts-receivable" element={<ProtectedRoute><Layout><AppAccountsReceivable /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/accounts-payable" element={<ProtectedRoute><Layout><AppAccountsPayable /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/cash-bank" element={<ProtectedRoute><Layout><AppCashBank /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/fixed-assets" element={<ProtectedRoute><Layout><AppFixedAssets /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/inventory" element={<ProtectedRoute><Layout><AppInventoryModule /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/payroll" element={<ProtectedRoute><Layout><AppPayroll /></Layout></ProtectedRoute>} />
-              <Route path="/app/subledgers/tax" element={<ProtectedRoute><Layout><AppTaxSubledger /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/subledgers/accounts-receivable', AppAccountsReceivable)}
+              {renderModuleCrudRoutes('/app/subledgers/accounts-payable', AppAccountsPayable)}
+              {renderModuleCrudRoutes('/app/subledgers/cash-bank', AppCashBank)}
+              {renderModuleCrudRoutes('/app/subledgers/fixed-assets', AppFixedAssets)}
+              {renderModuleCrudRoutes('/app/subledgers/inventory', AppInventoryModule)}
+              {renderModuleCrudRoutes('/app/subledgers/payroll', AppPayroll)}
+              {renderModuleCrudRoutes('/app/subledgers/tax', AppTaxSubledger)}
 
               {/* Billing */}
-              <Route path="/app/billing/invoices" element={<ProtectedRoute><Layout><AppInvoices /></Layout></ProtectedRoute>} />
-              <Route path="/app/billing/bills" element={<ProtectedRoute><Layout><AppBills /></Layout></ProtectedRoute>} />
-              <Route path="/app/billing/customers" element={<ProtectedRoute><Layout><AppCustomers /></Layout></ProtectedRoute>} />
-              <Route path="/app/billing/vendors" element={<ProtectedRoute><Layout><AppVendors /></Layout></ProtectedRoute>} />
-              <Route path="/app/billing/payment-scheduling" element={<ProtectedRoute><Layout><AppPaymentScheduling /></Layout></ProtectedRoute>} />
-              <Route path="/app/billing/collections" element={<ProtectedRoute><Layout><AppCollections /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/billing/invoices', AppInvoices)}
+              {renderModuleCrudRoutes('/app/billing/bills', AppBills)}
+              {renderModuleCrudRoutes('/app/billing/customers', AppCustomers)}
+              {renderModuleCrudRoutes('/app/billing/vendors', AppVendors)}
+              {renderModuleCrudRoutes('/app/billing/payment-scheduling', AppPaymentScheduling)}
+              {renderModuleCrudRoutes('/app/billing/collections', AppCollections)}
 
               {/* Reporting */}
-              <Route path="/app/reporting/statements" element={<ProtectedRoute><Layout><AppStatements /></Layout></ProtectedRoute>} />
-              <Route path="/app/reporting/trial-balance" element={<ProtectedRoute><Layout><AppTrialBalance /></Layout></ProtectedRoute>} />
-              <Route path="/app/reporting/analytics" element={<ProtectedRoute><Layout><AppAnalytics /></Layout></ProtectedRoute>} />
-              <Route path="/app/reporting/risk-exposure" element={<ProtectedRoute><Layout><AppRiskExposure /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/reporting/statements', AppStatements)}
+              {renderModuleCrudRoutes('/app/reporting/trial-balance', AppTrialBalance)}
+              {renderModuleCrudRoutes('/app/reporting/analytics', AppAnalytics)}
+              {renderModuleCrudRoutes('/app/reporting/risk-exposure', AppRiskExposure)}
 
               {/* Budgeting */}
-              <Route path="/app/budgeting/budgets" element={<ProtectedRoute><Layout><AppBudgets /></Layout></ProtectedRoute>} />
-              <Route path="/app/budgeting/forecasts" element={<ProtectedRoute><Layout><AppForecasts /></Layout></ProtectedRoute>} />
-              <Route path="/app/budgeting/variance-analysis" element={<ProtectedRoute><Layout><AppVarianceAnalysis /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/budgeting/budgets', AppBudgets)}
+              {renderModuleCrudRoutes('/app/budgeting/forecasts', AppForecasts)}
+              {renderModuleCrudRoutes('/app/budgeting/variance-analysis', AppVarianceAnalysis)}
 
               {/* Compliance */}
-              <Route path="/app/compliance/tax-center" element={<ProtectedRoute><Layout><AppTaxCenter /></Layout></ProtectedRoute>} />
-              <Route path="/app/compliance/audit-trail" element={<ProtectedRoute><Layout><AppAuditTrail /></Layout></ProtectedRoute>} />
-              <Route path="/app/compliance/period-close" element={<ProtectedRoute><Layout><AppPeriodClose /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/compliance/tax-center', AppTaxCenter)}
+              {renderModuleCrudRoutes('/app/compliance/audit-trail', AppAuditTrail)}
+              {renderModuleCrudRoutes('/app/compliance/period-close', AppPeriodClose)}
 
               {/* Documents */}
-              <Route path="/app/documents/vault" element={<ProtectedRoute><Layout><AppDocumentVault /></Layout></ProtectedRoute>} />
-              <Route path="/app/documents/receipts" element={<ProtectedRoute><Layout><AppReceipts /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/documents/vault', AppDocumentVault)}
+              {renderModuleCrudRoutes('/app/documents/receipts', AppReceipts)}
 
               {/* Clients */}
-              <Route path="/app/clients/directory" element={<ProtectedRoute><Layout><AppClientDirectory /></Layout></ProtectedRoute>} />
-              <Route path="/app/clients/portal" element={<ProtectedRoute><Layout><AppClientPortal /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/clients/directory', AppClientDirectory)}
+              {renderModuleCrudRoutes('/app/clients/portal', AppClientPortal)}
 
               {/* Automation */}
-              <Route path="/app/automation/rules" element={<ProtectedRoute><Layout><AppAutomationRules /></Layout></ProtectedRoute>} />
-              <Route path="/app/automation/recurring" element={<ProtectedRoute><Layout><AppRecurringEntries /></Layout></ProtectedRoute>} />
-              <Route path="/app/automation/ai-insights" element={<ProtectedRoute><Layout><AppAIInsights /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/automation/rules', AppAutomationRules)}
+              {renderModuleCrudRoutes('/app/automation/recurring', AppRecurringEntries)}
+              {renderModuleCrudRoutes('/app/automation/ai-insights', AppAIInsights)}
 
               {/* Integrations */}
-              <Route path="/app/integrations/api-keys" element={<ProtectedRoute><Layout><AppAPIKeys /></Layout></ProtectedRoute>} />
-              <Route path="/app/integrations/list" element={<ProtectedRoute><Layout><AppIntegrationsList /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/integrations/api-keys', AppAPIKeys)}
+              {renderModuleCrudRoutes('/app/integrations/list', AppIntegrationsList)}
 
               {/* Settings */}
-              <Route path="/app/settings/firm" element={<ProtectedRoute><Layout><AppFirmSettings /></Layout></ProtectedRoute>} />
-              <Route path="/app/settings/team" element={<ProtectedRoute><Layout><AppTeamPermissions /></Layout></ProtectedRoute>} />
-              <Route path="/app/settings/security" element={<ProtectedRoute><Layout><AppSecurity /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/settings/firm', AppFirmSettings)}
+              {renderModuleCrudRoutes('/app/settings/team', AppTeamPermissions)}
+              {renderModuleCrudRoutes('/app/settings/security', AppSecurity)}
               <Route path="/app/settings/entities" element={<Navigate to="/app/enterprise/entities" replace />} />
-              <Route path="/app/settings/branding" element={<ProtectedRoute><Layout><AppBranding /></Layout></ProtectedRoute>} />
-              <Route path="/app/settings/subscription" element={<ProtectedRoute><Layout><AppSubscription /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/settings/branding', AppBranding)}
+              {renderModuleCrudRoutes('/app/settings/subscription', AppSubscription)}
               {/* Support */}
-              <Route path="/app/support/help" element={<ProtectedRoute><Layout><AppHelpCenter /></Layout></ProtectedRoute>} />
-              <Route path="/app/support/tickets" element={<ProtectedRoute><Layout><AppSupportTickets /></Layout></ProtectedRoute>} />
+              {renderModuleCrudRoutes('/app/support/help', AppHelpCenter)}
+              {renderModuleCrudRoutes('/app/support/tickets', AppSupportTickets)}
             </Routes>
               </Router>
               </FilterProvider>

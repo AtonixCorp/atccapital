@@ -1,320 +1,130 @@
-import React, { useState, useMemo } from 'react';
-import { Button, Card, PageHeader, Input, Modal } from '../../../components/ui';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Card, PageHeader, Table, Modal, Input } from '../../../components/ui';
+import { chartOfAccountsAPI, entitiesAPI } from '../../../services/api';
 
-const ACCOUNT_TYPES = [
-  { value: 'Asset',     color: '#059669' },
-  { value: 'Liability', color: '#DC2626' },
-  { value: 'Equity',    color: '#7C3AED' },
-  { value: 'Revenue',   color: '#0284C7' },
-  { value: 'Expense',   color: '#D97706' },
-];
+const TYPES = ['asset', 'liability', 'equity', 'revenue', 'expense'];
+const TYPE_COLOR = { asset: '#10b981', liability: '#ef4444', equity: '#3b82f6', revenue: '#06b6d4', expense: '#f59e0b' };
+const BLANK = { account_code: '', account_name: '', account_type: 'asset', currency: 'USD', opening_balance: '0.00', description: '', status: 'active', entity: '' };
 
-const STATUS_OPTIONS = ['Active', 'Inactive', 'Archived'];
-const CURRENCY_OPTIONS = ['ZAR', 'USD', 'EUR', 'GBP', 'SGD', 'AED'];
-
-const SEED = [
-  { id: 1,  code: '1000', name: 'Cash & Cash Equivalents',   type: 'Asset',     currency: 'ZAR', balance: 250000,   costCenter: '',           status: 'Active',   desc: 'Bank and petty cash accounts' },
-  { id: 2,  code: '1100', name: 'Accounts Receivable',       type: 'Asset',     currency: 'ZAR', balance: 180000,   costCenter: 'Sales',      status: 'Active',   desc: '' },
-  { id: 3,  code: '1200', name: 'Inventory',                 type: 'Asset',     currency: 'ZAR', balance: 95000,    costCenter: 'Ops',        status: 'Active',   desc: '' },
-  { id: 4,  code: '1500', name: 'Property & Equipment',      type: 'Asset',     currency: 'ZAR', balance: 420000,   costCenter: '',           status: 'Active',   desc: 'Fixed assets net of depreciation' },
-  { id: 5,  code: '2000', name: 'Accounts Payable',          type: 'Liability', currency: 'ZAR', balance: 95000,    costCenter: 'Finance',    status: 'Active',   desc: '' },
-  { id: 6,  code: '2100', name: 'Accrued Liabilities',       type: 'Liability', currency: 'ZAR', balance: 32000,    costCenter: '',           status: 'Active',   desc: '' },
-  { id: 7,  code: '2500', name: 'Long-term Debt',            type: 'Liability', currency: 'ZAR', balance: 210000,   costCenter: '',           status: 'Active',   desc: '' },
-  { id: 8,  code: '3000', name: "Owner's Equity",            type: 'Equity',    currency: 'ZAR', balance: 500000,   costCenter: '',           status: 'Active',   desc: '' },
-  { id: 9,  code: '3100', name: 'Retained Earnings',         type: 'Equity',    currency: 'ZAR', balance: 108000,   costCenter: '',           status: 'Active',   desc: '' },
-  { id: 10, code: '4000', name: 'Revenue',                   type: 'Revenue',   currency: 'ZAR', balance: 750000,   costCenter: 'Sales',      status: 'Active',   desc: '' },
-  { id: 11, code: '4100', name: 'Service Income',            type: 'Revenue',   currency: 'ZAR', balance: 120000,   costCenter: 'Services',   status: 'Active',   desc: '' },
-  { id: 12, code: '5000', name: 'Cost of Goods Sold',        type: 'Expense',   currency: 'ZAR', balance: 310000,   costCenter: 'Ops',        status: 'Active',   desc: '' },
-  { id: 13, code: '5100', name: 'Salaries & Wages',          type: 'Expense',   currency: 'ZAR', balance: 195000,   costCenter: 'HR',         status: 'Active',   desc: '' },
-  { id: 14, code: '5200', name: 'Rent & Utilities',          type: 'Expense',   currency: 'ZAR', balance: 48000,    costCenter: 'Facilities', status: 'Active',   desc: '' },
-  { id: 15, code: '5300', name: 'Marketing & Advertising',   type: 'Expense',   currency: 'ZAR', balance: 22000,    costCenter: 'Marketing',  status: 'Inactive', desc: '' },
-];
-
-let nextId = SEED.length + 1;
-
-const BLANK = { code: '', name: '', type: 'Asset', currency: 'ZAR', balance: '', costCenter: '', parent: '', desc: '', status: 'Active' };
-
-const fmt = (v) => Number(v || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 });
-
-const lbl = { display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 };
-const sel = {
-  width: '100%', height: 38, padding: '0 10px', fontSize: 13,
-  border: '1px solid #D1D5DB', borderRadius: 6, background: '#fff',
-  color: '#111827', boxSizing: 'border-box', cursor: 'pointer',
-};
-const inp2 = {
-  width: '100%', height: 38, padding: '0 10px', fontSize: 13,
-  border: '1px solid #D1D5DB', borderRadius: 6, background: '#fff',
-  color: '#111827', boxSizing: 'border-box',
-};
-
-const ChartOfAccounts = () => {
-  const [accounts, setAccounts] = useState(SEED);
+export default function ChartOfAccounts() {
+  const [accounts, setAccounts] = useState([]);
+  const [entities, setEntities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(BLANK);
-  const [search, setSearch] = useState('');
+  const [saving, setSaving] = useState(false);
   const [filterType, setFilterType] = useState('');
-  const [collapsed, setCollapsed] = useState({});
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [aRes, eRes] = await Promise.all([chartOfAccountsAPI.getAll(), entitiesAPI.getAll()]);
+      setAccounts(aRes.data.results || aRes.data);
+      setEntities(eRes.data.results || eRes.data);
+    } catch (e) { setError('Failed to load accounts'); }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const filtered = filterType ? accounts.filter(a => a.account_type === filterType) : accounts;
+
+  const handleSave = async () => {
+    if (!form.account_code.trim()) { setError('Account code is required.'); return; }
+    if (!form.account_name.trim()) { setError('Account name is required.'); return; }
+    if (!form.entity) { setError('Entity is required.'); return; }
+    setSaving(true); setError('');
+    try {
+      const payload = { ...form, entity: parseInt(form.entity) };
+      if (editItem) await chartOfAccountsAPI.update(editItem.id, payload);
+      else await chartOfAccountsAPI.create(payload);
+      setShowModal(false);
+      load();
+    } catch (e) {
+      const d = e.response?.data;
+      setError(d ? Object.entries(d).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | ') : 'Failed to save');
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this account?')) return;
+    try { await chartOfAccountsAPI.delete(id); load(); } catch (e) { alert(e.response?.data?.detail || e.message); }
+  };
+
+  const openNew = () => { setEditItem(null); setForm(BLANK); setError(''); setShowModal(true); };
+  const openEdit = (item) => { setEditItem(item); setForm({ account_code: item.account_code, account_name: item.account_name, account_type: item.account_type, currency: item.currency || 'USD', opening_balance: item.opening_balance || '0.00', description: item.description || '', status: item.status || 'active', entity: item.entity || '' }); setError(''); setShowModal(true); };
   const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
 
-  const openNew  = () => { setEditing(null); setForm(BLANK); setShowModal(true); };
-  const openEdit = (a) => {
-    setEditing(a);
-    setForm({ code: a.code, name: a.name, type: a.type, currency: a.currency, balance: String(a.balance), costCenter: a.costCenter, parent: a.parent || '', desc: a.desc, status: a.status });
-    setShowModal(true);
-  };
-  const closeModal = () => { setShowModal(false); setEditing(null); };
-
-  const handleSave = () => {
-    if (!form.code.trim() || !form.name.trim()) return;
-    if (editing) {
-      setAccounts(prev => prev.map(a => a.id === editing.id ? { ...a, ...form, balance: parseFloat(form.balance) || 0 } : a));
-    } else {
-      setAccounts(prev => [...prev, { id: nextId++, ...form, balance: parseFloat(form.balance) || 0 }]);
-    }
-    closeModal();
-  };
-
-  const handleDelete = (id) => {
-    if (!window.confirm('Delete this account?')) return;
-    setAccounts(prev => prev.filter(a => a.id !== id));
-  };
-
-  const toggleCollapse = (type) => setCollapsed(p => ({ ...p, [type]: !p[type] }));
-
-  const filtered = useMemo(() => accounts.filter(a => {
-    const q = search.toLowerCase();
-    const matchQ = !q || a.code.toLowerCase().includes(q) || a.name.toLowerCase().includes(q);
-    const matchT = !filterType || a.type === filterType;
-    return matchQ && matchT;
-  }), [accounts, search, filterType]);
-
-  const grouped = useMemo(() => ACCOUNT_TYPES.reduce((acc, t) => {
-    acc[t.value] = filtered.filter(a => a.type === t.value);
-    return acc;
-  }, {}), [filtered]);
-
-  const stats = ACCOUNT_TYPES.map(t => ({
-    ...t,
-    count: accounts.filter(a => a.type === t.value).length,
-    total: accounts.filter(a => a.type === t.value).reduce((s, a) => s + Number(a.balance), 0),
-  }));
+  const columns = [
+    { key: 'account_code', label: 'Code', render: v => <code style={{ fontSize: 12, background: 'var(--color-bg-subtle)', padding: '2px 6px', borderRadius: 4 }}>{v}</code> },
+    { key: 'account_name', label: 'Account Name', render: v => <span style={{ fontWeight: 500 }}>{v}</span> },
+    { key: 'account_type', label: 'Type', render: v => <span style={{ fontSize: 12, fontWeight: 700, color: TYPE_COLOR[v] || '#6b7280', textTransform: 'capitalize' }}>{v}</span> },
+    { key: 'currency', label: 'Currency' },
+    { key: 'current_balance', label: 'Balance', render: (v, row) => <span style={{ fontFamily: 'monospace' }}>${parseFloat(v || row.opening_balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+    { key: 'status', label: 'Status', render: v => <span style={{ fontSize: 12, fontWeight: 700, color: v === 'active' ? '#10b981' : '#6b7280', textTransform: 'capitalize' }}>{v}</span> },
+  ];
 
   return (
-    <div className="module-page">
-      <PageHeader
-        title="Chart of Accounts"
-        subtitle="Manage your account structure across all types"
-        actions={
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Button variant="secondary" onClick={() => {
-              const csv = ['Code,Name,Type,Currency,Balance,Status', ...accounts.map(a => `${a.code},"${a.name}",${a.type},${a.currency},${a.balance},${a.status}`)].join('\n');
-              const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'chart-of-accounts.csv'; a.click();
-            }}>Export CSV</Button>
-            <Button variant="primary" onClick={openNew}>+ New Account</Button>
+    <div className="coa-page">
+      <PageHeader title="Chart of Accounts" subtitle="Account hierarchy — assets, liabilities, equity, revenue, expenses" actions={<Button variant="primary" onClick={openNew}>+ New Account</Button>} />
+      {error && <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '10px 16px', borderRadius: 8, marginBottom: 16, color: '#dc2626', fontSize: 13 }}>{error}</div>}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12, marginBottom: 24 }}>
+        {TYPES.map(t => (
+          <div key={t} onClick={() => setFilterType(filterType === t ? '' : t)} style={{ background: 'var(--color-white)', border: `1px solid ${filterType === t ? TYPE_COLOR[t] : 'var(--border-color-default)'}`, borderTop: `3px solid ${TYPE_COLOR[t]}`, borderRadius: 8, padding: '12px 16px', cursor: 'pointer' }}>
+            <div style={{ fontSize: 12, color: TYPE_COLOR[t], fontWeight: 700, textTransform: 'capitalize' }}>{t}</div>
+            <div style={{ fontSize: 22, fontWeight: 700 }}>{accounts.filter(a => a.account_type === t).length}</div>
           </div>
-        }
-      />
-
-      {/* KPI strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 14, marginBottom: 22 }}>
-        {stats.map(s => (
-          <Card key={s.value} style={{ padding: '14px 18px', borderTop: `3px solid ${s.color}` }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: s.color, textTransform: 'uppercase', letterSpacing: 0.5 }}>{s.value}</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', margin: '4px 0 2px' }}>{s.count}</div>
-            <div style={{ fontSize: 11, color: '#6B7280' }}>{s.value === 'Asset' || s.value === 'Revenue' ? '+' : ''}{fmt(s.total)}</div>
-          </Card>
         ))}
       </div>
-
-      {/* Search + filter */}
-      <Card style={{ padding: '12px 16px', marginBottom: 18, display: 'flex', gap: 12, alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
-          <Input
-            placeholder="Search by code or name…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{ marginBottom: 0, height: 38 }}
-          />
-        </div>
-        <select style={{ ...sel, width: 180 }} value={filterType} onChange={e => setFilterType(e.target.value)}>
-          <option value="">All Types</option>
-          {ACCOUNT_TYPES.map(t => <option key={t.value} value={t.value}>{t.value}</option>)}
-        </select>
+      <Card>
+        {loading ? <div style={{ textAlign: 'center', padding: 32, color: 'var(--color-silver-dark)' }}>Loading...</div>
+        : filtered.length === 0 ? <div style={{ textAlign: 'center', padding: 48, color: 'var(--color-silver-dark)' }}><p style={{ fontSize: 15, fontWeight: 500 }}>No accounts {filterType ? `of type "${filterType}"` : ''} yet.</p><p style={{ fontSize: 13 }}>Click "New Account" to create your first account.</p></div>
+        : <Table columns={columns} data={filtered} actions={row => (
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button onClick={() => openEdit(row)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border-color-default)', cursor: 'pointer', background: 'transparent' }}>Edit</button>
+              <button onClick={() => handleDelete(row.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid #fca5a5', cursor: 'pointer', background: 'transparent', color: '#dc2626' }}>Delete</button>
+            </div>
+          )} />}
       </Card>
-
-      {/* Grouped tables */}
-      {ACCOUNT_TYPES.map(t => {
-        const rows = grouped[t.value];
-        if (!rows || rows.length === 0) return null;
-        const isOpen = !collapsed[t.value];
-        return (
-          <Card key={t.value} style={{ marginBottom: 16, overflow: 'hidden', padding: 0 }}>
-            {/* Group header */}
-            <div
-              onClick={() => toggleCollapse(t.value)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '13px 20px',
-                background: '#F9FAFB', borderBottom: isOpen ? '1px solid #E5E7EB' : 'none',
-                cursor: 'pointer', userSelect: 'none',
-              }}
-            >
-              <span style={{ width: 10, height: 10, borderRadius: '50%', background: t.color, flexShrink: 0 }} />
-              <span style={{ fontWeight: 700, fontSize: 14, color: '#111827', flex: 1 }}>{t.value}</span>
-              <span style={{ fontSize: 12, color: '#6B7280' }}>{rows.length} accounts</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: t.color, minWidth: 110, textAlign: 'right' }}>
-                {fmt(rows.reduce((s, a) => s + Number(a.balance), 0))}
-              </span>
-              <span style={{ fontSize: 16, color: '#9CA3AF', marginLeft: 8 }}>{isOpen ? '▾' : '▸'}</span>
-            </div>
-
-            {isOpen && (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: '#FAFAFA' }}>
-                      {['Code', 'Account Name', 'Currency', 'Cost Center', 'Balance', 'Status', 'Actions'].map(h => (
-                        <th key={h} style={{ padding: '9px 16px', textAlign: 'left', fontWeight: 600, color: '#374151', fontSize: 12, borderBottom: '1px solid #E5E7EB', whiteSpace: 'nowrap' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((a, i) => (
-                      <tr key={a.id}
-                        style={{ borderBottom: '1px solid #F3F4F6', background: i % 2 === 1 ? '#FAFAFA' : '#fff' }}
-                        onMouseOver={e => e.currentTarget.style.background = '#EFF6FF'}
-                        onMouseOut={e => e.currentTarget.style.background = i % 2 === 1 ? '#FAFAFA' : '#fff'}
-                      >
-                        <td style={{ padding: '10px 16px', fontFamily: 'monospace', fontWeight: 600, color: '#374151' }}>{a.code}</td>
-                        <td style={{ padding: '10px 16px' }}>
-                          <div style={{ fontWeight: 500, color: '#111827' }}>{a.name}</div>
-                          {a.desc && <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 2 }}>{a.desc}</div>}
-                        </td>
-                        <td style={{ padding: '10px 16px', color: '#6B7280' }}>{a.currency}</td>
-                        <td style={{ padding: '10px 16px', color: '#6B7280' }}>{a.costCenter || '—'}</td>
-                        <td style={{ padding: '10px 16px', fontWeight: 600, color: '#111827', textAlign: 'right' }}>
-                          {a.currency} {fmt(a.balance)}
-                        </td>
-                        <td style={{ padding: '10px 16px' }}>
-                          <span style={{
-                            background: a.status === 'Active' ? '#D1FAE5' : a.status === 'Inactive' ? '#F3F4F6' : '#FEF3C7',
-                            color: a.status === 'Active' ? '#065F46' : a.status === 'Inactive' ? '#374151' : '#92400E',
-                            borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 600,
-                          }}>{a.status}</span>
-                        </td>
-                        <td style={{ padding: '10px 16px' }}>
-                          <div style={{ display: 'flex', gap: 6 }}>
-                            <button onClick={() => openEdit(a)} style={{ background: '#F3F4F6', border: 'none', borderRadius: 5, padding: '4px 10px', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>Edit</button>
-                            <button onClick={() => handleDelete(a.id)} style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', borderRadius: 5, padding: '4px 10px', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>Delete</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Card>
-        );
-      })}
-
-      {filtered.length === 0 && (
-        <Card style={{ padding: '40px 0', textAlign: 'center', color: '#9CA3AF' }}>
-          No accounts match your search.
-        </Card>
-      )}
-
-      {/* Add / Edit Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={closeModal}
-        title={editing ? 'Edit Account' : 'Add New Account'}
-        size="large"
-        footer={
-          <>
-            <Button variant="secondary" onClick={closeModal}>Cancel</Button>
-            <Button variant="primary" onClick={handleSave} disabled={!form.code.trim() || !form.name.trim()}>
-              {editing ? 'Save Changes' : 'Create Account'}
-            </Button>
-          </>
-        }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Code + Name */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 14 }}>
-            <div>
-              <label style={lbl}>Account Code <span style={{ color: '#DC2626' }}>*</span></label>
-              <input style={inp2} value={form.code} onChange={set('code')} placeholder="e.g. 1000" />
-            </div>
-            <div>
-              <label style={lbl}>Account Name <span style={{ color: '#DC2626' }}>*</span></label>
-              <input style={inp2} value={form.name} onChange={set('name')} placeholder="e.g. Cash & Cash Equivalents" />
-            </div>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editItem ? 'Edit Account' : 'New Account'}
+        footer={<><Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button><Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Account'}</Button></>}>
+        {error && <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: 6, marginBottom: 12, color: '#dc2626', fontSize: 12 }}>{error}</div>}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Entity *</label>
+          <select value={form.entity} onChange={set('entity')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            <option value="">— Select Entity —</option>
+            {entities.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+        </div>
+        <Input label="Account Code *" value={form.account_code} onChange={set('account_code')} placeholder="e.g. 1000" />
+        <Input label="Account Name *" value={form.account_name} onChange={set('account_name')} placeholder="e.g. Cash" />
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Account Type *</label>
+          <select value={form.account_type} onChange={set('account_type')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            {TYPES.map(t => <option key={t} value={t} style={{ textTransform: 'capitalize' }}>{t}</option>)}
+          </select>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Input label="Currency" value={form.currency} onChange={set('currency')} placeholder="USD" />
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Opening Balance</label>
+            <input type="number" step="0.01" value={form.opening_balance} onChange={set('opening_balance')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
           </div>
-
-          {/* Type + Status */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div>
-              <label style={lbl}>Account Type <span style={{ color: '#DC2626' }}>*</span></label>
-              <select style={sel} value={form.type} onChange={set('type')}>
-                {ACCOUNT_TYPES.map(t => <option key={t.value} value={t.value}>{t.value}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={lbl}>Status</label>
-              <select style={sel} value={form.status} onChange={set('status')}>
-                {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
-
-          {/* Currency + Opening Balance */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div>
-              <label style={lbl}>Currency</label>
-              <select style={sel} value={form.currency} onChange={set('currency')}>
-                {CURRENCY_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={lbl}>Opening Balance</label>
-              <input style={inp2} type="number" step="0.01" value={form.balance} onChange={set('balance')} placeholder="0.00" />
-            </div>
-          </div>
-
-          {/* Cost Center + Parent */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div>
-              <label style={lbl}>Cost Center</label>
-              <input style={inp2} value={form.costCenter} onChange={set('costCenter')} placeholder="e.g. Operations" />
-            </div>
-            <div>
-              <label style={lbl}>Parent Account <span style={{ fontSize: 11, color: '#9CA3AF' }}>(optional)</span></label>
-              <select style={sel} value={form.parent} onChange={set('parent')}>
-                <option value="">— None —</option>
-                {accounts.filter(a => a.type === form.type && a.id !== editing?.id).map(a => (
-                  <option key={a.id} value={a.id}>{a.code} – {a.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label style={lbl}>Description <span style={{ fontSize: 11, color: '#9CA3AF' }}>(optional)</span></label>
-            <textarea
-              style={{ ...inp2, height: 72, padding: '8px 10px', resize: 'vertical' }}
-              value={form.desc}
-              onChange={set('desc')}
-              placeholder="Optional description or notes…"
-            />
-          </div>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Status</label>
+          <select value={form.status} onChange={set('status')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            <option value="active">Active</option><option value="inactive">Inactive</option><option value="archived">Archived</option>
+          </select>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Description</label>
+          <textarea value={form.description} onChange={set('description')} rows={2} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
         </div>
       </Modal>
     </div>
   );
-};
-
-export default ChartOfAccounts;
+}

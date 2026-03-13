@@ -2340,7 +2340,15 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity, created_by=self.request.user)
+        subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        serializer.save(
+            entity=entity,
+            created_by=self.request.user,
+            total_amount=total_amount,
+            outstanding_amount=total_amount,
+        )
     
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -2513,7 +2521,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        instance = serializer.save(entity=entity)
+        invoice = serializer.validated_data['invoice']
+        customer = serializer.validated_data.get('customer') or invoice.customer
+        instance = serializer.save(entity=entity, customer=customer)
         
         # Update invoice paid amount
         instance.invoice.paid_amount += instance.amount
@@ -2564,7 +2574,15 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity, created_by=self.request.user)
+        subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        serializer.save(
+            entity=entity,
+            created_by=self.request.user,
+            total_amount=total_amount,
+            outstanding_amount=total_amount,
+        )
 
 
 class BillViewSet(viewsets.ModelViewSet):
@@ -2602,7 +2620,9 @@ class BillPaymentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        instance = serializer.save(entity=entity)
+        bill = serializer.validated_data['bill']
+        vendor = serializer.validated_data.get('vendor') or bill.vendor
+        instance = serializer.save(entity=entity, vendor=vendor)
         
         # Update bill paid amount
         instance.bill.paid_amount += instance.amount
@@ -2653,10 +2673,22 @@ class InventoryTransactionViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        instance = serializer.save(entity=entity, created_by=self.request.user)
+        item = serializer.validated_data['inventory_item']
+        quantity_before = item.quantity_on_hand
+        quantity = serializer.validated_data['quantity']
+        unit_cost = serializer.validated_data.get('unit_cost') or item.unit_cost
+        quantity_after = quantity_before + quantity
+        total_cost = serializer.validated_data.get('total_cost') or (quantity * unit_cost)
+        instance = serializer.save(
+            entity=entity,
+            created_by=self.request.user,
+            quantity_before=quantity_before,
+            quantity_after=quantity_after,
+            unit_cost=unit_cost,
+            total_cost=total_cost,
+        )
         
         # Update inventory quantity
-        item = instance.inventory_item
         item.quantity_on_hand = instance.quantity_after
         item.save()
 

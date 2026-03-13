@@ -1,96 +1,112 @@
-import React, { useState } from 'react';
-import { Button, Card, PageHeader, Table } from '../../../components/ui';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button, Card, PageHeader, Table, Modal, Input } from '../../../components/ui';
+import { bankReconciliationsAPI, bankAccountsAPI, entitiesAPI } from '../../../services/api';
 
-const MOCK_ACCOUNTS = [
-  { id: 1, account: 'Chase Business - USD', ledger_balance: '$24,582.45', bank_balance: '$24,582.45', reconciled: '$24,582.45', variance: '$0.00', status: 'Reconciled', last_update: '2024-11-28' },
-  { id: 2, account: 'HSBC Business - EUR', ledger_balance: '€18,650.92', bank_balance: '€18,620.15', reconciled: '€18,620.15', variance: '€30.77', status: 'Variance', last_update: '2024-11-27' },
-  { id: 3, account: 'Wells Fargo - CAD', ledger_balance: 'CAD 31,240.00', bank_balance: 'CAD 31,240.00', reconciled: 'CAD 31,240.00', variance: '$0.00', status: 'Reconciled', last_update: '2024-11-28' },
-  { id: 4, account: 'DBS Singapore - SGD', ledger_balance: 'SGD 42,155.60', bank_balance: 'SGD 41,920.35', reconciled: 'SGD 41,920.35', variance: 'SGD 235.25', status: 'Pending', last_update: '2024-11-26' },
-  { id: 5, account: 'Revolut - Multi-Currency', ledger_balance: '$8,420.12', bank_balance: '$8,420.12', reconciled: 'N/A', variance: 'N/A', status: 'Not Started', last_update: '—' },
-];
+const STATUS_COLOR = { draft: '#6b7280', in_progress: '#f59e0b', completed: '#10b981', reviewed: '#3b82f6' };
+const BLANK = { bank_account: '', reconciliation_date: '', bank_statement_balance: '', book_balance: '0.00', notes: '', entity: '' };
 
-const STATUS_COLOR = { Reconciled: '#15803d', Variance: '#f59e0b', Pending: '#3b82f6', 'Not Started': '#6b7280' };
+export default function Reconciliation() {
+  const [recs, setRecs] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
+  const [entities, setEntities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [form, setForm] = useState(BLANK);
+  const [saving, setSaving] = useState(false);
 
-const Reconciliation = () => {
-  const [accounts] = useState(MOCK_ACCOUNTS);
-  const [selected, setSelected] = useState(null);
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [rRes, bRes, eRes] = await Promise.all([bankReconciliationsAPI.getAll(), bankAccountsAPI.getAll(), entitiesAPI.getAll()]);
+      setRecs(rRes.data.results || rRes.data);
+      setBankAccounts(bRes.data.results || bRes.data);
+      setEntities(eRes.data.results || eRes.data);
+    } catch (e) { setError('Failed to load reconciliations'); }
+    setLoading(false);
+  }, []);
 
-  const reconciled_count = accounts.filter(a => a.status === 'Reconciled').length;
-  const variance_count = accounts.filter(a => a.status === 'Variance').length;
-  const pending_count = accounts.filter(a => a.status === 'Pending').length;
-  const not_started_count = accounts.filter(a => a.status === 'Not Started').length;
+  useEffect(() => { load(); }, [load]);
+
+  const handleSave = async () => {
+    if (!form.bank_account) { setError('Bank account is required.'); return; }
+    if (!form.reconciliation_date) { setError('Reconciliation date is required.'); return; }
+    if (!form.entity) { setError('Entity is required.'); return; }
+    setSaving(true); setError('');
+    try {
+      if (editItem) await bankReconciliationsAPI.update(editItem.id, form);
+      else await bankReconciliationsAPI.create(form);
+      setShowModal(false);
+      load();
+    } catch (e) {
+      const d = e.response?.data;
+      setError(d ? Object.entries(d).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | ') : 'Failed to save');
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this reconciliation?')) return;
+    try { await bankReconciliationsAPI.delete(id); load(); } catch (e) { alert(e.response?.data?.detail || e.message); }
+  };
+
+  const openNew = () => { setEditItem(null); setForm(BLANK); setError(''); setShowModal(true); };
+  const openEdit = (item) => { setEditItem(item); setForm({ bank_account: item.bank_account || '', reconciliation_date: item.reconciliation_date || '', bank_statement_balance: item.bank_statement_balance || '', book_balance: item.book_balance || '0.00', notes: item.notes || '', entity: item.entity || '' }); setError(''); setShowModal(true); };
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
 
   const columns = [
-    { key: 'account', label: 'Account', width: '25%', render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
-    { key: 'ledger_balance', label: 'Ledger Balance', width: '18%', render: v => <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{v}</span> },
-    { key: 'bank_balance', label: 'Bank Balance', width: '18%', render: v => <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{v}</span> },
-    { key: 'variance', label: 'Variance', width: '12%', render: v => <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 600, color: v === '$0.00' || v === 'N/A' ? '#15803d' : '#ef4444' }}>{v}</span> },
-    {
-      key: 'status', label: 'Status', width: '15%',
-      render: v => <span style={{ fontWeight: 700, fontSize: 12, color: STATUS_COLOR[v] || '#6b7280' }}>{v}</span>,
-    },
-    { key: 'last_update', label: 'Last Update', width: '12%', render: v => <span style={{ color: 'var(--color-silver-dark)', fontSize: 12 }}>{v}</span> },
+    { key: 'reconciliation_date', label: 'Reconciliation Date' },
+    { key: 'bank_statement_balance', label: 'Stmt Balance', render: v => <span style={{ fontFamily: 'monospace' }}>${parseFloat(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+    { key: 'book_balance', label: 'Book Balance', render: v => <span style={{ fontFamily: 'monospace' }}>${parseFloat(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+    { key: 'variance', label: 'Variance', render: v => <span style={{ fontFamily: 'monospace' }}>${parseFloat(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+    { key: 'status', label: 'Status', render: v => <span style={{ fontSize: 12, fontWeight: 700, color: STATUS_COLOR[v] || '#6b7280', textTransform: 'capitalize' }}>{(v || '').replace(/_/g, ' ')}</span> },
   ];
 
   return (
-    <div className="reconciliation-page">
-      <PageHeader
-        title="Reconciliation"
-        subtitle="Bank and account matching"
-        actions={
-          <>
-            <Button variant="secondary">Sync Banks</Button>
-            <Button variant="primary">Start New Reconciliation</Button>
-          </>
-        }
-      />
-
-      <div className="stats-row">
-        {[
-          { label: 'Reconciled', value: reconciled_count, accent: '#15803d' },
-          { label: 'Variance', value: variance_count, accent: '#f59e0b' },
-          { label: 'Pending', value: pending_count, accent: '#3b82f6' },
-          { label: 'Not Started', value: not_started_count, accent: '#6b7280' },
-        ].map(s => (
-          <div key={s.label} className="stat-card" style={{ borderTop: `3px solid ${s.accent}` }}>
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={{ color: s.accent }}>{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <Card header="Account Status">
-        <Table columns={columns} data={accounts} onRowClick={row => setSelected(row)} />
+    <div className="recon-page">
+      <PageHeader title="Bank Reconciliation" subtitle="Reconcile bank statements with book records" actions={<Button variant="primary" onClick={openNew}>+ New Reconciliation</Button>} />
+      {error && <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '10px 16px', borderRadius: 8, marginBottom: 16, color: '#dc2626', fontSize: 13 }}>{error}</div>}
+      <Card>
+        {loading ? <div style={{ textAlign: 'center', padding: 32, color: 'var(--color-silver-dark)' }}>Loading...</div>
+        : recs.length === 0 ? <div style={{ textAlign: 'center', padding: 48, color: 'var(--color-silver-dark)' }}><p>No reconciliations found.</p></div>
+        : <Table columns={columns} data={recs} actions={row => (
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button onClick={() => openEdit(row)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border-color-default)', cursor: 'pointer', background: 'transparent' }}>Edit</button>
+              <button onClick={() => handleDelete(row.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid #fca5a5', cursor: 'pointer', background: 'transparent', color: '#dc2626' }}>Delete</button>
+            </div>
+          )} />}
       </Card>
-
-      {selected && (
-        <Card header={`Reconciliation Details — ${selected.account}`} style={{ marginTop: 20 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--color-silver-dark)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Ledger Balance</div>
-              <div style={{ fontWeight: 700, fontSize: 18, fontFamily: 'monospace' }}>{selected.ledger_balance}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--color-silver-dark)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Bank Balance</div>
-              <div style={{ fontWeight: 700, fontSize: 18, fontFamily: 'monospace' }}>{selected.bank_balance}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--color-silver-dark)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>Difference</div>
-              <div style={{ fontWeight: 700, fontSize: 18, fontFamily: 'monospace', color: selected.variance === '$0.00' || selected.variance === 'N/A' ? '#15803d' : '#ef4444' }}>{selected.variance}</div>
-            </div>
-          </div>
-          {selected.status === 'Variance' && (
-            <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 8, padding: 12, fontSize: 13, color: '#78350f' }}>
-              <span style={{ fontWeight: 700 }}>⚠ Variance detected.</span> Review outstanding transactions and deposits not yet cleared by the bank.
-            </div>
-          )}
-          {selected.status === 'Not Started' && (
-            <Button variant="primary" onClick={() => setSelected(null)}>Begin Reconciliation</Button>
-          )}
-        </Card>
-      )}
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editItem ? 'Edit Reconciliation' : 'New Reconciliation'}
+        footer={<><Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button><Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button></>}>
+        {error && <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: 6, marginBottom: 12, color: '#dc2626', fontSize: 12 }}>{error}</div>}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Entity *</label>
+          <select value={form.entity} onChange={set('entity')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            <option value="">— Select Entity —</option>
+            {entities.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Bank Account *</label>
+          <select value={form.bank_account} onChange={set('bank_account')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+            <option value="">— Select Bank Account —</option>
+            {bankAccounts.map(b => <option key={b.id} value={b.id}>{b.account_name} — {b.bank_name}</option>)}
+          </select>
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Reconciliation Date *</label>
+          <input type="date" value={form.reconciliation_date} onChange={set('reconciliation_date')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Input label="Statement Balance *" type="number" step="0.01" value={form.bank_statement_balance} onChange={set('bank_statement_balance')} placeholder="0.00" />
+          <Input label="Book Balance" type="number" step="0.01" value={form.book_balance} onChange={set('book_balance')} placeholder="0.00" />
+        </div>
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Notes</label>
+          <textarea value={form.notes} onChange={set('notes')} rows={2} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
+        </div>
+      </Modal>
     </div>
   );
-};
-
-export default Reconciliation;
+}
