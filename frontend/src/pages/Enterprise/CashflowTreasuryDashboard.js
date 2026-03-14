@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import { useEnterprise } from '../../context/EnterpriseContext';
+import '../../styles/EntityPages.css';
 
 const CashflowTreasuryDashboard = () => {
   const { entities, fetchCashflowTreasuryDashboard } = useEnterprise();
