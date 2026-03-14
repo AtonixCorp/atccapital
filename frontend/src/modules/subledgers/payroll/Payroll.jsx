@@ -119,13 +119,14 @@ export default function Payroll() {
           notes: form.notes,
         },
       };
+      let response;
       if (editItem) {
-        await taskRequestsAPI.update(editItem.id, payload);
+        response = await taskRequestsAPI.update(editItem.id, payload);
       } else {
-        await taskRequestsAPI.create(payload);
+        response = await taskRequestsAPI.create(payload);
       }
       await load();
-      closeModal();
+      navigate(`${BASE_PATH}/view/${response.data.id}`, { replace: true });
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to save payroll task.'));
     }
@@ -137,6 +138,9 @@ export default function Payroll() {
     try {
       await taskRequestsAPI.delete(taskId);
       await load();
+      if (String(editItem?.id) === String(taskId)) {
+        closeModal();
+      }
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to delete payroll task.'));
     }

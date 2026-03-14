@@ -1,27 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useLanguage } from '../../context/LanguageContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
-import FilterBar from '../FilterBar/FilterBar';
 import './Layout.css';
-
-const BANKING_MODES = [
-  { id: 'retail',   label: 'Retail',   short: 'R' },
-  { id: 'business', label: 'Business', short: 'B' },
-  { id: 'treasury', label: 'Treasury', short: 'T' },
-];
 
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
   const navigate = useNavigate();
-  const location = useLocation();
-  const { entities, currentOrganization } = useEnterprise();
-  const firstEntity = (entities && entities.length > 0) ? entities[0] : null;
-  const bookkeepingPath = firstEntity
-    ? `/enterprise/entity/${firstEntity.id}/bookkeeping`
-    : '/app/enterprise/entities';
+  const { currentOrganization } = useEnterprise();
 
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
   const [expandedMenus, setExpandedMenus] = React.useState({});
@@ -55,14 +41,9 @@ const Layout = ({ children }) => {
   //  Navigation definitions
 
   const overviewNav = [
-    { to: '/app/firm/enterprise-branches',   label: 'Group Overview' },
-    { to: '/app/enterprise/org-overview',    label: 'Org Overview' },
+    { to: '/app/enterprise/org-overview',    label: 'Overview' },
     { to: '/app/overview/notifications',     label: 'Notifications' },
     { to: '/app/overview/tasks',             label: 'Tasks' },
-  ];
-
-  const entitiesNav = [
-    { to: '/app/enterprise/entities', label: 'All Entities' },
   ];
 
   const accountingNav = [
@@ -144,11 +125,6 @@ const Layout = ({ children }) => {
   const supportNav = [
     { to: '/app/support/help',            label: 'Help Center' },
     { to: '/app/support/tickets',         label: 'Support Tickets' },
-  ];
-
-  const bottomNav = [
-    { to: '/app/enterprise/settings',     label: 'Settings' },
-    { to: '/support',                     label: 'Support' },
   ];
 
   const toggleSubMenu = (label) => {
@@ -240,7 +216,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <ul className="nav-menu" role="list">
+        <ul className="nav-menu">
           {renderSection('Overview', overviewNav)}
           <li className="nav-divider" role="separator" />
 
@@ -333,9 +309,6 @@ const Layout = ({ children }) => {
             </div>
           </div>
         </header>
-
-        {/* Global Filter Bar — only on app routes */}
-        {location.pathname.startsWith('/app') && <FilterBar />}
 
         <main className="main-content">
           {children}

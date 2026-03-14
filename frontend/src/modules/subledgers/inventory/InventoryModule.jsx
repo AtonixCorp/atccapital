@@ -136,13 +136,14 @@ export default function InventoryModule() {
     setSaving(true);
     setError('');
     try {
+      let response;
       if (editItem) {
-        await inventoryItemsAPI.update(editItem.id, itemForm);
+        response = await inventoryItemsAPI.update(editItem.id, itemForm);
       } else {
-        await inventoryItemsAPI.create(itemForm);
+        response = await inventoryItemsAPI.create(itemForm);
       }
       await load();
-      closeItemModal();
+      navigate(`${BASE_PATH}/view/${response.data.id}`, { replace: true });
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to save inventory item.'));
     }
@@ -154,6 +155,9 @@ export default function InventoryModule() {
     try {
       await inventoryItemsAPI.delete(itemId);
       await load();
+      if (String(editItem?.id) === String(itemId)) {
+        closeItemModal();
+      }
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to delete inventory item.'));
     }

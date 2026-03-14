@@ -1,21 +1,30 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 const Modal = ({ isOpen, onClose, title, children, footer, size = 'medium' }) => {
   if (!isOpen) return null;
 
-  return (
-    <>
-      <div className="modal-overlay" onClick={onClose} />
-      <div className={`modal modal-${size}`}>
+  const modalContent = (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className={`modal modal-${size}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        onClick={(event) => event.stopPropagation()}
+        style={{ position: 'relative', top: 'auto', left: 'auto', transform: 'none' }}
+      >
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <button type="button" className="modal-close" onClick={onClose}>×</button>
         </div>
         <div className="modal-body">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
       </div>
-    </>
+    </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default Modal;

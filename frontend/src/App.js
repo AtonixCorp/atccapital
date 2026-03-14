@@ -32,7 +32,6 @@ import EnterpriseRiskExposure from './pages/Enterprise/EnterpriseRiskExposure';
 import EnterpriseReports from './pages/Enterprise/EnterpriseReports';
 import EnterpriseTeam from './pages/Enterprise/EnterpriseTeam';
 import EnterpriseSettings from './pages/EnterpriseSettings/EnterpriseSettings';
-import EnterpriseDashboard from './pages/Enterprise/EnterpriseDashboard';
 import FirmDashboard from './pages/Firm/FirmDashboard';
 import WhiteLabel from './pages/Firm/WhiteLabel';
 import Marketplace from './pages/Firm/Marketplace';
@@ -104,6 +103,7 @@ import Support from './pages/Support/Support';
 import HelpCenter from './pages/HelpCenter/HelpCenter';
 import Contact from './pages/Contact/Contact';
 import Privacy from './pages/Privacy/Privacy';
+import GlobalErrorCenter from './components/GlobalErrorCenter';
 
 function App() {
   const renderModuleCrudRoutes = (basePath, Component) => [
@@ -114,6 +114,11 @@ function App() {
     <Route key={`${basePath}-view`} path={`${basePath}/view/:id`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
   ];
 
+  const renderModulePageRoutes = (basePath, Component) => [
+    <Route key={`${basePath}-index`} path={basePath} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-list`} path={`${basePath}/list`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+  ];
+
   return (
     <AccessibilityProvider>
       <LanguageProvider>
@@ -122,6 +127,7 @@ function App() {
             <EnterpriseProvider>
               <FilterProvider>
               <Router>
+            <GlobalErrorCenter />
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Landing />} />
@@ -294,12 +300,8 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              {/* Enterprise Multi-Branch Dashboard */}
-              <Route path="/app/firm/enterprise-branches" element={
-                <ProtectedRoute>
-                  <Layout><EnterpriseDashboard /></Layout>
-                </ProtectedRoute>
-              } />
+              {/* Legacy Group Overview route */}
+              <Route path="/app/firm/enterprise-branches" element={<Navigate to="/app/enterprise/org-overview" replace />} />
 
               {/* Firm Management Routes */}
               <Route path="/app/firm/dashboard" element={
@@ -325,13 +327,13 @@ function App() {
 
               {/*  New Module Routes  */}
               {/* Overview */}
-              {renderModuleCrudRoutes('/app/overview/dashboard', AppDashboard)}
-              {renderModuleCrudRoutes('/app/overview/notifications', AppNotifications)}
+              {renderModulePageRoutes('/app/overview/dashboard', AppDashboard)}
+              {renderModulePageRoutes('/app/overview/notifications', AppNotifications)}
               {renderModuleCrudRoutes('/app/overview/tasks', AppTasks)}
 
               {/* Accounting */}
               {renderModuleCrudRoutes('/app/accounting/chart-of-accounts', AppChartOfAccounts)}
-              {renderModuleCrudRoutes('/app/accounting/general-ledger', AppGeneralLedger)}
+              {renderModulePageRoutes('/app/accounting/general-ledger', AppGeneralLedger)}
               {renderModuleCrudRoutes('/app/accounting/journal-entries', AppJournalEntries)}
               {renderModuleCrudRoutes('/app/accounting/reconciliation', AppReconciliation)}
 
@@ -349,19 +351,19 @@ function App() {
               {renderModuleCrudRoutes('/app/billing/bills', AppBills)}
               {renderModuleCrudRoutes('/app/billing/customers', AppCustomers)}
               {renderModuleCrudRoutes('/app/billing/vendors', AppVendors)}
-              {renderModuleCrudRoutes('/app/billing/payment-scheduling', AppPaymentScheduling)}
-              {renderModuleCrudRoutes('/app/billing/collections', AppCollections)}
+              {renderModulePageRoutes('/app/billing/payment-scheduling', AppPaymentScheduling)}
+              {renderModulePageRoutes('/app/billing/collections', AppCollections)}
 
               {/* Reporting */}
-              {renderModuleCrudRoutes('/app/reporting/statements', AppStatements)}
-              {renderModuleCrudRoutes('/app/reporting/trial-balance', AppTrialBalance)}
-              {renderModuleCrudRoutes('/app/reporting/analytics', AppAnalytics)}
-              {renderModuleCrudRoutes('/app/reporting/risk-exposure', AppRiskExposure)}
+              {renderModulePageRoutes('/app/reporting/statements', AppStatements)}
+              {renderModulePageRoutes('/app/reporting/trial-balance', AppTrialBalance)}
+              {renderModulePageRoutes('/app/reporting/analytics', AppAnalytics)}
+              {renderModulePageRoutes('/app/reporting/risk-exposure', AppRiskExposure)}
 
               {/* Budgeting */}
-              {renderModuleCrudRoutes('/app/budgeting/budgets', AppBudgets)}
-              {renderModuleCrudRoutes('/app/budgeting/forecasts', AppForecasts)}
-              {renderModuleCrudRoutes('/app/budgeting/variance-analysis', AppVarianceAnalysis)}
+              {renderModulePageRoutes('/app/budgeting/budgets', AppBudgets)}
+              {renderModulePageRoutes('/app/budgeting/forecasts', AppForecasts)}
+              {renderModulePageRoutes('/app/budgeting/variance-analysis', AppVarianceAnalysis)}
 
               {/* Compliance */}
               {renderModuleCrudRoutes('/app/compliance/tax-center', AppTaxCenter)}
@@ -369,32 +371,32 @@ function App() {
               {renderModuleCrudRoutes('/app/compliance/period-close', AppPeriodClose)}
 
               {/* Documents */}
-              {renderModuleCrudRoutes('/app/documents/vault', AppDocumentVault)}
-              {renderModuleCrudRoutes('/app/documents/receipts', AppReceipts)}
+              {renderModulePageRoutes('/app/documents/vault', AppDocumentVault)}
+              {renderModulePageRoutes('/app/documents/receipts', AppReceipts)}
 
               {/* Clients */}
-              {renderModuleCrudRoutes('/app/clients/directory', AppClientDirectory)}
-              {renderModuleCrudRoutes('/app/clients/portal', AppClientPortal)}
+              {renderModulePageRoutes('/app/clients/directory', AppClientDirectory)}
+              {renderModulePageRoutes('/app/clients/portal', AppClientPortal)}
 
               {/* Automation */}
-              {renderModuleCrudRoutes('/app/automation/rules', AppAutomationRules)}
-              {renderModuleCrudRoutes('/app/automation/recurring', AppRecurringEntries)}
-              {renderModuleCrudRoutes('/app/automation/ai-insights', AppAIInsights)}
+              {renderModulePageRoutes('/app/automation/rules', AppAutomationRules)}
+              {renderModulePageRoutes('/app/automation/recurring', AppRecurringEntries)}
+              {renderModulePageRoutes('/app/automation/ai-insights', AppAIInsights)}
 
               {/* Integrations */}
-              {renderModuleCrudRoutes('/app/integrations/api-keys', AppAPIKeys)}
-              {renderModuleCrudRoutes('/app/integrations/list', AppIntegrationsList)}
+              {renderModulePageRoutes('/app/integrations/api-keys', AppAPIKeys)}
+              {renderModulePageRoutes('/app/integrations/list', AppIntegrationsList)}
 
               {/* Settings */}
-              {renderModuleCrudRoutes('/app/settings/firm', AppFirmSettings)}
-              {renderModuleCrudRoutes('/app/settings/team', AppTeamPermissions)}
-              {renderModuleCrudRoutes('/app/settings/security', AppSecurity)}
+              {renderModulePageRoutes('/app/settings/firm', AppFirmSettings)}
+              {renderModulePageRoutes('/app/settings/team', AppTeamPermissions)}
+              {renderModulePageRoutes('/app/settings/security', AppSecurity)}
               <Route path="/app/settings/entities" element={<Navigate to="/app/enterprise/entities" replace />} />
-              {renderModuleCrudRoutes('/app/settings/branding', AppBranding)}
-              {renderModuleCrudRoutes('/app/settings/subscription', AppSubscription)}
+              {renderModulePageRoutes('/app/settings/branding', AppBranding)}
+              {renderModulePageRoutes('/app/settings/subscription', AppSubscription)}
               {/* Support */}
-              {renderModuleCrudRoutes('/app/support/help', AppHelpCenter)}
-              {renderModuleCrudRoutes('/app/support/tickets', AppSupportTickets)}
+              {renderModulePageRoutes('/app/support/help', AppHelpCenter)}
+              {renderModulePageRoutes('/app/support/tickets', AppSupportTickets)}
             </Routes>
               </Router>
               </FilterProvider>

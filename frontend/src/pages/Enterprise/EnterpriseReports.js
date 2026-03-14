@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { reportsAPI } from '../../services/api';
+import './EnterpriseActionPages.css';
 
 const EnterpriseReports = () => {
   const { currentOrganization } = useEnterprise();
@@ -103,15 +104,45 @@ const EnterpriseReports = () => {
     }
   };
 
+  const selectedReportDefinition = reports.find((report) => report.id === selectedReport) || null;
+
   return (
-    <div className="reports-container">
-      {/* Header */}
-      <div className="reports-header">
-        <div className="header-left">
-          <h1>Reports & Exports</h1>
-          <p>Generate comprehensive financial and compliance reports</p>
+    <div className="reports-container enterprise-action-page">
+      <section className="action-page-hero">
+        <div className="action-page-copy">
+          <span className="action-page-kicker">Quick Action Destination</span>
+          <h1 className="action-page-title">Reports & Exports</h1>
+          <p className="action-page-subtitle">Generate leadership-ready outputs from the same consolidated data surfaced in the overview.</p>
+          <div className="action-page-actions">
+            <button
+              className="btn-primary"
+              onClick={handleGenerateReport}
+              disabled={generating}
+            >
+              {generating ? 'Generating...' : 'Generate Report'}
+            </button>
+          </div>
         </div>
-      </div>
+        <div className="action-page-badge">{currentOrganization?.name || 'Organization'}</div>
+      </section>
+
+      <section className="action-page-stats">
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Available Reports</span>
+          <span className="action-page-stat-value">{reports.length}</span>
+          <span className="action-page-stat-caption">Templates ready for export</span>
+        </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Formats</span>
+          <span className="action-page-stat-value">3</span>
+          <span className="action-page-stat-caption">PDF, Excel, and CSV output options</span>
+        </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Current Focus</span>
+          <span className="action-page-stat-value">{selectedReportDefinition ? selectedReportDefinition.sections.length : 0}</span>
+          <span className="action-page-stat-caption">Sections in the selected report</span>
+        </div>
+      </section>
 
       <div className="reports-layout">
         {/* Left: Report List */}
@@ -137,15 +168,15 @@ const EnterpriseReports = () => {
             <>
               {/* Selected Report Details */}
               <div className="selected-report-card">
-                {reports.find(r => r.id === selectedReport) && (
+                {selectedReportDefinition && (
                   <>
-                    <h2>{reports.find(r => r.id === selectedReport)?.name}</h2>
-                    <p>{reports.find(r => r.id === selectedReport)?.description}</p>
+                    <h2>{selectedReportDefinition.name}</h2>
+                    <p>{selectedReportDefinition.description}</p>
 
                     <div className="report-sections">
                       <h3>Report Sections:</h3>
                       <ul>
-                        {reports.find(r => r.id === selectedReport)?.sections.map((section, idx) => (
+                        {selectedReportDefinition.sections.map((section, idx) => (
                           <li key={idx}>{section}</li>
                         ))}
                       </ul>

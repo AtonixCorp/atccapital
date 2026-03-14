@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { teamMembersAPI } from '../../services/api';
+import './EnterpriseActionPages.css';
 
 const EnterpriseTeam = () => {
   const { currentOrganization } = useEnterprise();
@@ -86,22 +87,46 @@ const EnterpriseTeam = () => {
     setTeam(team.map(m => m.email === email ? {...m, status: 'active', joinedDate: new Date().toISOString().split('T')[0]} : m));
   };
 
+  const pendingInvites = team.filter((member) => member.status === 'pending').length;
+  const activeMembers = team.filter((member) => member.status === 'active').length;
+
   return (
-    <div className="team-container">
-      {/* Header */}
-      <div className="team-header">
-        <div className="header-left">
-          <h1>Team & Permissions</h1>
-          <p>Manage team members and their access levels</p>
+    <div className="team-container enterprise-action-page">
+      <section className="action-page-hero">
+        <div className="action-page-copy">
+          <span className="action-page-kicker">Quick Action Destination</span>
+          <h1 className="action-page-title">Team & Permissions</h1>
+          <p className="action-page-subtitle">Control who can access the overview, who can act on entity data, and how responsibilities are distributed.</p>
+          <div className="action-page-actions">
+            <button className="btn-primary" onClick={() => {
+              setEditingId(null);
+              setFormData({ email: '', role: 'viewer', entities: [] });
+              setShowModal(true);
+            }}>
+              Invite Team Member
+            </button>
+          </div>
         </div>
-        <button className="btn-primary" onClick={() => {
-          setEditingId(null);
-          setFormData({ email: '', role: 'viewer', entities: [] });
-          setShowModal(true);
-        }}>
-          Invite Team Member
-        </button>
-      </div>
+        <div className="action-page-badge">{currentOrganization?.name || 'Organization'}</div>
+      </section>
+
+      <section className="action-page-stats">
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Active Members</span>
+          <span className="action-page-stat-value">{activeMembers}</span>
+          <span className="action-page-stat-caption">People currently operating inside the organization</span>
+        </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Pending Invites</span>
+          <span className="action-page-stat-value">{pendingInvites}</span>
+          <span className="action-page-stat-caption">Invitations awaiting acceptance</span>
+        </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Role Profiles</span>
+          <span className="action-page-stat-value">{roles.length}</span>
+          <span className="action-page-stat-caption">Permission templates available for assignment</span>
+        </div>
+      </section>
 
       {/* Permission Matrix */}
       <div className="permission-matrix-section">

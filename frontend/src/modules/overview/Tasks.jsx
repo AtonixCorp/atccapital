@@ -1,18 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button, Card, PageHeader, Table, Modal, Input } from '../../components/ui';
 import { taskRequestsAPI } from '../../services/api';
 import { useEnterprise } from '../../context/EnterpriseContext';
 
+const BASE_PATH = '/app/overview/tasks';
 const PRIORITY_COLOR = { urgent: '#7f1d1d', high: '#ef4444', normal: '#f59e0b', low: '#6b7280' };
 const STATUS_COLOR = { queued: '#1d4ed8', processing: '#c2410c', completed: '#15803d', failed: '#ef4444' };
 const BLANK = { title: '', task_type: 'custom', priority: 'normal', due_date: '', description: '', organization: '', entity: '' };
 
 export default function Tasks() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
   const { organizations, entities, currentOrganization } = useEnterprise();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [viewOnly, setViewOnly] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState(BLANK);
   const [saving, setSaving] = useState(false);
@@ -23,7 +29,11 @@ export default function Tasks() {
     try {
       const res = await taskRequestsAPI.getAll();
       setTasks(res.data.results || res.data);
-    } catch (e) { setError('Failed to load tasks'); }
+      setError('');
+    } catch (e) {
+      console.error('Failed to load tasks', e);
+      setError('Failed to load tasks');
+    }
     setLoading(false);
   }, []);
 
@@ -31,6 +41,58 @@ export default function Tasks() {
   useEffect(() => {
     if (currentOrganization) setForm(p => ({ ...p, organization: currentOrganization.id }));
   }, [currentOrganization]);
+
+  useEffect(() => {
+    const isCreatePath = location.pathname === `${BASE_PATH}/create`;
+    const isEditPath = location.pathname.includes('/edit/');
+    const isViewPath = location.pathname.includes('/view/');
+
+    if (!isCreatePath && !isEditPath && !isViewPath) {
+      setShowModal(false);
+      setViewOnly(false);
+      setEditItem(null);
+      return;
+    }
+
+    if (isCreatePath) {
+      setEditItem(null);
+      setViewOnly(false);
+      setForm({ ...BLANK, organization: currentOrganization?.id || '' });
+      setError('');
+      setShowModal(true);
+    }
+  }, [currentOrganization?.id, location.pathname]);
+
+  useEffect(() => {
+    if (!id || !tasks.length) return;
+    const match = tasks.find((task) => String(task.id) === String(id));
+    if (!match) return;
+
+    setEditItem(match);
+    setViewOnly(location.pathname.includes('/view/'));
+    setForm({
+      title: match.payload?.title || '',
+      task_type: match.task_type || 'custom',
+      priority: match.priority || 'normal',
+      due_date: match.payload?.due_date || '',
+      description: match.payload?.description || '',
+      organization: match.organization || '',
+      entity: match.entity || '',
+    });
+    setError('');
+    setShowModal(true);
+  }, [id, location.pathname, tasks]);
+
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    setViewOnly(false);
+    setEditItem(null);
+    setForm({ ...BLANK, organization: currentOrganization?.id || '' });
+    setError('');
+    if (location.pathname !== BASE_PATH) {
+      navigate(BASE_PATH, { replace: true });
+    }
+  }, [currentOrganization?.id, location.pathname, navigate]);
 
   const filtered = filterStatus === 'all' ? tasks : tasks.filter(t => t.status === filterStatus);
 
@@ -51,11 +113,13 @@ export default function Tasks() {
         },
       };
       if (!payload.entity) delete payload.entity;
-      if (editItem) await taskRequestsAPI.update(editItem.id, payload);
-      else await taskRequestsAPI.create(payload);
-      setShowModal(false);
-      load();
+      let response;
+      if (editItem) response = await taskRequestsAPI.update(editItem.id, payload);
+      else response = await taskRequestsAPI.create(payload);
+      await load();
+      navigate(`${BASE_PATH}/view/${response.data.id}`, { replace: true });
     } catch (e) {
+      console.error('Failed to save task', e);
       const d = e.response?.data;
       setError(d ? Object.entries(d).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | ') : 'Failed to save');
     }
@@ -64,11 +128,18 @@ export default function Tasks() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this task?')) return;
-    try { await taskRequestsAPI.delete(id); load(); } catch (e) { alert(e.response?.data?.detail || e.message); }
+    try {
+      await taskRequestsAPI.delete(id);
+      await load();
+      if (String(editItem?.id) === String(id)) {
+        closeModal();
+      }
+    } catch (e) {
+      console.error('Failed to delete task', e);
+      setError(e.response?.data?.detail || e.message || 'Failed to delete task');
+    }
   };
 
-  const openNew = () => { setEditItem(null); setForm({ ...BLANK, organization: currentOrganization?.id || '' }); setError(''); setShowModal(true); };
-  const openEdit = (item) => { setEditItem(item); setForm({ title: item.payload?.title || '', task_type: item.task_type || 'custom', priority: item.priority || 'normal', due_date: item.payload?.due_date || '', description: item.payload?.description || '', organization: item.organization || '', entity: item.entity || '' }); setError(''); setShowModal(true); };
   const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }));
 
   const columns = [
@@ -87,7 +158,7 @@ export default function Tasks() {
 
   return (
     <div className="tasks-page">
-      <PageHeader title="Tasks" subtitle="Manage workflow tasks and requests" actions={<Button variant="primary" onClick={openNew}>+ New Task</Button>} />
+      <PageHeader title="Tasks" subtitle="Manage workflow tasks and requests" actions={<Button variant="primary" onClick={() => navigate(`${BASE_PATH}/create`)}>+ New Task</Button>} />
       {error && <div className="error-banner" style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '10px 16px', borderRadius: 8, marginBottom: 16, color: '#dc2626', fontSize: 13 }}>{error}</div>}
       <div className="stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24 }}>
         {stats.map(s => (
@@ -106,49 +177,50 @@ export default function Tasks() {
         {loading ? <div style={{ textAlign: 'center', padding: 32, color: 'var(--color-silver-dark)' }}>Loading tasks...</div> : filtered.length === 0 ? <div style={{ textAlign: 'center', padding: 32, color: 'var(--color-silver-dark)' }}>No tasks found.</div> : (
           <Table columns={columns} data={filtered} actions={row => (
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => openEdit(row)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border-color-default)', cursor: 'pointer', background: 'transparent' }}>Edit</button>
+              <button onClick={() => navigate(`${BASE_PATH}/view/${row.id}`)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border-color-default)', cursor: 'pointer', background: 'transparent' }}>View</button>
+              <button onClick={() => navigate(`${BASE_PATH}/edit/${row.id}`)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid var(--border-color-default)', cursor: 'pointer', background: 'transparent' }}>Edit</button>
               <button onClick={() => handleDelete(row.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 4, border: '1px solid #fca5a5', cursor: 'pointer', background: 'transparent', color: '#dc2626' }}>Delete</button>
             </div>
           )} />
         )}
       </Card>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editItem ? 'Edit Task' : 'New Task'}
-        footer={<><Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button><Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Task'}</Button></>}>
+      <Modal isOpen={showModal} onClose={closeModal} title={viewOnly ? 'Task Details' : editItem ? 'Edit Task' : 'New Task'}
+        footer={viewOnly ? <Button variant="secondary" onClick={closeModal}>Close</Button> : <><Button variant="secondary" onClick={closeModal}>Cancel</Button><Button variant="primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Task'}</Button></>}>
         {error && <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: 6, marginBottom: 12, color: '#dc2626', fontSize: 12 }}>{error}</div>}
-        <Input label="Title *" value={form.title} onChange={set('title')} placeholder="Task title" />
+        <Input label="Title *" value={form.title} onChange={set('title')} placeholder="Task title" disabled={viewOnly} />
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Task Type</label>
-          <select value={form.task_type} onChange={set('task_type')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+          <select disabled={viewOnly} value={form.task_type} onChange={set('task_type')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
             {['custom', 'generate_statement', 'run_tax_calculation', 'import_bank_feed', 'process_payroll'].map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Priority</label>
-          <select value={form.priority} onChange={set('priority')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+          <select disabled={viewOnly} value={form.priority} onChange={set('priority')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
             <option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option>
           </select>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Organization *</label>
-          <select value={form.organization} onChange={set('organization')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+          <select disabled={viewOnly} value={form.organization} onChange={set('organization')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
             <option value="">— Select Organization —</option>
             {(organizations || []).map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
           </select>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Entity (optional)</label>
-          <select value={form.entity} onChange={set('entity')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
+          <select disabled={viewOnly} value={form.entity} onChange={set('entity')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }}>
             <option value="">— All Entities —</option>
             {(entities || []).map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
           </select>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Due Date</label>
-          <input type="date" value={form.due_date} onChange={set('due_date')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
+          <input disabled={viewOnly} type="date" value={form.due_date} onChange={set('due_date')} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} />
         </div>
         <div style={{ marginBottom: 12 }}>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Description</label>
-          <textarea value={form.description} onChange={set('description')} rows={3} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} placeholder="Optional description..." />
+          <textarea disabled={viewOnly} value={form.description} onChange={set('description')} rows={3} style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border-color-default)', borderRadius: 6, fontSize: 13 }} placeholder="Optional description..." />
         </div>
       </Modal>
     </div>

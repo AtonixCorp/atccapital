@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useEnterprise } from '../../context/EnterpriseContext';
+import './EnterpriseActionPages.css';
+import './EnterpriseTaxCompliance.css';
 
 const EnterpriseTaxCompliance = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -2782,33 +2784,52 @@ const EnterpriseTaxCompliance = () => {
   };
 
   return (
-    <div className="enterprise-tax-compliance">
-      {/* Page Header */}
-      <div className="page-header-tax">
-        <div className="header-content-tax">
-          <h1>Tax & Compliance</h1>
-          <p>Automated Global Tax Management</p>
+    <div className="enterprise-tax-compliance enterprise-action-page">
+      <section className="action-page-hero">
+        <div className="action-page-copy">
+          <span className="action-page-kicker">Quick Action Destination</span>
+          <h1 className="action-page-title">Tax & Compliance</h1>
+          <p className="action-page-subtitle">Monitor deadlines, filings, tax calculations, and jurisdiction risk from one operational control surface.</p>
+          <div className="action-page-actions">
+            <select
+              className="entity-selector"
+              value={selectedEntityId}
+              onChange={(e) => setSelectedEntityId(e.target.value)}
+              disabled={!entities || entities.length === 0}
+            >
+              {(!entities || entities.length === 0) ? (
+                <option value="">No entities</option>
+              ) : (
+                entities.map((ent) => (
+                  <option key={ent.id} value={String(ent.id)}>
+                    {ent.name} ({ent.country})
+                  </option>
+                ))
+              )}
+            </select>
+            {dataError ? <span className="status-badge warning">{dataError}</span> : null}
+          </div>
         </div>
-        <div className="header-actions">
-          <select
-            className="entity-selector"
-            value={selectedEntityId}
-            onChange={(e) => setSelectedEntityId(e.target.value)}
-            disabled={!entities || entities.length === 0}
-          >
-            {(!entities || entities.length === 0) ? (
-              <option value="">No entities</option>
-            ) : (
-              entities.map((ent) => (
-                <option key={ent.id} value={String(ent.id)}>
-                  {ent.name} ({ent.country})
-                </option>
-              ))
-            )}
-          </select>
-          {dataError ? <span className="status-badge warning">{dataError}</span> : null}
+        <div className="action-page-badge">{selectedEntity?.country || 'Global'}</div>
+      </section>
+
+      <section className="action-page-stats">
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Compliance Score</span>
+          <span className="action-page-stat-value">{overallComplianceScore}%</span>
+          <span className="action-page-stat-caption">Current organization-wide compliance posture</span>
         </div>
-      </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Active Alerts</span>
+          <span className="action-page-stat-value">{complianceAlerts.length}</span>
+          <span className="action-page-stat-caption">Critical and upcoming obligations requiring attention</span>
+        </div>
+        <div className="action-page-stat">
+          <span className="action-page-stat-label">Documents</span>
+          <span className="action-page-stat-value">{documents.length}</span>
+          <span className="action-page-stat-caption">Compliance artifacts currently attached to the selected entity</span>
+        </div>
+      </section>
 
       {/* Section Navigation Header */}
       <div className="section-navigation">

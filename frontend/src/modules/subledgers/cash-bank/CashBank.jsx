@@ -125,13 +125,14 @@ export default function CashBank() {
         ...form,
         is_active: form.is_active === 'true',
       };
+      let response;
       if (editItem) {
-        await bankAccountsAPI.update(editItem.id, payload);
+        response = await bankAccountsAPI.update(editItem.id, payload);
       } else {
-        await bankAccountsAPI.create(payload);
+        response = await bankAccountsAPI.create(payload);
       }
       await load();
-      closeModal();
+      navigate(`${BASE_PATH}/view/${response.data.id}`, { replace: true });
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to save bank account.'));
     }
@@ -143,6 +144,9 @@ export default function CashBank() {
     try {
       await bankAccountsAPI.delete(recordId);
       await load();
+      if (String(editItem?.id) === String(recordId)) {
+        closeModal();
+      }
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to delete bank account.'));
     }

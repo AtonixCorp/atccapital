@@ -103,7 +103,7 @@ export default function TaxSubledger() {
     setSaving(true);
     setError('');
     try {
-      await taxCalculationsAPI.calculate({
+      const response = await taxCalculationsAPI.calculate({
         entity: form.entity,
         tax_year: Number(form.tax_year),
         calculation_type: form.calculation_type,
@@ -114,7 +114,7 @@ export default function TaxSubledger() {
         credits: { amount: form.credits || 0 },
       });
       await load();
-      closeModal();
+      navigate(`${BASE_PATH}/view/${response.data.id}`, { replace: true });
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to calculate tax.'));
     }
@@ -126,6 +126,9 @@ export default function TaxSubledger() {
     try {
       await taxCalculationsAPI.delete(recordId);
       await load();
+      if (String(editItem?.id) === String(recordId)) {
+        closeModal();
+      }
     } catch (requestError) {
       setError(formatError(requestError, 'Failed to delete tax calculation.'));
     }

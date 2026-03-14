@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { countries, getBanksByCountryCode } from '../../utils/countries';
+import './EnterpriseActionPages.css';
 
 const EnterpriseEntities = () => {
   const navigate = useNavigate();
@@ -173,47 +174,45 @@ const EnterpriseEntities = () => {
   const labelStyle = { fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5, display: 'block' };
 
   return (
-    <div style={{ padding: '28px 32px', maxWidth: 1300, margin: '0 auto' }}>
+    <div className="enterprise-action-page entities-page" style={{ maxWidth: 1300, margin: '0 auto' }}>
 
-      {/* Page header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#003B73', margin: 0 }}>Entities & Countries</h1>
-          <p style={{ fontSize: 14, color: '#6B7280', margin: '6px 0 0' }}>Manage your legal entities across jurisdictions</p>
+      <section className="action-page-hero">
+        <div className="action-page-copy">
+          <span className="action-page-kicker">Quick Action Destination</span>
+          <h1 className="action-page-title">Entities</h1>
+          <p className="action-page-subtitle">Create, monitor, and drill into the legal entities that power your consolidated overview.</p>
+          {hasPermission(PERMISSIONS.CREATE_ENTITY) && (
+            <div className="action-page-actions">
+              <button
+                onClick={() => handleOpenModal()}
+                style={{
+                  background: '#ffffff', color: '#0f172a', border: 'none', borderRadius: 999,
+                  padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                Add Entity
+              </button>
+            </div>
+          )}
         </div>
-        {hasPermission(PERMISSIONS.CREATE_ENTITY) && (
-          <button
-            onClick={() => handleOpenModal()}
-            style={{
-              background: '#003B73', color: '#fff', border: 'none', borderRadius: 8,
-              padding: '10px 20px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            }}
-            onMouseOver={e => e.currentTarget.style.background = '#004f99'}
-            onMouseOut={e => e.currentTarget.style.background = '#003B73'}
-          >
-            + Add Entity
-          </button>
-        )}
-      </div>
+        <div className="action-page-badge">{currentOrganization?.name || 'Organization'}</div>
+      </section>
+
+      <section className="action-page-stats">
+        {kpis.slice(0, 3).map((kpi) => (
+          <div key={kpi.label} className="action-page-stat">
+            <span className="action-page-stat-label">{kpi.label}</span>
+            <span className="action-page-stat-value">{kpi.value}</span>
+            <span className="action-page-stat-caption">Entity footprint across jurisdictions</span>
+          </div>
+        ))}
+      </section>
 
       {error && (
         <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: 8, marginBottom: 20, fontSize: 13 }}>
           {error}
         </div>
       )}
-
-      {/* KPI Strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
-        {kpis.map(k => (
-          <div key={k.label} style={{
-            background: '#fff', borderRadius: 10, padding: '18px 22px',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.07)', borderLeft: `4px solid ${k.accent}`,
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', textTransform: 'uppercase', marginBottom: 6 }}>{k.label}</div>
-            <div style={{ fontSize: 30, fontWeight: 700, color: '#111827' }}>{k.value}</div>
-          </div>
-        ))}
-      </div>
 
       {/* Entity Cards Grid */}
       {loading ? (

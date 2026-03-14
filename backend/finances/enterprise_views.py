@@ -2340,15 +2340,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
-        tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
-        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
-        serializer.save(
-            entity=entity,
-            created_by=self.request.user,
-            total_amount=total_amount,
-            outstanding_amount=total_amount,
-        )
+        serializer.save(entity=entity, created_by=self.request.user)
     
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -2474,7 +2466,39 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity, created_by=self.request.user)
+        subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        serializer.save(
+            entity=entity,
+            created_by=self.request.user,
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total_amount=total_amount,
+            outstanding_amount=total_amount,
+        )
+
+    def perform_update(self, serializer):
+        subtotal = Decimal(str(self.request.data.get('subtotal') or serializer.instance.subtotal or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or serializer.instance.tax_amount or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        paid_amount = serializer.instance.paid_amount or Decimal('0')
+        outstanding_amount = max(total_amount - paid_amount, Decimal('0'))
+
+        status = serializer.validated_data.get('status', serializer.instance.status)
+        if status != 'cancelled':
+            if outstanding_amount == 0 and paid_amount > 0:
+                status = 'paid'
+            elif paid_amount > 0:
+                status = 'partially_paid'
+
+        serializer.save(
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total_amount=total_amount,
+            outstanding_amount=outstanding_amount,
+            status=status,
+        )
     
     @action(detail=True, methods=['post'])
     def post(self, request, pk=None):
@@ -2577,12 +2601,7 @@ class PurchaseOrderViewSet(viewsets.ModelViewSet):
         subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
         tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
         total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
-        serializer.save(
-            entity=entity,
-            created_by=self.request.user,
-            total_amount=total_amount,
-            outstanding_amount=total_amount,
-        )
+        serializer.save(entity=entity, created_by=self.request.user, total_amount=total_amount)
 
 
 class BillViewSet(viewsets.ModelViewSet):
@@ -2601,7 +2620,39 @@ class BillViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity, created_by=self.request.user)
+        subtotal = Decimal(str(self.request.data.get('subtotal') or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        serializer.save(
+            entity=entity,
+            created_by=self.request.user,
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total_amount=total_amount,
+            outstanding_amount=total_amount,
+        )
+
+    def perform_update(self, serializer):
+        subtotal = Decimal(str(self.request.data.get('subtotal') or serializer.instance.subtotal or '0'))
+        tax_amount = Decimal(str(self.request.data.get('tax_amount') or serializer.instance.tax_amount or '0'))
+        total_amount = Decimal(str(self.request.data.get('total_amount') or (subtotal + tax_amount)))
+        paid_amount = serializer.instance.paid_amount or Decimal('0')
+        outstanding_amount = max(total_amount - paid_amount, Decimal('0'))
+
+        status = serializer.validated_data.get('status', serializer.instance.status)
+        if status != 'cancelled':
+            if outstanding_amount == 0 and paid_amount > 0:
+                status = 'paid'
+            elif paid_amount > 0:
+                status = 'partially_paid'
+
+        serializer.save(
+            subtotal=subtotal,
+            tax_amount=tax_amount,
+            total_amount=total_amount,
+            outstanding_amount=outstanding_amount,
+            status=status,
+        )
 
 
 class BillPaymentViewSet(viewsets.ModelViewSet):
@@ -2732,7 +2783,16 @@ class BankReconciliationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         entity_id = self.request.data.get('entity')
         entity = get_object_or_404(Entity, id=entity_id, organization__owner=self.request.user)
-        serializer.save(entity=entity)
+        bank_statement_balance = Decimal(str(self.request.data.get('bank_statement_balance') or '0'))
+        book_balance = Decimal(str(self.request.data.get('book_balance') or '0'))
+        variance = abs(bank_statement_balance - book_balance)
+        serializer.save(entity=entity, variance=variance)
+
+    def perform_update(self, serializer):
+        bank_statement_balance = Decimal(str(self.request.data.get('bank_statement_balance') or serializer.instance.bank_statement_balance or '0'))
+        book_balance = Decimal(str(self.request.data.get('book_balance') or serializer.instance.book_balance or '0'))
+        variance = abs(bank_statement_balance - book_balance)
+        serializer.save(variance=variance)
     
     @action(detail=True, methods=['post'])
     def reconcile(self, request, pk=None):

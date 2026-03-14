@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { formatErrorMessage, reportUiError } from '../utils/errorReporting';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
@@ -23,13 +24,24 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
+    const status = error.response?.status;
+    const message = formatErrorMessage(error.response?.data, error.message || 'Request failed.');
     console.error('API request failed', {
       method: original?.method,
       url: original?.url,
-      status: error.response?.status,
+      status,
       data: error.response?.data,
     });
-    if (error.response?.status === 401 && !original._retried) {
+    if (!original?.skipGlobalErrorHandler) {
+      reportUiError({
+        title: status === 401 ? 'Authentication failed' : 'API request failed',
+        message,
+        status,
+        source: original?.url || 'api',
+        severity: status && status < 500 ? 'warning' : 'error',
+      });
+    }
+    if (status === 401 && !original._retried) {
       original._retried = true;
       try {
         const refresh = localStorage.getItem('refreshToken');
@@ -42,6 +54,13 @@ api.interceptors.response.use(
         }
       } catch {
         console.error('Token refresh failed; redirecting to login');
+        reportUiError({
+          title: 'Session expired',
+          message: 'Your session could not be refreshed. Please log in again.',
+          severity: 'warning',
+          source: 'auth',
+          status: 401,
+        });
         // Refresh failed — clear auth and redirect to login
         localStorage.removeItem('token');
         localStorage.removeItem('access_token');
@@ -792,7 +811,7 @@ export const financialStatementsAPI = {
   getAll: (params) => api.get('/financial-statements/', { params }),
   incomeStatement: (params) => api.get('/financial-statements/income_statement/', { params }),
   balanceSheet: (params) => api.get('/financial-statements/balance_sheet/', { params }),
-  cashFlow: (params) => api.get('/financial-statements/cash_flow/', { params }),
+  cashFlow: (params) => api.get('/financial-statements/cash_flow_statement/', { params }),
 };
 
 // Tax Profiles API

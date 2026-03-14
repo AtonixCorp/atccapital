@@ -174,7 +174,7 @@ const EntityLayout = ({ children }) => {
         </div>
 
         {/* Nav */}
-        <ul className="nav-menu" role="list">
+        <ul className="nav-menu">
           {navSections.map(section => (
             <React.Fragment key={section.label}>
               {!sidebarMinimized && (

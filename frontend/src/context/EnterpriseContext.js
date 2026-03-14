@@ -385,7 +385,7 @@ export const EnterpriseProvider = ({ children }) => {
 
     dashboardInflightRef.current.set(cacheKey, requestPromise);
     return requestPromise;
-  }, [apiUrl, buildAuthHeaders, DASHBOARD_CACHE_TTL_MS]);
+  }, [apiUrl, buildAuthHeaders, DASHBOARD_CACHE_TTL_MS, refreshAccessToken]);
 
   /**
    * Check if current user has permission

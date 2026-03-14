@@ -65,7 +65,7 @@ const Register = () => {
 
     const result = await register(name, email, password, country, phone, 'enterprise', orgName);
     if (result.success) {
-      navigate('/app/firm/enterprise-branches');
+      navigate('/app/enterprise/org-overview');
     } else {
       setError(result.error || 'Registration failed. Please try again.');
     }
