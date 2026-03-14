@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { vendorsAPI, purchaseOrdersAPI, billsAPI, billPaymentsAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const STATUS_COLORS = {
   draft: 'var(--color-silver-dark)', sent: 'var(--color-cyan)', acknowledged: 'var(--color-cyan)', received: 'var(--color-success)', cancelled: 'var(--color-error)',

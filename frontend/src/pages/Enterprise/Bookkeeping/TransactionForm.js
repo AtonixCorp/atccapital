@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { useEnterprise } from '../../../context/EnterpriseContext';
+import '../../../styles/EntityPages.css';
 
 const TransactionForm = ({ entityId, transaction, onClose, onSave }) => {
   const {

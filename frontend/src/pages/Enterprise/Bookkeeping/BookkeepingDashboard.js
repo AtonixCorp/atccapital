@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { useEnterprise } from '../../../context/EnterpriseContext';
+import '../../../styles/EntityPages.css';
 import TransactionForm from './TransactionForm';
 
 const BookkeepingDashboard = () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { journalEntriesAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const STATUS_COLORS = { draft: 'var(--color-warning)', posted: 'var(--color-success)', reversed: 'var(--color-silver-dark)' };
 const ENTRY_TYPES = ['manual', 'automated', 'reversal', 'adjusting'];

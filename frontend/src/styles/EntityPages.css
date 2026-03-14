@@ -953,3 +953,1523 @@ label {
     padding: 10px 12px;
   }
 }
+
+/* ============================================================================
+   ENTITY DASHBOARD — ed-* classes
+   ============================================================================ */
+
+.ed-page {
+  min-height: 100vh;
+  background: var(--page-bg);
+}
+
+.ed-header {
+  background: var(--card-bg);
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ed-entity-name {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.ed-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ed-meta-item {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ed-meta-type {
+  text-transform: capitalize;
+}
+
+.ed-meta-sep {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Tab nav */
+.ed-tabs {
+  display: flex;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  position: sticky;
+  top: 60px;
+  z-index: 50;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ed-tabs::-webkit-scrollbar { display: none; }
+
+.ed-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 13px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  margin-bottom: -1px;
+}
+
+.ed-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--gray-50);
+}
+
+.ed-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Content area */
+.ed-content {
+  padding: 28px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ed-section {
+  margin-bottom: 28px;
+}
+
+.ed-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+/* Quick access module cards */
+.ed-quick-access {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 12px;
+}
+
+.ed-quick-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s;
+  box-shadow: var(--shadow-sm);
+}
+
+.ed-quick-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.ed-quick-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.ed-quick-count {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+/* Tab section sub-headers */
+.ed-tab-header {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ed-tab-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ed-tab-subtitle {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+/* Staff + structure grids */
+.ed-staff-grid,
+.ed-structure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.ed-card-h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.ed-scroll-list {
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.ed-list-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ed-list-item:last-child { border-bottom: none; }
+
+.ed-list-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.ed-list-sub {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.ed-list-sub.ed-expiring { color: var(--red); }
+
+.ed-list-amount {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: 4px;
+}
+
+.ed-list-empty {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.ed-expiry-warning {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  margin-top: 3px;
+}
+
+/* P&L / financial stat rows */
+.ed-stat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ed-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ed-stat-row:last-child { border-bottom: none; }
+
+.ed-stat-row-total { padding-top: 14px; }
+
+.ed-stat-key {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.ed-stat-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ed-stat-lg { font-size: 16px; }
+
+.ed-val-green { color: var(--green); }
+.ed-val-red   { color: var(--red); }
+.ed-val-blue  { color: var(--primary); }
+
+/* Bookkeeping action button row */
+.ed-bk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* ============================================================================
+   ENTERPRISE ENTITIES PAGE — entity card + table + modal classes
+   ============================================================================ */
+
+.entity-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 18px;
+  margin-bottom: 34px;
+}
+
+.entity-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow 0.18s, border-color 0.18s;
+}
+
+.entity-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 59, 115, 0.13);
+  border-color: var(--primary);
+}
+
+.entity-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.entity-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #EFF6FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.entity-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 3px;
+}
+
+.entity-card-reg {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+
+.entity-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.entity-tag {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.entity-filing-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.entity-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.entity-empty-state {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 60px 32px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.entity-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin: 0 0 6px;
+}
+
+.entity-empty-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Entity table section */
+.entity-table-section {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.entity-table-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.entity-table-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Entity modal */
+.entity-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.entity-modal {
+  background: var(--card-bg);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.entity-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.entity-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ============================================================================
+   EXTENDED BOOKKEEPING, HR, MANAGEMENT, AND ACCOUNTING STYLES
+   ============================================================================ */
+
+.transaction-list-container,
+.staff-hr-module {
+  min-height: 100vh;
+  background: var(--page-bg);
+}
+
+.page-header,
+.page-header-hr,
+.report-header,
+.contracts-header,
+.roles-header,
+.performance-header,
+.budget-header,
+.balance-header {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin: 0 24px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.page-header-hr {
+  margin-top: 24px;
+}
+
+.report-content,
+.hr-content,
+.acct-groups,
+.module-tab-content,
+.compliance-dashboard,
+.performance-dashboard,
+.payroll-intelligence,
+.contract-timeline,
+.permissions-matrix,
+.category-breakdown,
+.monthly-trends,
+.cashflow-sections,
+.pnl-grid,
+.summary-stats {
+  padding: 0 24px 24px;
+}
+
+.section-header,
+.filters-header,
+.timeline-header,
+.perf-header,
+.staff-header,
+.category-header,
+.account-header,
+.budget-header,
+.acct-group-header,
+.contracts-header,
+.roles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-header,
+.roles-header,
+.contracts-header,
+.performance-header {
+  margin-bottom: 18px;
+}
+
+.recent-transactions,
+.categories-grid,
+.accounts-grid,
+.people-stats,
+.staff-grid,
+.roles-grid,
+.performance-grid,
+.compliance-grid,
+.budgets-grid,
+.source-grid,
+.type-grid,
+.category-grid,
+.acct-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.transactions-table-container,
+.table-summary,
+.hr-people-section,
+.hr-roles-section,
+.hr-contracts-section,
+.hr-performance-section,
+.payroll-table,
+.matrix-table,
+.timeline,
+.category-section,
+.total-balance-card,
+.report-type-selector,
+.pnl-report,
+.cashflow-report,
+.summary-report,
+.acct-stat-cards,
+.acct-table-wrap,
+.module-tabs,
+.tab-toolbar,
+.notif-item,
+.recon-card,
+.alert-summary,
+.alert-card,
+.summary-card-mini,
+.budget-card,
+.type-card,
+.source-card-mini,
+.category-card-mini,
+.role-card,
+.staff-card,
+.performance-card,
+.compliance-card,
+.acct-group,
+.mini-stat,
+.ar-summary-mini {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.transactions-table-container,
+.hr-people-section,
+.hr-roles-section,
+.hr-contracts-section,
+.hr-performance-section,
+.payroll-table,
+.matrix-table,
+.timeline,
+.category-section,
+.report-type-selector,
+.pnl-report,
+.cashflow-report,
+.summary-report,
+.acct-table-wrap,
+.module-tabs,
+.tab-toolbar,
+.alert-summary,
+.recon-card,
+.acct-group,
+.mini-stat,
+.ar-summary-mini {
+  padding: 20px 22px;
+}
+
+.people-controls,
+.filter-controls,
+.filters-actions,
+.action-buttons,
+.tab-toolbar,
+.acct-header-actions,
+.acct-actions,
+.acct-actions-row,
+.account-actions,
+.category-actions,
+.budget-actions,
+.staff-actions,
+.modal-actions,
+.form-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.people-controls,
+.filter-controls,
+.tab-toolbar,
+.filters-actions {
+  justify-content: space-between;
+}
+
+.search-bar,
+.acct-search,
+.search-input {
+  width: 100%;
+  max-width: 320px;
+}
+
+.search-input,
+.btn-link,
+.reference-number,
+.payment-method,
+.amount,
+.count,
+.count-mini,
+.percentage,
+.period,
+.transaction-count,
+.acct-code,
+.acct-name,
+.acct-desc,
+.acct-balance,
+.acct-group-balance,
+.acct-group-count,
+.acct-stat-label,
+.acct-stat-count,
+.acct-stat-balance,
+.role-code,
+.role-name,
+.role-description,
+.role-stats,
+.staff-role,
+.staff-department,
+.timeline-date,
+.notif-time,
+.notif-title,
+.notif-msg,
+.recon-variance,
+.category-description,
+.account-description,
+.account-number,
+.account-count,
+.balance-amount,
+.summary-item {
+  display: block;
+}
+
+.search-input {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 59, 115, 0.12);
+}
+
+.btn-link {
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.reference-number,
+.acct-code,
+.role-code,
+.period,
+.timeline-date,
+.payment-method {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.transaction-description,
+.acct-name,
+.role-name,
+.notif-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.category-tag,
+.tag,
+.tag-type,
+.badge-default,
+.badge-category,
+.badge-type,
+.account-type-badge,
+.status-badge,
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-default,
+.badge-category,
+.badge-type,
+.tag,
+.tag-type,
+.account-type-badge {
+  background: rgba(0, 59, 115, 0.08);
+  color: var(--primary);
+}
+
+.amount,
+.balance-amount,
+.acct-balance,
+.acct-group-balance,
+.acct-stat-balance,
+.acct-stat-count,
+.count,
+.count-mini,
+.transaction-count,
+.percentage {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.amount.positive,
+.amount-income,
+.amount-credit,
+.acct-stat-balance {
+  color: var(--green);
+}
+
+.amount.negative,
+.amount-expense,
+.amount-debit,
+.recon-variance.negative {
+  color: var(--red);
+}
+
+.amount-debit,
+.amount-credit,
+.summary-item,
+.acct-stat-label,
+.acct-desc,
+.role-description,
+.staff-role,
+.staff-department,
+.notif-msg,
+.recon-variance,
+.category-description,
+.account-description,
+.account-meta,
+.detail-row,
+.form-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.summary-item,
+.detail-row,
+.acct-group-count,
+.role-stats,
+.account-count {
+  font-weight: 500;
+}
+
+.filter-group,
+.stat,
+.staff-info,
+.perf-info,
+.timeline-content,
+.category-stats,
+.budget-meta,
+.budget-amounts,
+.account-meta,
+.acct-stat-card,
+.mini-stat,
+.ar-summary-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-card,
+.acct-stat-card,
+.summary-card-mini,
+.mini-stat,
+.ar-summary-mini,
+.summary-card-mini.income,
+.category-card-mini,
+.source-card-mini,
+.type-card,
+.budget-card,
+.alert-card,
+.recon-card {
+  padding: 18px;
+}
+
+.stat-card,
+.acct-stat-card {
+  min-height: 132px;
+  justify-content: space-between;
+}
+
+.acct-stat-card {
+  border-left: 4px solid var(--primary);
+}
+
+.stat-card.active,
+.alert-card.warning,
+.progress-fill.warning,
+.expiry-warning {
+  border-left-color: var(--amber);
+}
+
+.stat-card.info,
+.progress-fill.active,
+.progress-fill.on-track {
+  border-left-color: var(--blue);
+}
+
+.stat-card.warning,
+.alert-card.danger,
+.progress-fill.over-budget,
+.progress-fill.overdue {
+  border-left-color: var(--red);
+}
+
+.stat-icon,
+.acct-stat-label,
+.stat-label,
+.kpi-card-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat-value,
+.acct-stat-count {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.stat-value.positive {
+  color: var(--green);
+}
+
+.stat-value.negative {
+  color: var(--red);
+}
+
+.staff-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.staff-card,
+.role-card,
+.performance-card,
+.budget-card,
+.category-card-mini,
+.source-card-mini,
+.type-card,
+.summary-card-mini,
+.alert-card,
+.recon-card,
+.acct-group,
+.notif-item,
+.category-card,
+.account-card {
+  padding: 18px;
+  transition: var(--transition);
+}
+
+.staff-card:hover,
+.role-card:hover,
+.performance-card:hover,
+.budget-card:hover,
+.category-card-mini:hover,
+.source-card-mini:hover,
+.type-card:hover,
+.alert-card:hover,
+.recon-card:hover,
+.category-card:hover,
+.account-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.staff-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.staff-header,
+.role-header,
+.perf-header,
+.budget-header,
+.account-header,
+.category-header,
+.notif-item {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.staff-avatar,
+.staff-mini-avatar,
+.perf-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 59, 115, 0.12), rgba(13, 110, 253, 0.18));
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.staff-mini-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.staff-details,
+.staff-info,
+.role-header,
+.perf-info,
+.timeline-content,
+.notif-body {
+  flex: 1;
+}
+
+.status-badge.status-active,
+.status-badge.active,
+.staff-card.active,
+.marker-dot.active,
+.progress-fill.completed,
+.progress-fill.healthy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.status-badge.status-inactive,
+.status-badge.inactive,
+.staff-card.inactive,
+.marker-dot.inactive {
+  background: rgba(156, 163, 175, 0.16);
+  color: #4B5563;
+}
+
+.status-badge.status-archived,
+.status-badge.status-overdue,
+.status-badge.error,
+.staff-card.terminated,
+.marker-dot.terminated,
+.progress-fill.danger,
+.progress-fill.cancelled {
+  background: rgba(239, 68, 68, 0.12);
+  color: #B91C1C;
+}
+
+.status-badge.pending,
+.status-badge.warning,
+.staff-card.on_leave,
+.marker-dot.on_leave {
+  background: rgba(245, 158, 11, 0.14);
+  color: #B45309;
+}
+
+.marker-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.section-navigation-hr,
+.module-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-btn,
+.module-tab,
+.report-type-btn,
+.filter-btn {
+  border: 1px solid var(--border);
+  background: var(--gray-50);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-btn:hover,
+.module-tab:hover,
+.report-type-btn:hover,
+.filter-btn:hover {
+  border-color: rgba(0, 59, 115, 0.25);
+  color: var(--primary);
+}
+
+.nav-btn.active,
+.module-tab.active,
+.report-type-btn.active,
+.filter-btn.active {
+  background: rgba(0, 59, 115, 0.08);
+  border-color: rgba(0, 59, 115, 0.18);
+  color: var(--primary);
+}
+
+.people-stats,
+.summary-row,
+.budget-amount-row,
+.progress-info,
+.alert-summary {
+  margin-bottom: 20px;
+}
+
+.progress-bar,
+.budget-progress,
+.percentage-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--gray-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill,
+.percentage-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--blue));
+}
+
+.percentage-bar.income .percentage-fill {
+  background: linear-gradient(90deg, #059669, #10B981);
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-item:last-child,
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.timeline-marker {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 16px;
+}
+
+.timeline-marker::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  width: 2px;
+  height: calc(100% + 16px);
+  background: var(--gray-200);
+}
+
+.timeline-item:last-child .timeline-marker::after {
+  display: none;
+}
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.notif-item.unread {
+  border-color: rgba(0, 59, 115, 0.16);
+  background: rgba(0, 59, 115, 0.03);
+}
+
+.notif-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: 7px;
+}
+
+.matrix-table,
+.payroll-table,
+.transactions-table-container,
+.acct-table-wrap {
+  overflow-x: auto;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 22px 12px;
+}
+
+.gl-totals-row {
+  background: var(--gray-50);
+  font-weight: 700;
+}
+
+.modal-box {
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  width: min(760px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.modal-body {
+  padding: 22px 24px;
+}
+
+.modal-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #B91C1C;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.entity-form,
+.form-row,
+.form-row-2,
+.form-row .form-group,
+.form-row-2 .form-group {
+  width: 100%;
+}
+
+.form-row,
+.form-row-2 {
+  display: grid;
+  gap: 14px;
+}
+
+.form-row-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.acct-stat-label,
+.acct-group-count,
+.account-count,
+.count-mini,
+.summary-item,
+.subtitle,
+.notif-time {
+  color: var(--text-secondary);
+}
+
+.acct-group,
+.recon-card,
+.mini-stat,
+.ar-summary-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acct-group-header,
+.budget-amount-row,
+.summary-row,
+.progress-info,
+.alert-summary,
+.acct-actions,
+.acct-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.acct-loading {
+  padding: 40px 24px;
+  color: var(--text-secondary);
+}
+
+.btn-icon-danger,
+.btn-icon.btn-icon-danger {
+  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.16);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.btn-clear-filters {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-info.btn-sm,
+.btn-success.btn-sm,
+.btn-danger.btn-sm,
+.btn-warning.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compliance-grid,
+.performance-grid,
+.roles-grid,
+.category-grid,
+.source-grid,
+.type-grid,
+.budgets-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.staff-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.expiry-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400E;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.compliance-card.complete {
+  border-left: 4px solid var(--green);
+}
+
+.action-btn,
+.btn-icon-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.action-btn.delete,
+.btn-icon-small.delete {
+  color: var(--red);
+}
+
+.category-card.expense {
+  border-left: 4px solid var(--red);
+}
+
+.category-card.income {
+  border-left: 4px solid var(--green);
+}
+
+.section-header.income,
+.pnl-section.income {
+  color: #047857;
+}
+
+.section-header.expense,
+.pnl-section.expenses,
+.pnl-section.net-profit {
+  color: #B91C1C;
+}
+
+.entity-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+  .page-header,
+  .page-header-hr,
+  .report-header,
+  .contracts-header,
+  .roles-header,
+  .performance-header,
+  .budget-header,
+  .balance-header,
+  .bookkeeping-header,
+  .management-header,
+  .acct-header,
+  .chart-header,
+  .alerts-header,
+  .header-content-hr,
+  .header-content-tax {
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 18px 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .report-content,
+  .hr-content,
+  .acct-groups,
+  .module-tab-content,
+  .compliance-dashboard,
+  .performance-dashboard,
+  .payroll-intelligence,
+  .contract-timeline,
+  .permissions-matrix,
+  .category-breakdown,
+  .monthly-trends,
+  .cashflow-sections,
+  .pnl-grid,
+  .summary-stats {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .people-controls,
+  .filter-controls,
+  .filters-actions,
+  .action-buttons,
+  .tab-toolbar,
+  .acct-header-actions,
+  .acct-actions,
+  .acct-actions-row,
+  .account-actions,
+  .category-actions,
+  .budget-actions,
+  .staff-actions,
+  .modal-actions,
+  .form-actions,
+  .section-header,
+  .filters-header,
+  .timeline-header,
+  .perf-header,
+  .staff-header,
+  .category-header,
+  .account-header,
+  .budget-header,
+  .acct-group-header,
+  .contracts-header,
+  .roles-header,
+  .summary-row,
+  .progress-info,
+  .alert-summary,
+  .budget-amount-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .recent-transactions,
+  .categories-grid,
+  .accounts-grid,
+  .people-stats,
+  .staff-grid,
+  .roles-grid,
+  .performance-grid,
+  .compliance-grid,
+  .budgets-grid,
+  .source-grid,
+  .type-grid,
+  .category-grid,
+  .acct-stat-cards,
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+  .transactions-table-container,
+  .table-summary,
+  .hr-people-section,
+  .hr-roles-section,
+  .hr-contracts-section,
+  .hr-performance-section,
+  .payroll-table,
+  .matrix-table,
+  .timeline,
+  .category-section,
+  .report-type-selector,
+  .pnl-report,
+  .cashflow-report,
+  .summary-report,
+  .acct-table-wrap,
+  .module-tabs,
+  .tab-toolbar,
+  .alert-summary,
+  .recon-card,
+  .acct-group,
+  .mini-stat,
+  .ar-summary-mini {
+    padding: 16px;
+  }
+  .search-bar,
+  .acct-search,
+  .search-input {
+    max-width: none;
+  }
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.entity-modal-close:hover { color: var(--text-primary); }
+
+.entity-modal-body { padding: 24px; }
+
+.entity-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+.entity-form-grid .form-full { grid-column: 1 / -1; }
+
+.entity-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 5px;
+  display: block;
+}
+
+.entity-form-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.entity-form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 59, 115, 0.08);
+}
+
+.entity-form-input[readonly] {
+  background: var(--gray-50);
+  color: var(--text-secondary);
+}
+
+.entity-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .ed-content { padding: 20px 16px; }
+  .ed-header { padding: 18px 16px; }
+  .ed-tabs { padding: 0 16px; }
+  .entity-form-grid { grid-template-columns: 1fr; }
+  .entity-form-grid .form-full { grid-column: 1; }
+  .ed-staff-grid, .ed-structure-grid { grid-template-columns: 1fr; }
+}

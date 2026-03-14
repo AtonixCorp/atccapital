@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import '../Layout/Layout.css';
 import '../../styles/EntityPages.css';
+import './EntityLayout.css';
 
 const EntityLayout = ({ children }) => {
   const { user, logout } = useAuth();
@@ -88,28 +89,28 @@ const EntityLayout = ({ children }) => {
       return (
         <li key={item.label}>
           <button
-            className="nav-link submenu-toggle"
+            className="entity-nav-link entity-submenu-toggle"
             onClick={() => toggleMenu(item.label)}
             title={sidebarMinimized ? item.label : undefined}
           >
-            <span className="nav-icon">{item.icon}</span>
             {!sidebarMinimized && (
               <>
-                <span className="nav-label">{item.label}</span>
-                <span style={{ marginLeft: 'auto', fontSize: 10 }}>{isOpen ? '▾' : '▸'}</span>
+                <span>{item.label}</span>
+                <span className={`entity-submenu-chevron${isOpen ? ' open' : ''}`}>▶</span>
               </>
             )}
+            {sidebarMinimized && <span style={{ fontSize: 16 }}>≡</span>}
           </button>
           {isOpen && !sidebarMinimized && (
-            <ul className="submenu">
+            <ul className="entity-submenu">
               {item.submenu.map(sub => (
                 <li key={sub.to}>
                   <NavLink
                     to={sub.to}
                     end
-                    className={({ isActive }) => `nav-link submenu-item${isActive ? ' active' : ''}`}
+                    className={({ isActive }) => `entity-nav-link${isActive ? ' active' : ''}`}
                   >
-                    <span className="nav-label">{sub.label}</span>
+                    {sub.label}
                   </NavLink>
                 </li>
               ))}
@@ -123,11 +124,13 @@ const EntityLayout = ({ children }) => {
         <NavLink
           to={item.to}
           end
-          className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+          className={({ isActive }) => `entity-nav-link${isActive ? ' active' : ''}`}
           title={sidebarMinimized ? item.label : undefined}
         >
-          <span className="nav-icon">{item.icon}</span>
-          {!sidebarMinimized && <span className="nav-label">{item.label}</span>}
+          {!sidebarMinimized && item.label}
+          {sidebarMinimized && (
+            <span style={{ fontSize: 14 }}>{(item.label || '?').charAt(0)}</span>
+          )}
         </NavLink>
       </li>
     );
@@ -136,81 +139,69 @@ const EntityLayout = ({ children }) => {
   return (
     <div className="layout">
       {/* SIDEBAR */}
-      <nav className={`sidebar${sidebarMinimized ? ' minimized' : ''}`} aria-label="Entity navigation">
+      <nav className={`entity-sidebar${sidebarMinimized ? ' minimized' : ''}`} aria-label="Entity navigation">
 
         {/* Entity Header */}
-        <div className="sidebar-header" style={{ background: '#0B0C10' }}>
-          <div className="sidebar-brand">
-            <span className="sidebar-brand-dot" style={{ background: '#00B5E2' }} />
+        <div className="entity-sidebar-header">
+          <div className="entity-sidebar-brand">
+            <span className="entity-sidebar-accent" />
             {!sidebarMinimized && (
-              <span style={{
-                fontSize: 13, fontWeight: 700, color: '#fff',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {entityName}
-              </span>
+              <span className="entity-sidebar-name">{entityName}</span>
             )}
           </div>
         </div>
 
         {/* Back link */}
-        <div style={{ padding: sidebarMinimized ? '10px 0' : '10px 16px', borderBottom: '1px solid #E5E7EB' }}>
+        <div className="entity-back-nav">
           <button
             onClick={() => navigate('/app/enterprise/entities')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, width: '100%',
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: '#6B7280', fontSize: 12, fontWeight: 600,
-              justifyContent: sidebarMinimized ? 'center' : 'flex-start',
-              padding: '6px 8px', borderRadius: 6,
-            }}
+            className="entity-back-btn"
             title="Back to ATC Capital"
-            onMouseOver={e => e.currentTarget.style.background = '#F3F4F6'}
-            onMouseOut={e => e.currentTarget.style.background = 'none'}
           >
-            <span>←</span>
-            {!sidebarMinimized && <span>Back to ATC Capital</span>}
+            <span className="entity-back-arrow">←</span>
+            {!sidebarMinimized && <span className="entity-back-label">ATC Capital</span>}
           </button>
         </div>
 
         {/* Nav */}
-        <ul className="nav-menu">
+        <ul className="entity-nav-menu">
           {navSections.map(section => (
             <React.Fragment key={section.label}>
               {!sidebarMinimized && (
-                <li className="nav-section-label">
-                  <span>{section.label}</span>
-                </li>
+                <li className="entity-nav-section-label">{section.label}</li>
               )}
               {section.items.map(renderItem)}
-              <li className="nav-divider" role="separator" />
+              <li className="entity-nav-divider" role="separator" />
             </React.Fragment>
           ))}
         </ul>
 
         {/* Sidebar collapse button */}
-        <div className="sidebar-footer">
+        <div className="entity-sidebar-footer">
           <button
-            className="sidebar-collapse-btn"
+            className="entity-collapse-btn"
             onClick={toggleSidebar}
             title={sidebarMinimized ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {sidebarMinimized ? '→' : '←'}
+            <span className="entity-collapse-icon">←</span>
+            {!sidebarMinimized && <span style={{ fontSize: 12 }}>Collapse</span>}
           </button>
         </div>
       </nav>
 
       {/* MAIN CONTENT */}
-      <div className={`main-wrapper${sidebarMinimized ? ' sidebar-minimized' : ''}`}>
+      <div className={`entity-main-wrapper${sidebarMinimized ? ' sidebar-minimized' : ''}`}>
         {/* Topbar */}
-        <header className="topbar">
-          <div className="topbar-left">
-            <h2 className="topbar-title" style={{ fontSize: 16 }}>{entityName}</h2>
+        <header className="entity-topbar">
+          <div className="entity-topbar-left">
+            <h2 className="entity-topbar-title">{entityName}</h2>
             {entity?.country && (
-              <span className="topbar-org-context">{entity.country} · {entity.entity_type?.replace(/_/g, ' ')}</span>
+              <span className="entity-topbar-meta">
+                {entity.country} · {entity.entity_type?.replace(/_/g, ' ')}
+              </span>
             )}
           </div>
-          <div className="topbar-right">
+          <div className="entity-topbar-right">
             <div className="profile-menu" ref={profileRef}>
               <button
                 className="profile-avatar-btn"
@@ -240,7 +231,7 @@ const EntityLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="main-content">
+        <main className="entity-main-content">
           {children}
         </main>
       </div>

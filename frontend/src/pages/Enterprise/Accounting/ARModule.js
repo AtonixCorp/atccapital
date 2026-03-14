@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { customersAPI, invoicesAPI, creditNotesAPI, paymentsAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const STATUS_COLORS = {
   draft: 'var(--color-silver-dark)', posted: 'var(--color-cyan)', partially_paid: 'var(--color-warning)',

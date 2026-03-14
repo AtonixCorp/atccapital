@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { chartOfAccountsAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const ACCOUNT_TYPES = [
   { value: 'asset', label: 'Asset', color: 'var(--color-success)' },

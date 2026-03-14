@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ledgerPeriodsAPI, periodCloseChecklistsAPI, periodCloseItemsAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const TABS = [
   { id: 'periods', label: 'Ledger Periods', },

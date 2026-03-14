@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { entityStaffAPI, entityDepartmentsAPI, entityRolesAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const StaffHR = () => {
   const { entityId } = useParams();

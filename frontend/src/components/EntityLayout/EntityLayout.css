@@ -1,0 +1,452 @@
+/* =============================================================================
+   ATC CAPITAL — ENTITY LAYOUT SIDEBAR & SHELL
+   Extends Layout.css for entity-scoped pages
+   Color system: Midnight (#0B0C10), Cyan (#00B5E2), Silver (#C5C6C7)
+   ============================================================================= */
+
+/* --------------------------------------------------------------------------
+   ENTITY SIDEBAR WRAPPER
+   Override sidebar defaults with entity-specific dark theme header
+   -------------------------------------------------------------------------- */
+
+.entity-sidebar {
+  width: 260px;
+  background: #fff;
+  border-right: 1px solid #E5E7EB;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: width 0.22s ease;
+  z-index: 1000;
+  scrollbar-width: thin;
+  scrollbar-color: #E5E7EB transparent;
+}
+
+.entity-sidebar::-webkit-scrollbar { width: 3px; }
+.entity-sidebar::-webkit-scrollbar-track { background: transparent; }
+.entity-sidebar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 3px; }
+
+.entity-sidebar.minimized {
+  width: 68px;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR HEADER — Entity branding strip
+   -------------------------------------------------------------------------- */
+
+.entity-sidebar-header {
+  background: linear-gradient(145deg, #0B0C10 0%, #1a1c22 100%);
+  padding: 0;
+  flex-shrink: 0;
+  border-bottom: 2px solid #00B5E2;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.entity-sidebar-header::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(0,181,226,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.entity-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  width: 100%;
+  min-width: 0;
+}
+
+.entity-sidebar-accent {
+  width: 6px;
+  height: 6px;
+  background: #00B5E2;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(0, 181, 226, 0.6);
+}
+
+.entity-sidebar-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.entity-sidebar.minimized .entity-sidebar-brand {
+  justify-content: center;
+  padding: 16px 0;
+}
+
+/* --------------------------------------------------------------------------
+   BACK NAVIGATION
+   -------------------------------------------------------------------------- */
+
+.entity-back-nav {
+  padding: 8px 10px;
+  border-bottom: 1px solid #F3F4F6;
+  background: #FAFAFA;
+  flex-shrink: 0;
+}
+
+.entity-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 7px 8px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  text-align: left;
+}
+
+.entity-back-btn:hover {
+  background: #F0F9FF;
+  color: #0B0C10;
+}
+
+.entity-back-arrow {
+  font-size: 14px;
+  line-height: 1;
+  color: #9CA3AF;
+  transition: color 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.entity-back-btn:hover .entity-back-arrow {
+  color: #00B5E2;
+  transform: translateX(-2px);
+}
+
+.entity-back-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entity-sidebar.minimized .entity-back-nav {
+  padding: 8px 4px;
+}
+
+.entity-sidebar.minimized .entity-back-btn {
+  justify-content: center;
+  padding: 7px 4px;
+}
+
+/* --------------------------------------------------------------------------
+   NAV MENU — Entity-specific overrides
+   -------------------------------------------------------------------------- */
+
+.entity-nav-menu {
+  list-style: none;
+  padding: 8px 0 16px;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.entity-nav-menu::-webkit-scrollbar { display: none; }
+
+.entity-nav-section-label {
+  padding: 12px 18px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  list-style: none;
+  user-select: none;
+}
+
+.entity-nav-divider {
+  height: 1px;
+  background: #F3F4F6;
+  margin: 4px 16px 8px;
+  list-style: none;
+}
+
+/* Navigation links */
+.entity-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  margin: 1px 8px;
+  min-height: 40px;
+  border-radius: 8px;
+  color: #374151;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entity-nav-link:hover {
+  background: #F0F9FF;
+  color: #0B0C10;
+}
+
+.entity-nav-link.active {
+  background: #EFF8FF;
+  color: #00B5E2;
+  font-weight: 600;
+}
+
+.entity-nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #00B5E2;
+}
+
+/* Submenu toggle button */
+.entity-submenu-toggle {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.entity-submenu-chevron {
+  margin-left: auto;
+  font-size: 10px;
+  color: #9CA3AF;
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+  line-height: 1;
+}
+
+.entity-submenu-chevron.open {
+  transform: rotate(90deg);
+}
+
+/* Submenu list */
+.entity-submenu {
+  list-style: none;
+  padding: 2px 0;
+  margin: 0;
+}
+
+.entity-submenu .entity-nav-link {
+  padding-left: 36px;
+  min-height: 36px;
+  font-size: 12.5px;
+  margin: 1px 8px;
+  color: #6B7280;
+}
+
+.entity-submenu .entity-nav-link:hover {
+  background: #F0F9FF;
+  color: #0B0C10;
+}
+
+.entity-submenu .entity-nav-link.active {
+  color: #00B5E2;
+  background: #EFF8FF;
+}
+
+/* Minimized sidebar tooltip-labels */
+.entity-sidebar.minimized .entity-nav-link {
+  justify-content: center;
+  padding: 0 4px;
+  margin: 1px 4px;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR FOOTER — Collapse toggle
+   -------------------------------------------------------------------------- */
+
+.entity-sidebar-footer {
+  border-top: 1px solid #F3F4F6;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.entity-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 9px;
+  background: none;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  color: #6B7280;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.entity-collapse-btn:hover {
+  background: #F0F9FF;
+  border-color: #00B5E2;
+  color: #0B0C10;
+}
+
+.entity-collapse-icon {
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.entity-sidebar.minimized .entity-collapse-icon {
+  transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   MAIN WRAPPER — entity shell
+   -------------------------------------------------------------------------- */
+
+.entity-main-wrapper {
+  margin-left: 260px;
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F4F6FA;
+  overflow-x: hidden;
+  transition: margin-left 0.22s ease;
+}
+
+.entity-main-wrapper.sidebar-minimized {
+  margin-left: 68px;
+}
+
+/* --------------------------------------------------------------------------
+   ENTITY TOPBAR
+   -------------------------------------------------------------------------- */
+
+.entity-topbar {
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.entity-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.entity-topbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0B0C10;
+  margin: 0;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.entity-topbar-meta {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #9CA3AF;
+  border-left: 1px solid #E5E7EB;
+  padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+.entity-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Entity badge in topbar */
+.entity-topbar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #EFF8FF;
+  color: #00B5E2;
+  border: 1px solid #BAE6FD;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   MAIN CONTENT AREA
+   -------------------------------------------------------------------------- */
+
+.entity-main-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .entity-sidebar {
+    width: 68px;
+  }
+
+  .entity-main-wrapper {
+    margin-left: 68px;
+  }
+
+  .entity-topbar-meta {
+    display: none;
+  }
+}

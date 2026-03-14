@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { notificationsAPI, notificationPreferencesAPI } from '../../../services/api';
+import '../../../styles/EntityPages.css';
 
 const TABS = [
   { id: 'inbox', label: 'Inbox', },
