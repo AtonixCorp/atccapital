@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useFinance } from '../../context/FinanceContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -9,8 +9,13 @@ const Budget = () => {
     addBudget,
     deleteBudget,
     expenses,
+    manualExpenses,
+    bankFeedExpenses,
     financialSummary,
-    calculationEngine
+    calculationEngine,
+    validationResults,
+    expenseSourceFilter,
+    setExpenseSourceFilter,
   } = useFinance();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,14 +57,75 @@ const Budget = () => {
     return 'var(--color-success)';
   };
 
+  const spendingBreakdown = useMemo(() => {
+    const manualTotal = calculationEngine.calculateTotalExpenses(Array.isArray(manualExpenses) ? manualExpenses : []);
+    const importedTotal = calculationEngine.calculateTotalExpenses(Array.isArray(bankFeedExpenses) ? bankFeedExpenses : []);
+    const combinedTotal = calculationEngine.calculateTotalExpenses(Array.isArray(expenses) ? expenses : []);
+    return {
+      manualTotal,
+      importedTotal,
+      combinedTotal,
+      manualCount: Array.isArray(manualExpenses) ? manualExpenses.length : 0,
+      importedCount: Array.isArray(bankFeedExpenses) ? bankFeedExpenses.length : 0,
+    };
+  }, [bankFeedExpenses, calculationEngine, expenses, manualExpenses]);
+
+  const categorySourceBreakdown = useMemo(() => {
+    return budgets.map((budget) => {
+      const manualSpent = calculationEngine.calculateTotalExpenses(
+        (Array.isArray(manualExpenses) ? manualExpenses : []).filter((expense) => expense.category === budget.category)
+      );
+      const importedSpent = calculationEngine.calculateTotalExpenses(
+        (Array.isArray(bankFeedExpenses) ? bankFeedExpenses : []).filter((expense) => expense.category === budget.category)
+      );
+      return {
+        category: budget.category,
+        manualSpent,
+        importedSpent,
+      };
+    });
+  }, [bankFeedExpenses, budgets, calculationEngine, manualExpenses]);
+
   return (
     <div className="page-container" key={language}>
       <div className="page-header">
         <h1 className="page-title">Budget Management</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Cancel' : '+ Add Budget'}
-        </button>
+        <div className="header-actions">
+          <div className="view-toggle">
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('all')}
+            >All Sources
+            </button>
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('manual')}
+            >Manual Only
+            </button>
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('imported')}
+            >Imported Only
+            </button>
+          </div>
+          <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Cancel' : '+ Add Budget'}
+          </button>
+        </div>
       </div>
+
+      {Array.isArray(validationResults?.warningDetails) && validationResults.warningDetails.length > 0 && (
+        <div className="card budget-summary-card" style={{ marginBottom: 24 }}>
+          <h2>Budget Alerts by Source</h2>
+          <div className="validation-warnings">
+            {validationResults.warningDetails.slice(0, 4).map((warning) => (
+              <div key={warning.category} className="warning-message">
+                {warning.message}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="card form-card">
@@ -120,6 +186,37 @@ const Budget = () => {
               </span>
             </div>
           </div>
+          <div className="summary-stats" style={{ marginTop: 16 }}>
+            <div className="stat-box">
+              <label>Manual Spend</label>
+              <span className="stat-value">${spendingBreakdown.manualTotal.toFixed(2)}</span>
+            </div>
+            <div className="stat-box">
+              <label>Imported Bank Feed Spend</label>
+              <span className="stat-value spent">${spendingBreakdown.importedTotal.toFixed(2)}</span>
+            </div>
+            <div className="stat-box">
+              <label>Imported Transactions</label>
+              <span className="stat-value">{spendingBreakdown.importedCount}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {budgets.length > 0 && (
+        <div className="card budget-summary-card" style={{ marginBottom: 24 }}>
+          <h2>Imported vs Manual by Budget Category</h2>
+          <div className="summary-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+            {categorySourceBreakdown.map((item) => (
+              <div key={item.category} className="stat-box" style={{ textAlign: 'left' }}>
+                <label>{item.category}</label>
+                <div style={{ marginTop: 8, fontSize: 14 }}>
+                  <div>Manual: ${item.manualSpent.toFixed(2)}</div>
+                  <div>Imported: ${item.importedSpent.toFixed(2)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -133,6 +230,13 @@ const Budget = () => {
             const percentage = utilization.percentageUsed;
             const statusColor = getStatusColor(percentage);
             const remaining = utilization.remaining;
+            const sourceBreakdown = categorySourceBreakdown.find((item) => item.category === budget.category) || {
+              manualSpent: 0,
+              importedSpent: 0,
+            };
+            const sourceAlert = Array.isArray(validationResults?.warningDetails)
+              ? validationResults.warningDetails.find((warning) => warning.category === budget.category)
+              : null;
 
             return (
               <div key={budget.id} className="card budget-card">
@@ -162,6 +266,17 @@ const Budget = () => {
                   </div>
                 </div>
 
+                <div className="budget-amounts" style={{ marginTop: 8 }}>
+                  <div className="budget-stat">
+                    <span className="stat-label">Manual</span>
+                    <span className="stat-value">${sourceBreakdown.manualSpent.toFixed(2)}</span>
+                  </div>
+                  <div className="budget-stat">
+                    <span className="stat-label">Imported</span>
+                    <span className="stat-value spent">${sourceBreakdown.importedSpent.toFixed(2)}</span>
+                  </div>
+                </div>
+
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -178,12 +293,12 @@ const Budget = () => {
 
                 {utilization.isOverBudget && (
                   <div className="budget-warning">
-                     {t('labels.overBudget')} ${Math.abs(remaining).toFixed(2)}!
+                     {t('labels.overBudget')} ${Math.abs(remaining).toFixed(2)}! {sourceAlert?.dominantSource ? `${sourceAlert.dominantSource.label} are driving most of the overage.` : ''}
                   </div>
                 )}
                 {!utilization.isOverBudget && percentage >= 90 && (
                   <div className="budget-warning">
-                     {t('labels.approachingLimit')}!
+                     {t('labels.approachingLimit')}! {sourceAlert?.dominantSource ? `${sourceAlert.dominantSource.label} are the main contributor.` : ''}
                   </div>
                 )}
               </div>

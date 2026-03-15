@@ -133,6 +133,69 @@ export const calculateMonthlyTax = (incomes, year, month, taxRate) => {
   return calculationEngine.calculateTax(monthlyIncome.total, taxRate);
 };
 
+const normalizeSourceType = (sourceType) => {
+  if (sourceType === 'bank_feed' || sourceType === 'imported') {
+    return 'imported';
+  }
+  return 'manual';
+};
+
+const getSourceBreakdown = (transactions = []) => {
+  const breakdown = {
+    manual: { source: 'manual', label: 'Manual', amount: 0, count: 0 },
+    imported: { source: 'imported', label: 'Imported Bank Feed', amount: 0, count: 0 },
+  };
+
+  transactions.forEach((transaction) => {
+    const source = normalizeSourceType(transaction.sourceType);
+    breakdown[source].amount = calculationEngine.round(
+      breakdown[source].amount + parseFloat(transaction.amount || 0)
+    );
+    breakdown[source].count += 1;
+  });
+
+  return Object.values(breakdown);
+};
+
+const getSourceCategoryBreakdown = (transactions = []) => {
+  const categories = {};
+
+  transactions.forEach((transaction) => {
+    const category = transaction.category || 'Other';
+    const source = normalizeSourceType(transaction.sourceType);
+    const amount = parseFloat(transaction.amount || 0);
+
+    if (!categories[category]) {
+      categories[category] = {
+        category,
+        manual: 0,
+        imported: 0,
+      };
+    }
+
+    categories[category][source] = calculationEngine.round(categories[category][source] + amount);
+  });
+
+  return Object.values(categories).sort(
+    (left, right) => (right.manual + right.imported) - (left.manual + left.imported)
+  );
+};
+
+const buildTrendComparison = (incomes, expenses, year, month) => {
+  const previousMonth = month === 0 ? 11 : month - 1;
+  const previousYear = month === 0 ? year - 1 : year;
+
+  const currentIncome = calculateMonthlyIncome(incomes, year, month).total;
+  const previousIncome = calculateMonthlyIncome(incomes, previousYear, previousMonth).total;
+  const currentExpenses = calculateMonthlyExpenses(expenses, year, month).total;
+  const previousExpenses = calculateMonthlyExpenses(expenses, previousYear, previousMonth).total;
+
+  return {
+    incomeChange: calculationEngine.percentageChange(previousIncome, currentIncome),
+    expenseChange: calculationEngine.percentageChange(previousExpenses, currentExpenses),
+  };
+};
+
 // ==================== CATEGORY ANALYSIS ====================
 
 /**
@@ -340,15 +403,47 @@ export const generateMonthlySummary = ({
 
   // Spending patterns
   const dailyAverage = getDailyAverage(expenses, year, month);
-  const weeklySpending = getWeeklySpending(expenses, year, month);
   const highestSpendingDay = getHighestSpendingDay(expenses, year, month);
+  const weeklySpendingMap = getWeeklySpending(expenses, year, month);
+  const weeklySpending = Object.entries(weeklySpendingMap).map(([week, amount]) => ({
+    week: `Week ${week}`,
+    amount,
+  }));
+  const sourceBreakdown = getSourceBreakdown(expenseData.transactions);
+  const sourceCategoryBreakdown = getSourceCategoryBreakdown(expenseData.transactions);
 
   // Budget analysis
   const budgetVsActual = getBudgetVsActual(budgets, expenses, year, month);
   const remainingBudget = getRemainingBudget(budgets, expenses, year, month);
+  const overBudgetCategories = budgetVsActual
+    .filter((budget) => budget.isOverBudget)
+    .map((budget) => ({
+      category: budget.category,
+      over: Math.abs(budget.remaining),
+      spent: budget.spent,
+      budget: budget.budgeted,
+    }));
+  const budgetAnalysis = {
+    comparison: budgetVsActual.map((budget) => ({
+      ...budget,
+      budget: budget.budgeted,
+    })),
+    totalRemaining: remainingBudget.remaining,
+    overallStatus: remainingBudget.isOverBudget
+      ? 'Over'
+      : remainingBudget.percentageUsed >= 90
+        ? 'Critical'
+        : remainingBudget.percentageUsed >= 70
+          ? 'Warning'
+          : 'Good',
+    overBudgetCategories,
+  };
 
   // Calculate savings rate
   const savingsRate = calculationEngine.calculateSavingsRate(netIncome, expenseData.total);
+  const trends = {
+    comparison: buildTrendComparison(incomes, expenses, year, month),
+  };
 
   // Month info
   const monthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
@@ -377,7 +472,11 @@ export const generateMonthlySummary = ({
       netIncome: calculationEngine.round(netIncome),
       expenses: calculationEngine.round(expenseData.total),
       netBalance: calculationEngine.round(netBalance),
-      savingsRate: calculationEngine.round(savingsRate)
+      savingsRate: calculationEngine.round(savingsRate),
+      totalIncome: calculationEngine.round(incomeData.total),
+      totalExpenses: calculationEngine.round(expenseData.total),
+      totalTax: calculationEngine.round(taxAmount),
+      remainingBalance: calculationEngine.round(netBalance),
     },
 
     // Transaction counts
@@ -388,7 +487,11 @@ export const generateMonthlySummary = ({
     },
 
     // Category breakdown
-    categories: {
+    categories: categoryBreakdown.categories.map(({ name, ...data }) => ({
+      category: name,
+      ...data,
+    })),
+    categorySummary: {
       breakdown: categoryBreakdown.categories,
       top: topCategories,
       total: categoryBreakdown.total,
@@ -399,7 +502,9 @@ export const generateMonthlySummary = ({
     patterns: {
       dailyAverage: calculationEngine.round(dailyAverage),
       weeklySpending,
+      weeklySpendingMap,
       highestDay: highestSpendingDay,
+      highestSpendingDay,
       dailySpending: getDailySpending(expenses, year, month)
     },
 
@@ -408,6 +513,12 @@ export const generateMonthlySummary = ({
       comparison: budgetVsActual,
       remaining: remainingBudget,
       overBudgetCategories: budgetVsActual.filter(b => b.isOverBudget).length
+    },
+    budgetAnalysis,
+
+    sourceAnalysis: {
+      breakdown: sourceBreakdown,
+      categories: sourceCategoryBreakdown,
     },
 
     // Tax info
@@ -418,13 +529,16 @@ export const generateMonthlySummary = ({
     },
 
     // Transactions
-    transactions: {
+    transactionGroups: {
       income: incomeData.transactions,
       expenses: expenseData.transactions,
       all: [...incomeData.transactions, ...expenseData.transactions].sort((a, b) =>
         new Date(b.date) - new Date(a.date)
       )
     },
+    transactions: [...expenseData.transactions].sort((a, b) => new Date(b.date) - new Date(a.date)),
+
+    trends,
 
     // Status indicators
     status: {

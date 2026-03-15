@@ -258,7 +258,7 @@ export const organizationsAPI = {
 
 // Entities API
 export const entitiesAPI = {
-  getAll: () => api.get('/entities/'),
+  getAll: (params) => api.get('/entities/', { params }),
   getById: (id) => api.get(`/entities/${id}/`),
   create: (data) => api.post('/entities/', data),
   update: (id, data) => api.put(`/entities/${id}/`, data),
@@ -698,6 +698,9 @@ export const bankingIntegrationsAPI = {
   getAll: (params) => api.get('/banking-integrations/', { params }),
   getById: (id) => api.get(`/banking-integrations/${id}/`),
   create: (data) => api.post('/banking-integrations/', data),
+  consentSession: (data) => api.post('/banking-integrations/consent-session/', data),
+  completeConsent: (id, data) => api.post(`/banking-integrations/${id}/complete-consent/`, data),
+  sync: (id, data) => api.post(`/banking-integrations/${id}/sync/`, data),
   update: (id, data) => api.put(`/banking-integrations/${id}/`, data),
   delete: (id) => api.delete(`/banking-integrations/${id}/`),
 };
@@ -706,6 +709,7 @@ export const bankingIntegrationsAPI = {
 export const bankingTransactionsAPI = {
   getAll: (params) => api.get('/banking-transactions/', { params }),
   getById: (id) => api.get(`/banking-transactions/${id}/`),
+  overrideCategory: (id, data) => api.post(`/banking-transactions/${id}/override-category/`, data),
 };
 
 // Embedded Payments API

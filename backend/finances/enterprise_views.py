@@ -1,8 +1,9 @@
 """
 Enterprise-specific viewsets and views
 """
-from rest_framework import viewsets
+from rest_framework import status as drf_status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Q, Count
@@ -33,7 +34,8 @@ from .models import (
     Client, ClientPortal, ClientMessage, ClientDocument, DocumentRequest, ApprovalRequest,
     DocumentTemplate, Loan, LoanPayment, KYCProfile, AMLTransaction, FirmService,
     ClientInvoice, ClientInvoiceLineItem, ClientSubscription, WhiteLabelBranding,
-    BankingIntegration, BankingTransaction, EmbeddedPayment, AutomationWorkflow,
+    BankingIntegration, BankingTransaction, BankingConsentLog, BankingSyncRun,
+    BankingCategorizationRule, BankingCategorizationDecision, EmbeddedPayment, AutomationWorkflow,
     AutomationExecution, FirmMetric, ClientMarketplaceIntegration
 )
 from .serializers import (
@@ -64,6 +66,13 @@ from .serializers import (
     WhiteLabelBrandingSerializer, BankingIntegrationSerializer, BankingTransactionSerializer,
     EmbeddedPaymentSerializer, AutomationWorkflowSerializer, AutomationExecutionSerializer,
     FirmMetricSerializer, ClientMarketplaceIntegrationSerializer
+)
+from .banking_services import (
+    complete_oauth_consent,
+    handle_banking_webhook,
+    override_banking_transaction_category,
+    prepare_oauth_consent,
+    sync_banking_integration,
 )
 from .permissions import PermissionChecker
 
@@ -114,6 +123,13 @@ def _get_accessible_entity_or_404(user, entity_id, organization=None):
 
 def _filter_queryset_by_entity_scope(queryset, user, entity_relation='entity'):
     return queryset.filter(**{f'{entity_relation}__in': _accessible_entities_queryset(user)}).distinct()
+
+
+def _request_ip(request):
+    forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR')
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
@@ -3451,9 +3467,152 @@ class BankingIntegrationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         accessible_orgs = _accessible_organizations_queryset(self.request.user)
         org_id = self.request.query_params.get('organization')
+        entity_id = self.request.query_params.get('entity') or self.request.query_params.get('entity_id')
         if org_id:
-            return BankingIntegration.objects.filter(organization__in=accessible_orgs, organization_id=org_id)
-        return BankingIntegration.objects.filter(organization__in=accessible_orgs)
+            queryset = BankingIntegration.objects.filter(organization__in=accessible_orgs, organization_id=org_id)
+        else:
+            queryset = BankingIntegration.objects.filter(organization__in=accessible_orgs)
+        if entity_id:
+            queryset = queryset.filter(entity_id=entity_id)
+        return queryset.select_related('organization', 'entity')
+
+    def perform_create(self, serializer):
+        accessible_orgs = _accessible_organizations_queryset(self.request.user)
+        organization = get_object_or_404(accessible_orgs, id=self.request.data.get('organization'))
+        entity_id = self.request.data.get('entity')
+        entity = _get_accessible_entity_or_404(self.request.user, entity_id, organization=organization) if entity_id else None
+        serializer.save(organization=organization, entity=entity)
+
+    @action(detail=False, methods=['post'], url_path='consent-session')
+    def consent_session(self, request):
+        accessible_orgs = _accessible_organizations_queryset(request.user)
+        organization = get_object_or_404(accessible_orgs, id=request.data.get('organization'))
+        entity_id = request.data.get('entity')
+        entity = _get_accessible_entity_or_404(request.user, entity_id, organization=organization) if entity_id else None
+
+        integration_id = request.data.get('integration_id')
+        if integration_id:
+            integration = get_object_or_404(self.get_queryset(), id=integration_id)
+            integration.entity = entity
+            integration.integration_type = request.data.get('integration_type', integration.integration_type)
+            integration.provider_code = request.data.get('provider_code', integration.provider_code)
+            integration.provider_name = request.data.get('provider_name', integration.provider_name)
+            integration.webhook_url = request.data.get('webhook_url', integration.webhook_url)
+            api_key = request.data.get('api_key')
+            api_secret = request.data.get('api_secret')
+            if api_key is not None:
+                integration.set_api_key(api_key)
+            if api_secret is not None:
+                integration.set_api_secret(api_secret)
+            integration.save()
+        else:
+            integration = BankingIntegration(
+                organization=organization,
+                entity=entity,
+                integration_type=request.data.get('integration_type', 'open_banking'),
+                provider_code=request.data.get('provider_code', 'custom'),
+                provider_name=request.data.get('provider_name') or request.data.get('provider_code', 'Custom').title(),
+                webhook_url=request.data.get('webhook_url', ''),
+                status='pending',
+                is_active=True,
+            )
+            integration.set_api_key(request.data.get('api_key', ''))
+            integration.set_api_secret(request.data.get('api_secret', ''))
+            integration.save()
+
+        session = prepare_oauth_consent(
+            integration,
+            redirect_uri=request.data.get('redirect_uri', ''),
+            scopes=request.data.get('scopes') or None,
+            requested_by=request.user,
+            ip_address=_request_ip(request),
+        )
+
+        return Response(
+            {
+                **session,
+                'integration': self.get_serializer(integration).data,
+            },
+            status=drf_status.HTTP_201_CREATED,
+        )
+
+    @action(detail=True, methods=['post'], url_path='complete-consent')
+    def complete_consent(self, request, pk=None):
+        integration = self.get_object()
+        try:
+            result = complete_oauth_consent(
+                integration,
+                authorization_code=request.data.get('authorization_code') or request.data.get('code') or '',
+                state=request.data.get('state', ''),
+                requested_by=request.user,
+                ip_address=_request_ip(request),
+                access_token=request.data.get('access_token', ''),
+                refresh_token=request.data.get('refresh_token', ''),
+                expires_in=request.data.get('expires_in', 3600),
+                consent_reference=request.data.get('consent_reference', ''),
+                metadata=request.data.get('metadata') or {},
+            )
+        except ValueError as exc:
+            return Response({'detail': str(exc)}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        sync_summary = None
+        if request.data.get('accounts') or request.data.get('transactions'):
+            sync_run = sync_banking_integration(
+                integration,
+                payload=request.data,
+                initiated_by=request.user,
+                trigger_type='manual',
+            )
+            sync_summary = {
+                'sync_run_id': sync_run.id,
+                'transactions_processed': sync_run.transactions_processed,
+                'accounts_processed': sync_run.accounts_processed,
+                'status': sync_run.status,
+            }
+
+        return Response(
+            {
+                'integration': self.get_serializer(integration).data,
+                'consent': result,
+                'sync': sync_summary,
+            },
+            status=drf_status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=['post'], url_path='sync')
+    def sync(self, request, pk=None):
+        integration = self.get_object()
+        try:
+            sync_run = sync_banking_integration(
+                integration,
+                payload=request.data or {},
+                initiated_by=request.user,
+                trigger_type='manual',
+            )
+        except ValueError as exc:
+            return Response({'detail': str(exc)}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                'sync_run_id': sync_run.id,
+                'status': sync_run.status,
+                'accounts_processed': sync_run.accounts_processed,
+                'transactions_processed': sync_run.transactions_processed,
+                'completed_at': sync_run.completed_at,
+                'response_payload': sync_run.response_payload,
+            },
+            status=drf_status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=['post'], url_path=r'webhooks/(?P<provider_code>[^/.]+)', permission_classes=[AllowAny])
+    def webhook(self, request, provider_code=None):
+        result = handle_banking_webhook(
+            provider_code,
+            request.data or {},
+            signature=request.headers.get('X-Bank-Signature', ''),
+        )
+        status_code = drf_status.HTTP_202_ACCEPTED if result['accepted'] else drf_status.HTTP_400_BAD_REQUEST
+        return Response(result, status=status_code)
 
 
 class BankingTransactionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -3462,11 +3621,50 @@ class BankingTransactionViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        qs = _filter_queryset_by_entity_scope(BankingTransaction.objects.all(), self.request.user)
+        qs = _filter_queryset_by_entity_scope(
+            BankingTransaction.objects.select_related('bank_account', 'integration', 'entity'),
+            self.request.user,
+        )
         entity_id = self.request.query_params.get('entity')
         if entity_id:
-            return qs.filter(entity_id=entity_id)
+            qs = qs.filter(entity_id=entity_id)
+        integration_id = self.request.query_params.get('integration')
+        if integration_id:
+            qs = qs.filter(integration_id=integration_id)
+        merchant = self.request.query_params.get('merchant')
+        if merchant:
+            qs = qs.filter(Q(merchant_name__icontains=merchant) | Q(description__icontains=merchant))
+        category_name = self.request.query_params.get('category')
+        if category_name:
+            qs = qs.filter(normalized_category__iexact=category_name)
+        bank_account_id = self.request.query_params.get('bank_account')
+        if bank_account_id:
+            qs = qs.filter(bank_account_id=bank_account_id)
+        start_date = self.request.query_params.get('start_date')
+        if start_date:
+            qs = qs.filter(transaction_date__date__gte=start_date)
+        end_date = self.request.query_params.get('end_date')
+        if end_date:
+            qs = qs.filter(transaction_date__date__lte=end_date)
         return qs
+
+    @action(detail=True, methods=['post'], url_path='override-category')
+    def override_category(self, request, pk=None):
+        banking_transaction = self.get_object()
+        category_name = request.data.get('category_name') or request.data.get('normalized_category')
+        if not category_name:
+            return Response({'detail': 'category_name is required.'}, status=drf_status.HTTP_400_BAD_REQUEST)
+
+        override_banking_transaction_category(
+            banking_transaction,
+            category_name=category_name,
+            dashboard_bucket=request.data.get('dashboard_bucket', ''),
+            explanation=request.data.get('explanation', ''),
+            user=request.user,
+            learn=bool(request.data.get('learn', True)),
+        )
+        banking_transaction.refresh_from_db()
+        return Response(self.get_serializer(banking_transaction).data, status=drf_status.HTTP_200_OK)
 
 
 class EmbeddedPaymentViewSet(viewsets.ModelViewSet):

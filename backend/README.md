@@ -201,6 +201,14 @@ EXPOSE 8000
 CMD ["gunicorn", "finance_api.wsgi:application", "--bind", "0.0.0.0:8000"]
 ```
 
+### Banking Integration Environment
+- Copy `backend/.env.example` to `backend/.env` and set a strong `BANKING_TOKEN_ENCRYPTION_KEY`.
+- Configure the provider variables for the aggregator you are using: `PLAID_*`, `YODLEE_*`, or `FINICITY_*`.
+- Frontend consent callbacks can return to the integrations page after the provider completes the OAuth flow.
+- Provider webhooks should target `https://<your-domain>/api/banking-integrations/webhooks/<provider_code>/`.
+- Nightly fallback syncs run through `python manage.py sync_banking_integrations`; `docker-compose.yml` now includes a `banking-sync` service that executes this every 24 hours by default.
+- Run `python manage.py seed_source_filter_demo --reset` to recreate the mixed manual-plus-imported verification dataset used for source-filter QA.
+
 ## Testing
 
 ### Run Tests

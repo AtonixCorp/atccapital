@@ -191,10 +191,6 @@ const EnterpriseEntities = () => {
     { label: 'Currencies', value: new Set(entities.map(e => e.local_currency)).size, accent: '#F59E0B' },
   ];
 
-  // shared input style — kept for legacy inline refs (replaced by CSS below)
-  const inputStyle = undefined; // no longer used
-  const labelStyle = undefined; // no longer used
-
   return (
     <div className="enterprise-action-page entities-page" style={{ maxWidth: 1300, margin: '0 auto' }}>
 

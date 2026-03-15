@@ -6,11 +6,14 @@ const Expenses = () => {
     expenses,
     addExpense,
     deleteExpense,
+    bankFeedExpenses,
     calculationEngine,
     monthlySummary,
     financialSummary,
     validationResults,
-    budgets
+    budgets,
+    expenseSourceFilter,
+    setExpenseSourceFilter,
   } = useFinance();
 
   const [showForm, setShowForm] = useState(false);
@@ -77,6 +80,23 @@ const Expenses = () => {
               className={`toggle-btn ${viewMode === 'monthly' ? 'active' : ''}`}
               onClick={() => setViewMode('monthly')}
             >This Month
+            </button>
+          </div>
+          <div className="view-toggle">
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('all')}
+            >All Sources
+            </button>
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('manual')}
+            >Manual Only
+            </button>
+            <button
+              className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
+              onClick={() => setExpenseSourceFilter('imported')}
+            >Imported Only
             </button>
           </div>
           <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
@@ -158,6 +178,9 @@ const Expenses = () => {
             {viewMode === 'monthly' ? 'Monthly' : 'Total'} Expenses:
             <span className="total-amount"> ${displayTotal.toFixed(2)}</span>
           </h2>
+          {Array.isArray(bankFeedExpenses) && bankFeedExpenses.length > 0 && (
+            <p className="summary-detail">Imported bank feed expenses included: {bankFeedExpenses.length}</p>
+          )}
           {viewMode === 'monthly' && monthlySummary && (
             <div className="monthly-stats">
               <div className="stat-item">
@@ -182,6 +205,16 @@ const Expenses = () => {
             {validationResults.warnings.slice(0, 2).map((warning, idx) => (
               <div key={idx} className="warning-message">
                  {warning}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {Array.isArray(validationResults?.warningDetails) && validationResults.warningDetails.length > 0 && (
+          <div className="validation-warnings">
+            {validationResults.warningDetails.slice(0, 2).map((warning) => (
+              <div key={warning.category} className="warning-message">
+                {warning.message}
               </div>
             ))}
           </div>
@@ -235,6 +268,7 @@ const Expenses = () => {
                   <th>Date</th>
                   <th>Description</th>
                   <th>Category</th>
+                  <th>Source</th>
                   <th>Amount</th>
                   <th>Actions</th>
                 </tr>
@@ -249,13 +283,18 @@ const Expenses = () => {
                     <td>
                       <span className="category-badge">{expense.category}</span>
                     </td>
+                    <td>{expense.sourceLabel || 'Manual'}</td>
                     <td className="amount">${(expense.amount || 0).toFixed(2)}</td>
                     <td>
-                      <button
-                        className="btn-danger"
-                        onClick={() => deleteExpense(expense.id)}
-                      >Delete
-                      </button>
+                      {expense.canDelete === false ? (
+                        <span className="stat-label">Managed by bank feed</span>
+                      ) : (
+                        <button
+                          className="btn-danger"
+                          onClick={() => deleteExpense(expense.id)}
+                        >Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

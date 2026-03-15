@@ -3047,17 +3047,31 @@ class BankingIntegration(models.Model):
     ]
 
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='banking_integrations')
+    entity = models.ForeignKey(Entity, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_integrations')
     integration_type = models.CharField(max_length=50, choices=INTEGRATION_TYPE_CHOICES)
+    provider_code = models.CharField(max_length=50, default='custom')
     provider_name = models.CharField(max_length=255)
     
-    api_key = models.CharField(max_length=500)
+    api_key = models.CharField(max_length=500, blank=True)
     api_secret = models.CharField(max_length=500, blank=True)
+    access_token_encrypted = models.TextField(blank=True)
+    refresh_token_encrypted = models.TextField(blank=True)
+    webhook_signing_secret_encrypted = models.TextField(blank=True)
     webhook_url = models.URLField(blank=True)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     is_active = models.BooleanField(default=True)
     
     last_sync = models.DateTimeField(null=True, blank=True)
+    last_webhook_at = models.DateTimeField(null=True, blank=True)
+    token_expires_at = models.DateTimeField(null=True, blank=True)
+    token_last_rotated_at = models.DateTimeField(null=True, blank=True)
+    consent_reference = models.CharField(max_length=100, blank=True)
+    consent_scopes = models.JSONField(default=list, blank=True)
+    consent_granted_at = models.DateTimeField(null=True, blank=True)
+    consent_revoked_at = models.DateTimeField(null=True, blank=True)
+    consent_metadata = models.JSONField(default=dict, blank=True)
+    failure_count = models.PositiveIntegerField(default=0)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -3067,6 +3081,165 @@ class BankingIntegration(models.Model):
 
     def __str__(self):
         return f"{self.provider_name} - {self.organization.name}"
+
+    @property
+    def has_access_token(self):
+        return bool(self.access_token_encrypted)
+
+    def set_api_key(self, value):
+        from .banking_security import encrypt_secret
+        self.api_key = encrypt_secret(value) if value else ''
+
+    def get_api_key(self):
+        from .banking_security import decrypt_secret
+        return decrypt_secret(self.api_key)
+
+    def set_api_secret(self, value):
+        from .banking_security import encrypt_secret
+        self.api_secret = encrypt_secret(value) if value else ''
+
+    def get_api_secret(self):
+        from .banking_security import decrypt_secret
+        return decrypt_secret(self.api_secret)
+
+    def set_access_token(self, value):
+        from .banking_security import encrypt_secret
+        self.access_token_encrypted = encrypt_secret(value) if value else ''
+
+    def get_access_token(self):
+        from .banking_security import decrypt_secret
+        return decrypt_secret(self.access_token_encrypted)
+
+    def set_refresh_token(self, value):
+        from .banking_security import encrypt_secret
+        self.refresh_token_encrypted = encrypt_secret(value) if value else ''
+
+    def get_refresh_token(self):
+        from .banking_security import decrypt_secret
+        return decrypt_secret(self.refresh_token_encrypted)
+
+    def set_webhook_signing_secret(self, value):
+        from .banking_security import encrypt_secret
+        self.webhook_signing_secret_encrypted = encrypt_secret(value) if value else ''
+
+    def get_webhook_signing_secret(self):
+        from .banking_security import decrypt_secret
+        return decrypt_secret(self.webhook_signing_secret_encrypted)
+
+
+class BankingConsentLog(models.Model):
+    """Auditable record of explicit user consent for bank data access."""
+
+    STATUS_CHOICES = [
+        ('requested', 'Requested'),
+        ('granted', 'Granted'),
+        ('revoked', 'Revoked'),
+        ('failed', 'Failed'),
+    ]
+
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='banking_consent_logs')
+    integration = models.ForeignKey(BankingIntegration, on_delete=models.CASCADE, related_name='consent_logs')
+    entity = models.ForeignKey(Entity, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_consent_logs')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_consent_logs')
+    provider_code = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='requested')
+    redirect_uri = models.URLField(blank=True)
+    state = models.CharField(max_length=100, db_index=True)
+    scopes = models.JSONField(default=list, blank=True)
+    consent_reference = models.CharField(max_length=100, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-requested_at']
+        indexes = [
+            models.Index(fields=['integration', 'requested_at']),
+            models.Index(fields=['state']),
+        ]
+
+    def __str__(self):
+        return f"Consent {self.status} for {self.integration.provider_name} ({self.organization.name})"
+
+
+class BankingSyncRun(models.Model):
+    """Execution log for manual, webhook, and scheduled bank synchronizations."""
+
+    TRIGGER_TYPE_CHOICES = [
+        ('manual', 'Manual'),
+        ('scheduled', 'Scheduled'),
+        ('webhook', 'Webhook'),
+    ]
+
+    STATUS_CHOICES = [
+        ('queued', 'Queued'),
+        ('running', 'Running'),
+        ('succeeded', 'Succeeded'),
+        ('failed', 'Failed'),
+        ('partial', 'Partial'),
+    ]
+
+    integration = models.ForeignKey(BankingIntegration, on_delete=models.CASCADE, related_name='sync_runs')
+    entity = models.ForeignKey(Entity, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_sync_runs')
+    initiated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_sync_runs')
+    trigger_type = models.CharField(max_length=20, choices=TRIGGER_TYPE_CHOICES, default='manual')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='queued')
+    request_payload = models.JSONField(default=dict, blank=True)
+    response_payload = models.JSONField(default=dict, blank=True)
+    error_message = models.TextField(blank=True)
+    retry_count = models.PositiveIntegerField(default=0)
+    accounts_processed = models.PositiveIntegerField(default=0)
+    transactions_processed = models.PositiveIntegerField(default=0)
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-started_at']
+        indexes = [
+            models.Index(fields=['integration', 'started_at']),
+            models.Index(fields=['status']),
+        ]
+
+    def __str__(self):
+        return f"Sync {self.trigger_type} {self.status} for {self.integration.provider_name}"
+
+
+class BankingCategorizationRule(models.Model):
+    """Rules that classify imported bank transactions into expense buckets."""
+
+    MATCH_TYPE_CHOICES = [
+        ('exact', 'Exact'),
+        ('contains', 'Contains'),
+        ('regex', 'Regex'),
+    ]
+
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='banking_categorization_rules')
+    merchant_pattern = models.CharField(max_length=255, blank=True)
+    description_pattern = models.CharField(max_length=255, blank=True)
+    match_type = models.CharField(max_length=20, choices=MATCH_TYPE_CHOICES, default='contains')
+    category_name = models.CharField(max_length=255)
+    dashboard_bucket = models.CharField(max_length=255, blank=True)
+    priority = models.PositiveIntegerField(default=100)
+    is_active = models.BooleanField(default=True)
+    learned_from_user = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_rules_created')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_rules_updated')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-priority', 'merchant_pattern', 'description_pattern']
+        indexes = [
+            models.Index(fields=['entity', 'is_active']),
+            models.Index(fields=['entity', 'category_name']),
+        ]
+
+    def __str__(self):
+        pattern = self.merchant_pattern or self.description_pattern or 'rule'
+        return f"{pattern} -> {self.category_name}"
 
 
 class BankingTransaction(models.Model):
@@ -3080,6 +3253,8 @@ class BankingTransaction(models.Model):
 
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='banking_transactions')
     bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
+    integration = models.ForeignKey(BankingIntegration, on_delete=models.CASCADE, null=True, blank=True, related_name='transactions')
+    sync_run = models.ForeignKey(BankingSyncRun, on_delete=models.SET_NULL, null=True, blank=True, related_name='transactions')
     
     transaction_id = models.CharField(max_length=255, unique=True)
     transaction_date = models.DateTimeField()
@@ -3087,6 +3262,12 @@ class BankingTransaction(models.Model):
     currency = models.CharField(max_length=3)
     
     description = models.CharField(max_length=500)
+    merchant_name = models.CharField(max_length=255, blank=True)
+    raw_category = models.CharField(max_length=255, blank=True)
+    normalized_category = models.CharField(max_length=255, blank=True)
+    dashboard_bucket = models.CharField(max_length=255, blank=True)
+    categorization_source = models.CharField(max_length=50, blank=True)
+    categorization_confidence = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     counterparty_name = models.CharField(max_length=255)
     counterparty_account = models.CharField(max_length=100, blank=True)
     
@@ -3105,6 +3286,42 @@ class BankingTransaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_id}: {self.amount} {self.currency}"
+
+
+class BankingCategorizationDecision(models.Model):
+    """History of categorization decisions, including user overrides and learned rules."""
+
+    DECISION_SOURCE_CHOICES = [
+        ('rule_engine', 'Rule Engine'),
+        ('provider_hint', 'Provider Hint'),
+        ('keyword', 'Keyword'),
+        ('user_override', 'User Override'),
+        ('ml_feedback', 'ML Feedback'),
+        ('fallback', 'Fallback'),
+    ]
+
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name='banking_categorization_decisions')
+    banking_transaction = models.ForeignKey(BankingTransaction, on_delete=models.CASCADE, related_name='categorization_decisions')
+    matched_rule = models.ForeignKey(BankingCategorizationRule, on_delete=models.SET_NULL, null=True, blank=True, related_name='decisions')
+    source = models.CharField(max_length=30, choices=DECISION_SOURCE_CHOICES)
+    raw_category = models.CharField(max_length=255, blank=True)
+    assigned_category = models.CharField(max_length=255)
+    dashboard_bucket = models.CharField(max_length=255, blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    explanation = models.TextField(blank=True)
+    is_current = models.BooleanField(default=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banking_categorization_decisions')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['banking_transaction', 'is_current']),
+            models.Index(fields=['entity', 'assigned_category']),
+        ]
+
+    def __str__(self):
+        return f"{self.assigned_category} ({self.source})"
 
 
 class ReconciliationMatch(models.Model):

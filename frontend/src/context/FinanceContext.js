@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import calculationEngine from '../services/calculation/calculationEngine';
 import validationService from '../services/calculation/validationService';
 import monthlyAnalysisService from '../services/calculation/monthlyAnalysisService';
@@ -6,16 +6,97 @@ import taxCalculatorService from '../services/taxCalculatorService';
 import {
   modelTemplatesAPI, financialModelsAPI, scenariosAPI,
   aiInsightsAPI, reportsAPI,
-  organizationsAPI, entitiesAPI
+  organizationsAPI, entitiesAPI, bankingTransactionsAPI
 } from '../services/api';
 
 const FinanceContext = createContext();
 
 const mockPortfolio = [];
+const EXPENSE_SOURCE_OPTIONS = [
+  { value: 'all', label: 'All Sources' },
+  { value: 'manual', label: 'Manual Only' },
+  { value: 'imported', label: 'Imported Only' },
+];
+
+const normalizeExpenseSourceType = (sourceType) => {
+  if (sourceType === 'bank_feed' || sourceType === 'imported') {
+    return 'imported';
+  }
+  return 'manual';
+};
+
+const filterExpensesBySource = (items = [], sourceFilter = 'all') => {
+  if (sourceFilter === 'all') {
+    return items;
+  }
+
+  return items.filter((item) => normalizeExpenseSourceType(item.sourceType) === sourceFilter);
+};
+
+const buildMonthlyExpenseHistory = (items = [], incomes = []) => {
+  const months = items.reduce((accumulator, item) => {
+    if (!item.date) {
+      return accumulator;
+    }
+
+    const date = new Date(item.date);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!accumulator[key]) {
+      accumulator[key] = {
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        expenses: 0,
+        income: 0,
+        sourceBreakdown: {
+          manual: { source: 'manual', label: 'Manual entries', amount: 0, count: 0 },
+          imported: { source: 'imported', label: 'Imported bank feed', amount: 0, count: 0 },
+        },
+      };
+    }
+
+    const source = normalizeExpenseSourceType(item.sourceType);
+    const amount = parseFloat(item.amount || 0);
+    accumulator[key].expenses = calculationEngine.round(accumulator[key].expenses + amount);
+    accumulator[key].sourceBreakdown[source].amount = calculationEngine.round(
+      accumulator[key].sourceBreakdown[source].amount + amount
+    );
+    accumulator[key].sourceBreakdown[source].count += 1;
+
+    return accumulator;
+  }, {});
+
+  incomes.forEach((item) => {
+    if (!item.date) {
+      return;
+    }
+
+    const date = new Date(item.date);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months[key]) {
+      months[key] = {
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        expenses: 0,
+        income: 0,
+        sourceBreakdown: {
+          manual: { source: 'manual', label: 'Manual entries', amount: 0, count: 0 },
+          imported: { source: 'imported', label: 'Imported bank feed', amount: 0, count: 0 },
+        },
+      };
+    }
+
+    months[key].income = calculationEngine.round(
+      months[key].income + parseFloat(item.amount || 0)
+    );
+  });
+
+  return Object.values(months);
+};
 
 export const FinanceProvider = ({ children }) => {
   // Core Data States
   const [expenses, setExpenses] = useState([]);
+  const [bankFeedExpenses, setBankFeedExpenses] = useState([]);
   const [income, setIncome] = useState([]);
   const [budgets, setBudgets] = useState([]);
 
@@ -75,11 +156,51 @@ export const FinanceProvider = ({ children }) => {
     return { year: current.year, month: current.month };
   });
   const [availableMonths, setAvailableMonths] = useState([]);
+  const [expenseSourceFilter, setExpenseSourceFilter] = useState('all');
 
   // Calculated States (auto-updated by engine)
   const [financialSummary, setFinancialSummary] = useState(null);
   const [monthlySummary, setMonthlySummary] = useState(null);
   const [validationResults, setValidationResults] = useState(null);
+
+  const mapBankTransactionToExpense = useCallback((transaction) => {
+    const numericAmount = Math.abs(parseFloat(transaction.amount || 0));
+    const transactionDate = transaction.transaction_date || transaction.date || new Date().toISOString();
+    return {
+      id: `bank-${transaction.id}`,
+      bankingTransactionId: transaction.id,
+      description: transaction.merchant_name || transaction.description || 'Imported bank transaction',
+      amount: numericAmount,
+      category: transaction.normalized_category || transaction.raw_category || 'Uncategorized',
+      date: transactionDate,
+      sourceType: 'bank_feed',
+      sourceLabel: 'Bank Feed',
+      bankAccountName: transaction.bank_account_name || '',
+      dashboardBucket: transaction.dashboard_bucket || 'Needs Review',
+      canDelete: false,
+      originalAmount: parseFloat(transaction.amount || 0),
+      metadata: transaction,
+    };
+  }, []);
+
+  const mergedExpenses = useMemo(
+    () => [
+      ...(Array.isArray(expenses) ? expenses.map((expense) => ({ ...expense, sourceType: expense.sourceType || 'manual', sourceLabel: expense.sourceLabel || 'Manual', canDelete: expense.canDelete !== false })) : []),
+      ...(Array.isArray(bankFeedExpenses) ? bankFeedExpenses : []),
+    ],
+    [bankFeedExpenses, expenses]
+  );
+
+  const filteredExpenses = useMemo(
+    () => filterExpensesBySource(mergedExpenses, expenseSourceFilter),
+    [expenseSourceFilter, mergedExpenses]
+  );
+
+  const historicalExpenseData = useMemo(() => {
+    return buildMonthlyExpenseHistory(filteredExpenses, income).filter(
+      (entry) => !(entry.year === selectedMonth.year && entry.month === selectedMonth.month)
+    );
+  }, [filteredExpenses, income, selectedMonth.month, selectedMonth.year]);
 
   // ==================== CALCULATION ENGINE ====================
 
@@ -102,7 +223,7 @@ export const FinanceProvider = ({ children }) => {
     // Calculate complete financial summary using engine
     const summary = calculationEngine.calculateFinancialSummary({
       incomes: transformedIncome,
-      expenses: expenses,
+      expenses: filteredExpenses,
       budgets: budgets,
       taxRate: effectiveTaxRate,
       country: userCountry
@@ -113,7 +234,7 @@ export const FinanceProvider = ({ children }) => {
     // Calculate monthly summary for selected month
     const monthly = monthlyAnalysisService.generateMonthlySummary({
       incomes: transformedIncome,
-      expenses: expenses,
+      expenses: filteredExpenses,
       budgets: budgets,
       year: selectedMonth.year,
       month: selectedMonth.month,
@@ -130,13 +251,19 @@ export const FinanceProvider = ({ children }) => {
       totalBudget: summary.budget.total,
       taxRate: effectiveTaxRate,
       country: userCountry,
-      summary: summary
+      summary: summary,
+      budgets,
+      expenseTransactions: filteredExpenses,
+      selectedMonth,
+      historicalExpenseData,
+      monthlyIncome: monthly.totals?.totalIncome || 0,
+      expenseSourceFilter,
     });
 
     setValidationResults(validation);
 
     return summary;
-  }, [budgets, expenses, income, selectedMonth.month, selectedMonth.year, userCountry, userTaxRate]);
+  }, [budgets, expenseSourceFilter, filteredExpenses, historicalExpenseData, income, selectedMonth, userCountry, userTaxRate]);
 
   /**
    * Update available months based on existing transactions
@@ -153,7 +280,7 @@ export const FinanceProvider = ({ children }) => {
     });
 
     // Get months from expenses
-    expenses.forEach(item => {
+    mergedExpenses.forEach(item => {
       if (item.date) {
         const date = new Date(item.date);
         months.add(`${date.getFullYear()}-${date.getMonth()}`);
@@ -179,7 +306,7 @@ export const FinanceProvider = ({ children }) => {
     }
 
     setAvailableMonths(monthsList);
-  }, [expenses, income]);
+  }, [income, mergedExpenses]);
 
   // Recalculate everything when data changes
   useEffect(() => {
@@ -199,30 +326,37 @@ export const FinanceProvider = ({ children }) => {
 
     const load = async () => {
       try {
-        const [expRes, incRes, budRes] = await Promise.all([
+        const [expRes, incRes, budRes, bankRes] = await Promise.all([
           fetch(apiUrl('/api/expenses/'), { headers: buildAuthHeaders() }),
           fetch(apiUrl('/api/income/'), { headers: buildAuthHeaders() }),
           fetch(apiUrl('/api/budgets/'), { headers: buildAuthHeaders() }),
+          fetch(apiUrl('/api/banking-transactions/'), { headers: buildAuthHeaders() }),
         ]);
 
         const expJson = expRes.ok ? await expRes.json() : [];
         const incJson = incRes.ok ? await incRes.json() : [];
         const budJson = budRes.ok ? await budRes.json() : [];
+        const bankJson = bankRes.ok ? await bankRes.json() : [];
 
         const expItems = Array.isArray(expJson) ? expJson : expJson.results || [];
         const incItems = Array.isArray(incJson) ? incJson : incJson.results || [];
         const budItems = Array.isArray(budJson) ? budJson : budJson.results || [];
+        const bankItems = Array.isArray(bankJson) ? bankJson : bankJson.results || [];
+        const importedExpenseItems = bankItems
+          .filter((item) => parseFloat(item.amount || 0) < 0)
+          .map(mapBankTransactionToExpense);
 
         setExpenses(expItems);
         setIncome(incItems);
         setBudgets(budItems);
+        setBankFeedExpenses(importedExpenseItems);
       } catch (err) {
         console.error('Failed to load personal finance data:', err);
       }
     };
 
     load();
-  }, [apiUrl, buildAuthHeaders]);
+  }, [apiUrl, buildAuthHeaders, mapBankTransactionToExpense]);
 
   // Load persisted user settings (country/tax) for authenticated users
   useEffect(() => {
@@ -461,7 +595,7 @@ export const FinanceProvider = ({ children }) => {
     calculationEngine.calculateTotalIncome(income.map(i => ({ amount: i.amount })));
 
   const totalExpenses = financialSummary ? financialSummary.expenses.total :
-    calculationEngine.calculateTotalExpenses(expenses);
+    calculationEngine.calculateTotalExpenses(filteredExpenses);
 
   const balance = financialSummary ? financialSummary.balance.net :
     calculationEngine.calculateNetBalance(totalIncome, totalExpenses);
@@ -688,15 +822,31 @@ export const FinanceProvider = ({ children }) => {
   };
 
   // Combine all transactions for AI analysis
-  const transactions = [...expenses, ...income];
+  const transactions = [...filteredExpenses, ...income];
+
+  const refreshBankFeedExpenses = useCallback(async () => {
+    try {
+      const response = await bankingTransactionsAPI.getAll();
+      const items = Array.isArray(response.data) ? response.data : response.data.results || [];
+      setBankFeedExpenses(items.filter((item) => parseFloat(item.amount || 0) < 0).map(mapBankTransactionToExpense));
+    } catch (err) {
+      console.error('Failed to refresh bank feed expenses:', err);
+    }
+  }, [mapBankTransactionToExpense]);
 
   const value = {
     // Data
-    expenses,
+    expenses: filteredExpenses,
+    allExpenses: mergedExpenses,
+    manualExpenses: expenses,
+    bankFeedExpenses,
     income,
     budgets,
     transactions,
     mockPortfolio,
+    expenseSourceFilter,
+    setExpenseSourceFilter,
+    expenseSourceOptions: EXPENSE_SOURCE_OPTIONS,
 
     // Financial Modeling Data
     models,
@@ -803,7 +953,8 @@ export const FinanceProvider = ({ children }) => {
     validationService,
 
     // Manual recalculation trigger
-    recalculateAll
+    recalculateAll,
+    refreshBankFeedExpenses
   };
 
   return (

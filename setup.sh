@@ -12,6 +12,17 @@ fi
 echo "📦 Setting up Django backend..."
 cd backend
 
+if [ ! -f ".env" ] && [ -f ".env.example" ]; then
+    echo "Creating backend .env file..."
+    cp .env.example .env
+    BANKING_KEY=$(python3 - <<'PY'
+import secrets
+print(secrets.token_urlsafe(32))
+PY
+)
+    sed -i "s/^BANKING_TOKEN_ENCRYPTION_KEY=.*/BANKING_TOKEN_ENCRYPTION_KEY=${BANKING_KEY}/" .env
+fi
+
 # Create virtual environment
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating virtual environment..."
@@ -20,6 +31,12 @@ fi
 
 # Activate virtual environment
 source "$VENV_DIR/bin/activate"
+
+if [ -f ".env" ]; then
+    set -a
+    source .env
+    set +a
+fi
 
 # Install dependencies
 echo "Installing Python dependencies..."
@@ -64,6 +81,11 @@ echo "✅ Setup complete!"
 echo ""
 echo "To start the application, run:"
 echo "  ./start.sh"
+echo ""
+echo "Banking integration setup:"
+echo "  1. Edit backend/.env with your Plaid, Yodlee, or Finicity credentials"
+echo "  2. Point provider webhooks to /api/banking-integrations/webhooks/<provider_code>/"
+echo "  3. Nightly fallback sync runs automatically via start.sh or docker-compose banking-sync"
 echo ""
 echo "To use the CLI after setup, run:"
 echo "  backend/$VENV_DIR/bin/atc profiles"

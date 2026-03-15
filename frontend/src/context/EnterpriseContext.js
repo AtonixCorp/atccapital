@@ -517,7 +517,7 @@ export const EnterpriseProvider = ({ children }) => {
     }
 
     switchOrganization(currentOrganization);
-  }, [currentOrganization?.id, switchOrganization, user?.account_type]);
+  }, [currentOrganization, switchOrganization, user?.account_type]);
 
   /**
    * Create new organization

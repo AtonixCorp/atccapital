@@ -11,6 +11,8 @@ from .models import (
     APIKey,
     AuditLog,
     BankAccount,
+    BankingConsentLog,
+    BankingIntegration,
     BankingTransaction,
     Budget,
     ChartOfAccounts,
@@ -1134,3 +1136,107 @@ class CoreFinancialAPIV1Tests(TestCase):
         )
         self.assertEqual(deliveries_response.status_code, 200)
         self.assertGreaterEqual(len(deliveries_response.data), 2)
+
+
+class BankingIntegrationAutomationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='bank-owner',
+            email='bank-owner@example.com',
+            password='bank-pass-123',
+        )
+        self.organization = Organization.objects.create(
+            owner=self.user,
+            name='Bank Ops LLC',
+            slug='bank-ops-llc',
+            primary_country='US',
+            primary_currency='USD',
+        )
+        self.entity = Entity.objects.create(
+            organization=self.organization,
+            name='Bank Ops Entity',
+            country='US',
+            entity_type='corporation',
+            status='active',
+            local_currency='USD',
+        )
+        self.client = APIClient(HTTP_HOST='localhost')
+        self.client.force_authenticate(user=self.user)
+
+    def test_consent_sync_and_override_flow_is_auditable(self):
+        consent_response = self.client.post(
+            '/api/banking-integrations/consent-session/',
+            {
+                'organization': self.organization.id,
+                'entity': self.entity.id,
+                'integration_type': 'financial_data',
+                'provider_code': 'plaid',
+                'provider_name': 'Plaid',
+                'redirect_uri': 'http://localhost:3000/firm/integrations',
+                'scopes': ['accounts:read', 'transactions:read'],
+            },
+            format='json',
+        )
+
+        self.assertEqual(consent_response.status_code, 201)
+        integration_id = consent_response.data['integration']['id']
+        state = consent_response.data['state']
+        self.assertTrue(BankingConsentLog.objects.filter(integration_id=integration_id, state=state, status='requested').exists())
+
+        complete_response = self.client.post(
+            f'/api/banking-integrations/{integration_id}/complete-consent/',
+            {
+                'state': state,
+                'authorization_code': 'demo-auth-code',
+                'accounts': [
+                    {
+                        'account_id': 'acct_001',
+                        'name': 'Operating Checking',
+                        'bank_name': 'Chase',
+                        'account_type': 'business',
+                        'currency': 'USD',
+                        'balance': '5000.00',
+                        'available_balance': '4800.00',
+                    }
+                ],
+                'transactions': [
+                    {
+                        'external_id': 'txn_001',
+                        'account_id': 'acct_001',
+                        'date': '2026-03-14',
+                        'amount': '-14.25',
+                        'currency': 'USD',
+                        'merchant': 'Starbucks',
+                        'description': 'STARBUCKS STORE 1234',
+                        'raw_category': 'food_and_drink',
+                    }
+                ],
+            },
+            format='json',
+        )
+
+        self.assertEqual(complete_response.status_code, 200)
+        integration = BankingIntegration.objects.get(id=integration_id)
+        self.assertEqual(integration.status, 'active')
+        self.assertTrue(integration.access_token_encrypted)
+        self.assertEqual(BankAccount.objects.filter(entity=self.entity, provider_account_id='acct_001').count(), 1)
+
+        banking_transaction = BankingTransaction.objects.get(transaction_id='txn_001')
+        self.assertEqual(banking_transaction.normalized_category, 'Food & Beverage')
+        self.assertEqual(banking_transaction.dashboard_bucket, 'Operating Expenses')
+
+        override_response = self.client.post(
+            f'/api/banking-transactions/{banking_transaction.id}/override-category/',
+            {
+                'category_name': 'Meals',
+                'dashboard_bucket': 'People Ops',
+                'explanation': 'Finance team reclassified this merchant.',
+            },
+            format='json',
+        )
+
+        self.assertEqual(override_response.status_code, 200)
+        banking_transaction.refresh_from_db()
+        self.assertEqual(banking_transaction.normalized_category, 'Meals')
+        self.assertEqual(banking_transaction.dashboard_bucket, 'People Ops')
+        self.assertTrue(AuditLog.objects.filter(model_name='BankingCategorizationDecision', object_id__isnull=False).exists())

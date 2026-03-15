@@ -11,10 +11,43 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    env_file:
+      - ./backend/.env
     environment:
       - DJANGO_SETTINGS_MODULE=finance_api.settings
       - PYTHONUNBUFFERED=1
+      - BANKING_TOKEN_ENCRYPTION_KEY=${BANKING_TOKEN_ENCRYPTION_KEY:-local-dev-banking-key-change-me}
+      - PLAID_CLIENT_ID=${PLAID_CLIENT_ID:-}
+      - PLAID_CLIENT_SECRET=${PLAID_CLIENT_SECRET:-}
+      - PLAID_OAUTH_AUTHORIZE_URL=${PLAID_OAUTH_AUTHORIZE_URL:-}
+      - YODLEE_CLIENT_ID=${YODLEE_CLIENT_ID:-}
+      - YODLEE_CLIENT_SECRET=${YODLEE_CLIENT_SECRET:-}
+      - YODLEE_OAUTH_AUTHORIZE_URL=${YODLEE_OAUTH_AUTHORIZE_URL:-}
+      - FINICITY_CLIENT_ID=${FINICITY_CLIENT_ID:-}
+      - FINICITY_CLIENT_SECRET=${FINICITY_CLIENT_SECRET:-}
+      - FINICITY_OAUTH_AUTHORIZE_URL=${FINICITY_OAUTH_AUTHORIZE_URL:-}
     depends_on: []
+
+  banking-sync:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: atonix-banking-sync
+    command: >
+      /bin/sh -c "while true; do
+      python manage.py sync_banking_integrations;
+      sleep ${BANKING_SYNC_INTERVAL_SECONDS:-86400};
+      done"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=finance_api.settings
+      - PYTHONUNBUFFERED=1
+      - BANKING_SYNC_INTERVAL_SECONDS=${BANKING_SYNC_INTERVAL_SECONDS:-86400}
+    depends_on:
+      - backend
 
   frontend:
     build:

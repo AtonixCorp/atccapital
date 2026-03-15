@@ -34,6 +34,7 @@ from .models import (
     BankingIntegration, BankingTransaction, EmbeddedPayment, AutomationWorkflow,
     AutomationExecution, FirmMetric, ClientMarketplaceIntegration
 )
+from .banking_security import mask_secret
 
 
 # ============ User & Auth Serializers ============
@@ -962,16 +963,70 @@ class WhiteLabelBrandingSerializer(serializers.ModelSerializer):
 # ============ EMBEDDED BANKING & PAYMENTS SERIALIZERS ============
 
 class BankingIntegrationSerializer(serializers.ModelSerializer):
+    entity_name = serializers.ReadOnlyField(source='entity.name')
+    has_access_token = serializers.ReadOnlyField()
+    masked_api_key = serializers.SerializerMethodField()
+    api_key = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    api_secret = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
     class Meta:
         model = BankingIntegration
-        fields = ['id', 'organization', 'integration_type', 'provider_name', 'status', 'is_active', 'last_sync', 'created_at', 'updated_at']
-        read_only_fields = ['created_at', 'updated_at', 'api_key', 'api_secret']
+        fields = [
+            'id', 'organization', 'entity', 'entity_name', 'integration_type', 'provider_code', 'provider_name',
+            'status', 'is_active', 'webhook_url', 'last_sync', 'last_webhook_at', 'consent_reference',
+            'consent_scopes', 'consent_granted_at', 'token_expires_at', 'token_last_rotated_at', 'failure_count',
+            'has_access_token', 'masked_api_key', 'api_key', 'api_secret', 'created_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'created_at', 'updated_at', 'last_webhook_at', 'consent_reference', 'consent_scopes',
+            'consent_granted_at', 'token_expires_at', 'token_last_rotated_at', 'failure_count',
+            'has_access_token', 'masked_api_key'
+        ]
+
+    def get_masked_api_key(self, obj):
+        return mask_secret(obj.get_api_key())
+
+    def create(self, validated_data):
+        api_key = validated_data.pop('api_key', '')
+        api_secret = validated_data.pop('api_secret', '')
+        instance = super().create(validated_data)
+        if api_key:
+            instance.set_api_key(api_key)
+        if api_secret:
+            instance.set_api_secret(api_secret)
+        if api_key or api_secret:
+            instance.save(update_fields=['api_key', 'api_secret', 'updated_at'])
+        return instance
+
+    def update(self, instance, validated_data):
+        api_key = validated_data.pop('api_key', None)
+        api_secret = validated_data.pop('api_secret', None)
+        instance = super().update(instance, validated_data)
+        updated_fields = []
+        if api_key is not None:
+            instance.set_api_key(api_key)
+            updated_fields.append('api_key')
+        if api_secret is not None:
+            instance.set_api_secret(api_secret)
+            updated_fields.append('api_secret')
+        if updated_fields:
+            updated_fields.append('updated_at')
+            instance.save(update_fields=updated_fields)
+        return instance
 
 
 class BankingTransactionSerializer(serializers.ModelSerializer):
+    bank_account_name = serializers.ReadOnlyField(source='bank_account.account_name')
+
     class Meta:
         model = BankingTransaction
-        fields = ['id', 'entity', 'bank_account', 'transaction_id', 'transaction_date', 'amount', 'currency', 'description', 'counterparty_name', 'counterparty_account', 'transaction_type', 'status', 'is_matched', 'matched_transaction', 'created_at', 'updated_at']
+        fields = [
+            'id', 'entity', 'integration', 'bank_account', 'bank_account_name', 'transaction_id', 'transaction_date',
+            'amount', 'currency', 'description', 'merchant_name', 'raw_category', 'normalized_category',
+            'dashboard_bucket', 'categorization_source', 'categorization_confidence', 'counterparty_name',
+            'counterparty_account', 'transaction_type', 'status', 'is_matched', 'matched_transaction',
+            'created_at', 'updated_at'
+        ]
         read_only_fields = ['created_at', 'updated_at']
 
 

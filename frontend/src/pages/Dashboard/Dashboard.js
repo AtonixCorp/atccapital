@@ -18,7 +18,9 @@ const Dashboard = () => {
     availableMonths,
     changeMonth,
     financialSummary,
-    validationResults
+    validationResults,
+    expenseSourceFilter,
+    setExpenseSourceFilter,
   } = useFinance();
 
   const [viewMode, setViewMode] = useState('monthly'); // 'monthly' or 'all-time'
@@ -58,11 +60,19 @@ const Dashboard = () => {
     budgetComparison: Array.isArray(budgets) ? budgets.map(b => ({
       category: b.category,
       budget: b.limit || 0,
-      spent: b.spent || 0,
-      remaining: (b.limit || 0) - (b.spent || 0)
+      spent: (Array.isArray(expenses) ? expenses : [])
+        .filter((expense) => expense.category === b.category)
+        .reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0),
+      remaining: (b.limit || 0) - (Array.isArray(expenses) ? expenses : [])
+        .filter((expense) => expense.category === b.category)
+        .reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0)
     })) : [],
     recentTransactions: Array.isArray(expenses) ? [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5) : []
   };
+
+  const budgetAlertDetails = Array.isArray(validationResults?.warningDetails)
+    ? validationResults.warningDetails
+    : [];
 
   const THEME = {
     base: 'var(--color-white)',
@@ -101,6 +111,24 @@ const Dashboard = () => {
             onClick={() => setViewMode('all-time')}
           >
             {t('dashboard.allTime')}
+          </button>
+        </div>
+
+        <div className="view-toggle">
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('all')}
+          >All Sources
+          </button>
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('manual')}
+          >Manual Only
+          </button>
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('imported')}
+          >Imported Only
           </button>
         </div>
 
@@ -181,6 +209,23 @@ const Dashboard = () => {
                 </ul>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {budgetAlertDetails.length > 0 && (
+        <div className="card anomaly-card">
+          <h2 className="chart-title">Source-Aware Budget Alerts</h2>
+          <div className="anomalies-list">
+            {budgetAlertDetails.slice(0, 3).map((alert) => (
+              <div key={alert.category} className={`anomaly-item severity-${alert.severity}`}>
+                <div className="anomaly-header">
+                  <span className="anomaly-type">{alert.category}</span>
+                  <span className="anomaly-severity">{alert.dominantSource?.label || 'Mixed sources'}</span>
+                </div>
+                <p className="anomaly-message">{alert.message}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -439,6 +484,7 @@ const Dashboard = () => {
                   <th>Date</th>
                   <th>Description</th>
                   <th>Category</th>
+                  <th>Source</th>
                   <th>Amount</th>
                 </tr>
               </thead>
@@ -450,6 +496,7 @@ const Dashboard = () => {
                     <td>
                       <span className="category-badge">{transaction.category}</span>
                     </td>
+                    <td>{transaction.sourceLabel || 'Manual'}</td>
                     <td className="amount-expense">-${(transaction.amount || 0).toFixed(2)}</td>
                   </tr>
                 ))}

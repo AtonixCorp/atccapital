@@ -12,6 +12,8 @@ const Analytics = () => {
   const { user } = useAuth();
   const {
     expenses,
+    manualExpenses,
+    bankFeedExpenses,
     income,
     models,
     reports,
@@ -19,7 +21,9 @@ const Analytics = () => {
     totalExpenses,
     balance,
     loadFinancialModels,
-    loadReports
+    loadReports,
+    expenseSourceFilter,
+    setExpenseSourceFilter,
   } = useFinance();
 
   // Load backend data
@@ -50,6 +54,42 @@ const Analytics = () => {
       amount: parseFloat(amount.toFixed(2))
     }));
   }, [expenses]);
+
+  const sourceExpenseBreakdown = useMemo(() => {
+    const manualTotal = (Array.isArray(manualExpenses) ? manualExpenses : []).reduce((sum, expense) => sum + expense.amount, 0);
+    const importedTotal = (Array.isArray(bankFeedExpenses) ? bankFeedExpenses : []).reduce((sum, expense) => sum + expense.amount, 0);
+
+    return [
+      { source: 'Manual', amount: parseFloat(manualTotal.toFixed(2)), count: Array.isArray(manualExpenses) ? manualExpenses.length : 0 },
+      { source: 'Imported', amount: parseFloat(importedTotal.toFixed(2)), count: Array.isArray(bankFeedExpenses) ? bankFeedExpenses.length : 0 },
+    ];
+  }, [bankFeedExpenses, manualExpenses]);
+
+  const sourceCategoryBreakdown = useMemo(() => {
+    const categoryMap = {};
+
+    (Array.isArray(manualExpenses) ? manualExpenses : []).forEach((expense) => {
+      if (!categoryMap[expense.category]) {
+        categoryMap[expense.category] = { category: expense.category, manual: 0, imported: 0 };
+      }
+      categoryMap[expense.category].manual += expense.amount;
+    });
+
+    (Array.isArray(bankFeedExpenses) ? bankFeedExpenses : []).forEach((expense) => {
+      if (!categoryMap[expense.category]) {
+        categoryMap[expense.category] = { category: expense.category, manual: 0, imported: 0 };
+      }
+      categoryMap[expense.category].imported += expense.amount;
+    });
+
+    return Object.values(categoryMap)
+      .map((item) => ({
+        ...item,
+        manual: parseFloat(item.manual.toFixed(2)),
+        imported: parseFloat(item.imported.toFixed(2)),
+      }))
+      .sort((left, right) => (right.manual + right.imported) - (left.manual + left.imported));
+  }, [bankFeedExpenses, manualExpenses]);
 
   // Monthly trend
   const monthlyData = useMemo(() => {
@@ -134,7 +174,26 @@ const Analytics = () => {
 
   return (
     <div className="page-container">
-      <h1 className="page-title">Analytics & Insights</h1>
+      <div className="page-header">
+        <h1 className="page-title">Analytics & Insights</h1>
+        <div className="view-toggle">
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('all')}
+          >All Sources
+          </button>
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('manual')}
+          >Manual Only
+          </button>
+          <button
+            className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
+            onClick={() => setExpenseSourceFilter('imported')}
+          >Imported Only
+          </button>
+        </div>
+      </div>
 
       {/* Key Metrics */}
       <div className="grid-4">
@@ -173,6 +232,24 @@ const Analytics = () => {
         </div>
       </div>
 
+      <div className="grid-2">
+        <div className="card metric-card">
+          <div className="metric-content">
+            <h4>Manual Expense Entries</h4>
+            <p className="metric-value">${sourceExpenseBreakdown[0]?.amount.toFixed(2)}</p>
+            <p>{sourceExpenseBreakdown[0]?.count || 0} transactions</p>
+          </div>
+        </div>
+
+        <div className="card metric-card">
+          <div className="metric-content">
+            <h4>Imported Bank Feed Entries</h4>
+            <p className="metric-value negative">${sourceExpenseBreakdown[1]?.amount.toFixed(2)}</p>
+            <p>{sourceExpenseBreakdown[1]?.count || 0} transactions</p>
+          </div>
+        </div>
+      </div>
+
       {/* Charts Section */}
       <div className="grid-2">
         <div className="card">
@@ -186,7 +263,7 @@ const Analytics = () => {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={(entry) => `${entry.category} (${((entry.amount / totalExpenses) * 100).toFixed(1)}%)`}
+                label={(entry) => `${entry.category} (${totalExpenses > 0 ? ((entry.amount / totalExpenses) * 100).toFixed(1) : '0.0'}%)`}
               >
                 {expensesByCategory.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -210,6 +287,48 @@ const Analytics = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {sourceCategoryBreakdown.length > 0 && (
+        <div className="card">
+          <h2 className="chart-title">Imported vs Manual by Category</h2>
+          <ResponsiveContainer width="100%" height={340}>
+            <BarChart data={sourceCategoryBreakdown}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+              <Legend />
+              <Bar dataKey="manual" stackId="source" fill="var(--color-cyan-dark)" name="Manual" />
+              <Bar dataKey="imported" stackId="source" fill="var(--color-error)" name="Imported" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {sourceExpenseBreakdown.some((item) => item.amount > 0) && (
+        <div className="card">
+          <h2 className="chart-title">Expense Source Distribution</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={sourceExpenseBreakdown}
+                dataKey="amount"
+                nameKey="source"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label={(entry) => `${entry.source} (${entry.count})`}
+              >
+                {sourceExpenseBreakdown.map((entry, index) => (
+                  <Cell key={`source-cell-${index}`} fill={index === 0 ? 'var(--color-cyan-dark)' : 'var(--color-error)'} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => `$${value.toFixed(2)}`} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Monthly Trend */}
       {monthlyData.length > 0 && (
@@ -239,7 +358,7 @@ const Analytics = () => {
               <div className="expense-details">
                 <h4>{expense.description}</h4>
                 <p className="expense-meta">
-                  {expense.category} • {new Date(expense.date).toLocaleDateString()}
+                  {expense.category} • {expense.sourceLabel || 'Manual'} • {new Date(expense.date).toLocaleDateString()}
                 </p>
               </div>
               <div className="expense-amount">${expense.amount.toFixed(2)}</div>

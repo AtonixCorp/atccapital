@@ -10,6 +10,7 @@ psycopg[binary]==3.2.3
 
 # Production serving
 gunicorn==22.0.0
+cryptography==44.0.2
 
 # Reporting and document generation
 python-dateutil==2.8.2

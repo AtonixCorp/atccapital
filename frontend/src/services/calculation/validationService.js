@@ -41,6 +41,119 @@ const VALIDATION_RULES = {
   }
 };
 
+const normalizeSourceType = (sourceType) => {
+  if (sourceType === 'bank_feed' || sourceType === 'imported') {
+    return 'imported';
+  }
+  return 'manual';
+};
+
+const getSourceLabel = (sourceType) => {
+  if (normalizeSourceType(sourceType) === 'imported') {
+    return 'Imported bank feed';
+  }
+  return 'Manual entries';
+};
+
+const formatCurrency = (value) => `$${calculationEngine.round(parseFloat(value || 0)).toFixed(2)}`;
+
+const isInMonth = (date, year, month) => {
+  const current = new Date(date);
+  return current.getFullYear() === year && current.getMonth() === month;
+};
+
+const getExpenseSourceBreakdown = (expenses = []) => {
+  return expenses.reduce((accumulator, expense) => {
+    const source = normalizeSourceType(expense.sourceType);
+    if (!accumulator[source]) {
+      accumulator[source] = {
+        source,
+        label: getSourceLabel(source),
+        amount: 0,
+        count: 0,
+      };
+    }
+
+    accumulator[source].amount = calculationEngine.round(
+      accumulator[source].amount + parseFloat(expense.amount || 0)
+    );
+    accumulator[source].count += 1;
+    return accumulator;
+  }, {
+    manual: { source: 'manual', label: getSourceLabel('manual'), amount: 0, count: 0 },
+    imported: { source: 'imported', label: getSourceLabel('imported'), amount: 0, count: 0 },
+  });
+};
+
+const getDominantSource = (sourceBreakdown = {}) => {
+  return Object.values(sourceBreakdown)
+    .sort((left, right) => right.amount - left.amount)
+    .find((entry) => entry.amount > 0) || null;
+};
+
+const getAverageSourceAmounts = (historicalData = []) => {
+  if (!historicalData.length) {
+    return {
+      manual: 0,
+      imported: 0,
+    };
+  }
+
+  return historicalData.reduce((accumulator, entry) => {
+    const breakdown = entry.sourceBreakdown || {};
+    accumulator.manual += parseFloat(breakdown.manual?.amount || 0);
+    accumulator.imported += parseFloat(breakdown.imported?.amount || 0);
+    return accumulator;
+  }, {
+    manual: 0,
+    imported: 0,
+  });
+};
+
+const buildBudgetAlertDetails = (budgets = [], expenses = [], selectedMonth = null) => {
+  const scopedExpenses = selectedMonth
+    ? expenses.filter((expense) => expense.date && isInMonth(expense.date, selectedMonth.year, selectedMonth.month))
+    : expenses;
+
+  return budgets.reduce((alerts, budget) => {
+    const budgetLimit = parseFloat(budget.limit || budget.amount || 0);
+    const categoryExpenses = scopedExpenses.filter((expense) => expense.category === budget.category);
+    const spent = calculationEngine.calculateTotalExpenses(categoryExpenses);
+
+    if (!budgetLimit || !spent) {
+      return alerts;
+    }
+
+    const utilization = calculationEngine.calculateBudgetUtilization(budgetLimit, spent);
+    if (!utilization.isOverBudget && utilization.percentageUsed < 90) {
+      return alerts;
+    }
+
+    const sourceBreakdown = getExpenseSourceBreakdown(categoryExpenses);
+    const dominantSource = getDominantSource(sourceBreakdown);
+    const driverText = dominantSource
+      ? `${dominantSource.label} account for ${formatCurrency(dominantSource.amount)} of this category.`
+      : 'No dominant source detected.';
+    const message = utilization.isOverBudget
+      ? `${budget.category} is over budget by ${formatCurrency(Math.abs(utilization.remaining))}. ${driverText}`
+      : `${budget.category} has used ${utilization.percentageUsed.toFixed(0)}% of budget. ${driverText}`;
+
+    alerts.push({
+      category: budget.category,
+      severity: utilization.isOverBudget ? 'warning' : 'info',
+      spent,
+      budget: budgetLimit,
+      remaining: utilization.remaining,
+      percentageUsed: utilization.percentageUsed,
+      dominantSource,
+      sourceBreakdown,
+      message,
+    });
+
+    return alerts;
+  }, []);
+};
+
 // ==================== TAX VALIDATION ====================
 
 /**
@@ -324,9 +437,14 @@ export const detectAnomalies = (currentData, historicalData = []) => {
   // Calculate historical averages
   const avgIncome = historicalData.reduce((sum, d) => sum + d.income, 0) / historicalData.length;
   const avgExpenses = historicalData.reduce((sum, d) => sum + d.expenses, 0) / historicalData.length;
+  const averageSourceTotals = getAverageSourceAmounts(historicalData);
+  const averageSourceBreakdown = {
+    manual: averageSourceTotals.manual / historicalData.length,
+    imported: averageSourceTotals.imported / historicalData.length,
+  };
 
   // Check for sudden spikes
-  if (currentData.income > avgIncome * 2) {
+  if (avgIncome > 0 && currentData.income > avgIncome * 2) {
     anomalies.push({
       type: 'spike',
       field: 'income',
@@ -335,17 +453,22 @@ export const detectAnomalies = (currentData, historicalData = []) => {
     });
   }
 
-  if (currentData.expenses > avgExpenses * 2) {
+  if (avgExpenses > 0 && currentData.expenses > avgExpenses * 2) {
+    const dominantSource = getDominantSource(currentData.expenseSourceBreakdown);
+    const sourceDelta = dominantSource
+      ? dominantSource.amount - (averageSourceBreakdown[dominantSource.source] || 0)
+      : 0;
     anomalies.push({
       type: 'spike',
       field: 'expenses',
-      message: `Expenses are ${((currentData.expenses / avgExpenses - 1) * 100).toFixed(0)}% higher than average`,
-      severity: 'warning'
+      message: `Expenses are ${((currentData.expenses / avgExpenses - 1) * 100).toFixed(0)}% higher than average${dominantSource ? `, driven mostly by ${dominantSource.label.toLowerCase()} (${formatCurrency(sourceDelta)} above their average).` : ''}`,
+      severity: 'warning',
+      dominantSource,
     });
   }
 
   // Check for sudden drops
-  if (currentData.income < avgIncome * 0.5 && avgIncome > 0) {
+  if (avgIncome > 0 && currentData.income < avgIncome * 0.5) {
     anomalies.push({
       type: 'drop',
       field: 'income',
@@ -372,7 +495,13 @@ export const validateAllFinancialData = (data) => {
     errors: [],
     warnings: [],
     recommendations: [],
-    validations: {}
+    validations: {},
+    warningDetails: [],
+    anomalies: [],
+    sourceInsights: {
+      budgetAlerts: [],
+      anomalies: [],
+    }
   };
 
   // Tax validation
@@ -437,6 +566,27 @@ export const validateAllFinancialData = (data) => {
     results.recommendations.push(...healthValidation.recommendations);
     results.healthScore = healthValidation.healthScore;
     results.healthStatus = healthValidation.status;
+  }
+
+  if (Array.isArray(data.budgets) && Array.isArray(data.expenseTransactions)) {
+    const budgetAlerts = buildBudgetAlertDetails(data.budgets, data.expenseTransactions, data.selectedMonth);
+    results.warningDetails = budgetAlerts;
+    results.sourceInsights.budgetAlerts = budgetAlerts;
+    results.warnings.push(...budgetAlerts.slice(0, 3).map((alert) => alert.message));
+  }
+
+  if (data.selectedMonth && Array.isArray(data.expenseTransactions)) {
+    const currentMonthExpenses = data.expenseTransactions.filter(
+      (expense) => expense.date && isInMonth(expense.date, data.selectedMonth.year, data.selectedMonth.month)
+    );
+    const anomalyResult = detectAnomalies({
+      income: parseFloat(data.monthlyIncome || 0),
+      expenses: calculationEngine.calculateTotalExpenses(currentMonthExpenses),
+      expenseSourceBreakdown: getExpenseSourceBreakdown(currentMonthExpenses),
+    }, Array.isArray(data.historicalExpenseData) ? data.historicalExpenseData : []);
+
+    results.anomalies = anomalyResult.anomalies;
+    results.sourceInsights.anomalies = anomalyResult.anomalies;
   }
 
   return results;
