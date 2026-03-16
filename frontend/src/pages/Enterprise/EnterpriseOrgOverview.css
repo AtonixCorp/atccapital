@@ -283,10 +283,18 @@
   align-items: stretch;
 }
 
+.org-dashboard-page .ed-quick-access {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
 .org-quick-card {
   display: grid;
-  gap: 8px;
-  min-height: 138px;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 10px;
+  min-height: 148px;
+  padding: 18px 18px 16px;
 }
 
 .org-quick-meta {
@@ -294,7 +302,19 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
+  line-height: 1;
   text-transform: uppercase;
+}
+
+.org-quick-card .ed-quick-label {
+  margin-bottom: 0;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.org-quick-card .card-count {
+  align-self: end;
+  line-height: 1.5;
 }
 
 .org-dashboard-panels {
@@ -320,6 +340,12 @@
 .org-panel-head span {
   color: var(--text-secondary);
   font-size: 12px;
+}
+
+@media (max-width: 900px) {
+  .org-dashboard-page .ed-quick-access {
+    grid-template-columns: 1fr;
+  }
 }
 
 .org-performance-list,

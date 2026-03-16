@@ -271,8 +271,8 @@ const EnterpriseOrgOverview = () => {
               <div className="ed-quick-access">
                 {quickActions.map((action) => (
                   <button key={action.key} onClick={action.onClick} className={`ed-quick-card org-quick-card ${action.accent}`}>
-                    <div className="ed-quick-label">{action.title}</div>
                     <div className="org-quick-meta">{action.eyebrow}</div>
+                    <div className="ed-quick-label">{action.title}</div>
                     <div className="card-count">{action.description}</div>
                   </button>
                 ))}

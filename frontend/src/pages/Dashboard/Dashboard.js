@@ -93,99 +93,142 @@ const Dashboard = () => {
     'rgba(28, 28, 30, 0.35)'
   ];
 
+  const sourceFilterLabel =
+    expenseSourceFilter === 'manual'
+      ? 'Manual Only'
+      : expenseSourceFilter === 'imported'
+        ? 'Imported Only'
+        : 'All Sources';
+
+  const overviewHighlights = [
+    {
+      label: 'Reporting View',
+      value: viewMode === 'monthly' ? 'Monthly Focus' : 'All-Time Scope',
+      tone: 'primary',
+    },
+    {
+      label: 'Expense Source',
+      value: sourceFilterLabel,
+      tone: 'accent',
+    },
+    {
+      label: 'Net Position',
+      value: `${displayData.balance >= 0 ? '+' : '-'}$${Math.abs(displayData.balance).toFixed(2)}`,
+      tone: displayData.balance >= 0 ? 'success' : 'danger',
+    },
+  ];
+
   return (
-    <div className="page-container" key={language}>
-      <div className="dashboard-header">
-        <h1 className="page-title">{t('dashboard.title')}</h1>
+    <div className="page-container dashboard-page" key={language}>
+      <section className="dashboard-overview-shell">
+        <div className="dashboard-hero-card">
+          <div className="dashboard-header">
+            <div className="dashboard-title-block">
+              <span className="dashboard-kicker">ATC Overview</span>
+              <h1 className="page-title">{t('dashboard.title')}</h1>
+              <p className="dashboard-subtitle">
+                Monitor cash movement, spending pressure, and budget momentum from one command surface.
+              </p>
+            </div>
 
-        {/* View Mode Toggle */}
-        <div className="view-toggle">
-          <button
-            className={`toggle-btn ${viewMode === 'monthly' ? 'active' : ''}`}
-            onClick={() => setViewMode('monthly')}
-          >
-            {t('dashboard.monthlyView')}
-          </button>
-          <button
-            className={`toggle-btn ${viewMode === 'all-time' ? 'active' : ''}`}
-            onClick={() => setViewMode('all-time')}
-          >
-            {t('dashboard.allTime')}
-          </button>
-        </div>
+            <div className="dashboard-controls-cluster">
+              <div className="view-toggle dashboard-toggle-group">
+                <button
+                  className={`toggle-btn ${viewMode === 'monthly' ? 'active' : ''}`}
+                  onClick={() => setViewMode('monthly')}
+                >
+                  {t('dashboard.monthlyView')}
+                </button>
+                <button
+                  className={`toggle-btn ${viewMode === 'all-time' ? 'active' : ''}`}
+                  onClick={() => setViewMode('all-time')}
+                >
+                  {t('dashboard.allTime')}
+                </button>
+              </div>
 
-        <div className="view-toggle">
-          <button
-            className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
-            onClick={() => setExpenseSourceFilter('all')}
-          >All Sources
-          </button>
-          <button
-            className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
-            onClick={() => setExpenseSourceFilter('manual')}
-          >Manual Only
-          </button>
-          <button
-            className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
-            onClick={() => setExpenseSourceFilter('imported')}
-          >Imported Only
-          </button>
-        </div>
+              <div className="view-toggle dashboard-toggle-group">
+                <button
+                  className={`toggle-btn ${expenseSourceFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setExpenseSourceFilter('all')}
+                >All Sources
+                </button>
+                <button
+                  className={`toggle-btn ${expenseSourceFilter === 'manual' ? 'active' : ''}`}
+                  onClick={() => setExpenseSourceFilter('manual')}
+                >Manual Only
+                </button>
+                <button
+                  className={`toggle-btn ${expenseSourceFilter === 'imported' ? 'active' : ''}`}
+                  onClick={() => setExpenseSourceFilter('imported')}
+                >Imported Only
+                </button>
+              </div>
 
-        {/* Month Selector (only in monthly view) */}
-        {viewMode === 'monthly' && availableMonths.length > 0 && (
-          <div className="month-selector">
-            <select
-              value={`${selectedMonth.year}-${selectedMonth.month}`}
-              onChange={(e) => {
-                const [year, month] = e.target.value.split('-');
-                changeMonth(parseInt(year), parseInt(month));
-              }}
-              className="month-select"
-            >
-              {availableMonths.map(m => (
-                <option key={`${m.year}-${m.month}`} value={`${m.year}-${m.month}`}>
-                  {getMonthName(m.month)} {m.year}
-                </option>
-              ))}
-            </select>
+              {viewMode === 'monthly' && availableMonths.length > 0 && (
+                <div className="month-selector">
+                  <select
+                    value={`${selectedMonth.year}-${selectedMonth.month}`}
+                    onChange={(e) => {
+                      const [year, month] = e.target.value.split('-');
+                      changeMonth(parseInt(year), parseInt(month));
+                    }}
+                    className="month-select"
+                  >
+                    {availableMonths.map(m => (
+                      <option key={`${m.year}-${m.month}`} value={`${m.year}-${m.month}`}>
+                        {getMonthName(m.month)} {m.year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Quick Access Navigation Cards */}
-      <div className="grid-3 quick-access-cards">
-        <div className="card nav-card dashboard-card" onClick={() => navigate('/dashboard')}>
-          <div className="nav-icon"></div>
-          <div className="nav-content">
-            <h3>Dashboard</h3>
-            <p>Real-time overview</p>
+          <div className="dashboard-overview-metrics">
+            {overviewHighlights.map((item) => (
+              <div key={item.label} className={`dashboard-overview-pill tone-${item.tone}`}>
+                <span className="dashboard-overview-label">{item.label}</span>
+                <strong className="dashboard-overview-value">{item.value}</strong>
+              </div>
+            ))}
           </div>
-          <div className="nav-arrow">→</div>
         </div>
 
-        <div className="card nav-card expenses-card" onClick={() => navigate('/expenses')}>
-          <div className="nav-icon"></div>
-          <div className="nav-content">
-            <h3>Expenses</h3>
-            <p>Track spending</p>
+        <div className="grid-3 quick-access-cards">
+          <div className="card nav-card dashboard-card" onClick={() => navigate('/dashboard')}>
+            <div className="nav-icon"></div>
+            <div className="nav-content">
+              <h3>Dashboard</h3>
+              <p>Real-time overview</p>
+            </div>
+            <div className="nav-arrow">→</div>
           </div>
-          <div className="nav-arrow">→</div>
-        </div>
 
-        <div className="card nav-card budgets-card" onClick={() => navigate('/budget')}>
-          <div className="nav-icon"></div>
-          <div className="nav-content">
-            <h3>Budgets</h3>
-            <p>Set limits</p>
+          <div className="card nav-card expenses-card" onClick={() => navigate('/expenses')}>
+            <div className="nav-icon"></div>
+            <div className="nav-content">
+              <h3>Expenses</h3>
+              <p>Track spending</p>
+            </div>
+            <div className="nav-arrow">→</div>
           </div>
-          <div className="nav-arrow">→</div>
+
+          <div className="card nav-card budgets-card" onClick={() => navigate('/budget')}>
+            <div className="nav-icon"></div>
+            <div className="nav-content">
+              <h3>Budgets</h3>
+              <p>Set limits</p>
+            </div>
+            <div className="nav-arrow">→</div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Health Score (if available) */}
       {validationResults && (
-        <div className={`card health-score ${
+        <div className={`card health-score dashboard-panel ${
           validationResults.healthScore >= 80 ? 'health-excellent' :
           validationResults.healthScore >= 60 ? 'health-good' :
           validationResults.healthScore >= 40 ? 'health-fair' : 'health-poor'
@@ -214,7 +257,7 @@ const Dashboard = () => {
       )}
 
       {budgetAlertDetails.length > 0 && (
-        <div className="card anomaly-card">
+        <div className="card anomaly-card dashboard-panel">
           <h2 className="chart-title">Source-Aware Budget Alerts</h2>
           <div className="anomalies-list">
             {budgetAlertDetails.slice(0, 3).map((alert) => (
@@ -232,7 +275,7 @@ const Dashboard = () => {
 
       {/* Summary Cards */}
       <div className="grid-4 summary-cards">
-        <div className="card summary-card income">
+        <div className="card summary-card dashboard-summary-card income">
           <div className="summary-icon"></div>
           <div className="summary-content">
             <h3>
@@ -251,7 +294,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card summary-card expense">
+        <div className="card summary-card dashboard-summary-card expense">
           <div className="summary-icon"></div>
           <div className="summary-content">
             <h3>
@@ -270,7 +313,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card summary-card tax">
+        <div className="card summary-card dashboard-summary-card tax">
           <div className="summary-icon"></div>
           <div className="summary-content">
             <h3>{viewMode === 'monthly' ? 'Monthly' : 'Total'} {t('labels.tax')}</h3>
@@ -281,7 +324,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className={`card summary-card ${displayData.balance >= 0 ? 'balance-positive' : 'balance-negative'}`}>
+        <div className={`card summary-card dashboard-summary-card ${displayData.balance >= 0 ? 'balance-positive' : 'balance-negative'}`}>
           <div className="summary-icon"></div>
           <div className="summary-content">
             <h3>{viewMode === 'monthly' ? 'Monthly' : 'Net'} {t('labels.balance')}</h3>
@@ -299,7 +342,7 @@ const Dashboard = () => {
       {/* Charts */}
       <div className="grid-2">
         {/* Category Breakdown */}
-        <div className="card">
+        <div className="card dashboard-panel dashboard-chart-panel">
           <h2 className="chart-title">
             {viewMode === 'monthly' ? 'Monthly' : 'All-Time'} Expenses by Category
           </h2>
@@ -355,7 +398,7 @@ const Dashboard = () => {
         </div>
 
         {/* Budget vs Actual */}
-        <div className="card">
+        <div className="card dashboard-panel dashboard-chart-panel">
           <h2 className="chart-title">Budget vs Actual Spending</h2>
           {displayData.budgetComparison.length > 0 ? (
             <>
@@ -418,7 +461,7 @@ const Dashboard = () => {
 
       {/* Spending Patterns (Monthly View Only) */}
       {viewMode === 'monthly' && monthlySummary?.patterns?.weeklySpending && (
-        <div className="card">
+        <div className="card dashboard-panel dashboard-chart-panel">
           <h2 className="chart-title">Weekly Spending Pattern</h2>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={monthlySummary.patterns.weeklySpending}>
@@ -472,7 +515,7 @@ const Dashboard = () => {
       )}
 
       {/* Recent Transactions */}
-      <div className="card">
+      <div className="card dashboard-panel dashboard-transactions-panel">
         <h2 className="chart-title">
           {viewMode === 'monthly' ? 'Monthly' : 'Recent'} Transactions
         </h2>
@@ -536,7 +579,7 @@ const Dashboard = () => {
 
       {/* AI Insights */}
       {validationResults?.anomalies && validationResults.anomalies.length > 0 && (
-        <div className="card anomaly-card">
+        <div className="card anomaly-card dashboard-panel">
           <h2 className="chart-title">AI-Detected Anomalies</h2>
           <div className="anomalies-list">
             {validationResults.anomalies.map((anomaly, idx) => (

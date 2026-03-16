@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "proxy": "http://localhost:8000",
+  "engines": {
+    "node": ">=18 <22"
+  },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
@@ -19,6 +22,7 @@
     "yaml": "^2.8.2"
   },
   "scripts": {
+    "prestart": "node scripts/check-node-version.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import { useEnterprise } from '../../context/EnterpriseContext';
 import './EnterpriseActionPages.css';
@@ -7,7 +7,6 @@ import './EnterpriseTaxCompliance.css';
 
 const EnterpriseTaxCompliance = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const activeSection = searchParams.get('section') || 'overview';
 
   const {
@@ -17,6 +16,8 @@ const EnterpriseTaxCompliance = () => {
     fetchEntityComplianceDocuments,
     fetchEntityComplianceDeadlines,
     fetchEntityTaxCalculations,
+    createComplianceDeadline,
+    createComplianceDocument,
   } = useEnterprise();
 
   const [selectedEntityId, setSelectedEntityId] = useState('');
@@ -32,6 +33,28 @@ const EnterpriseTaxCompliance = () => {
   const [dataError, setDataError] = useState(null);
 
   const [showCountrySelector, setShowCountrySelector] = useState(false);
+
+  // Calculator state
+  const [calcForm, setCalcForm] = useState({
+    calcType: 'corporate',
+    jurisdiction: '',
+    taxYear: new Date().getFullYear(),
+    income: '',
+    rate: '',
+    deductions: '',
+    credits: '',
+  });
+  const [calcResult, setCalcResult] = useState(null);
+
+  // Filing / deadline creation state
+  const [showDeadlineForm, setShowDeadlineForm] = useState(false);
+  const [deadlineForm, setDeadlineForm] = useState({ title: '', deadline_type: 'tax_return', deadline_date: '' });
+  const [deadlineSubmitting, setDeadlineSubmitting] = useState(false);
+
+  // Document upload state
+  const [showDocForm, setShowDocForm] = useState(false);
+  const [docForm, setDocForm] = useState({ title: '', document_type: 'tax_certificate', notes: '' });
+  const [docSubmitting, setDocSubmitting] = useState(false);
 
   useEffect(() => {
     if (selectedEntityId) return;
@@ -297,6 +320,56 @@ const EnterpriseTaxCompliance = () => {
     }
   };
 
+  const handleCalculate = (e) => {
+    e.preventDefault();
+    const income = parseFloat(calcForm.income) || 0;
+    const rate = parseFloat(calcForm.rate) || 0;
+    const deductions = parseFloat(calcForm.deductions) || 0;
+    const credits = parseFloat(calcForm.credits) || 0;
+
+    const taxableIncome = Math.max(0, income - deductions);
+    const calculatedTax = (taxableIncome * rate) / 100 - credits;
+
+    setCalcResult({
+      taxableIncome,
+      rate,
+      calculatedTax: Math.max(0, calculatedTax),
+      deductions,
+      credits,
+      effectiveRate: income > 0 ? (Math.max(0, calculatedTax) / income) * 100 : 0,
+      calcType: calcForm.calcType,
+      jurisdiction: calcForm.jurisdiction || 'Global',
+      taxYear: calcForm.taxYear,
+    });
+  };
+
+  const handleAddDeadline = async (e) => {
+    e.preventDefault();
+    if (!deadlineForm.title.trim() || !deadlineForm.deadline_date || !selectedEntityId) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setDeadlineSubmitting(true);
+    try {
+      await createComplianceDeadline({
+        entity: selectedEntityId,
+        title: deadlineForm.title,
+        deadline_type: deadlineForm.deadline_type,
+        deadline_date: deadlineForm.deadline_date,
+      });
+      const refreshed = await fetchEntityComplianceDeadlines(selectedEntityId);
+      setComplianceDeadlines(refreshed || []);
+      setShowDeadlineForm(false);
+      setDeadlineForm({ title: '', deadline_type: 'tax_return', deadline_date: '' });
+    } catch (err) {
+      console.error(err);
+      alert(err?.message || 'Failed to add deadline');
+    } finally {
+      setDeadlineSubmitting(false);
+    }
+  };
+
   const renderOverview = () => (
     <div className="compliance-overview">
       {/* Quick Stats */}
@@ -337,17 +410,17 @@ const EnterpriseTaxCompliance = () => {
 
       {/* Quick Actions Bar */}
       <div className="quick-actions">
-        <button className="quick-action-btn" onClick={() => navigate('/app/compliance/tax-calculator')}>
+        <button className="quick-action-btn" onClick={() => setSearchParams({ section: 'calculator' })}>
           Run Tax Calculation
         </button>
-        <button className="quick-action-btn secondary" onClick={() => navigate('/app/compliance/monitoring')}>
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'monitoring' })}>
           Check Compliance
         </button>
-        <button className="quick-action-btn secondary" onClick={() => navigate('/app/compliance/filing')}>
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'filing' })}>
           Filing Assistant
         </button>
-        <button className="quick-action-btn secondary" onClick={() => navigate('/app/automation/ai-advisor')}>
-          Ask AI Advisor
+        <button className="quick-action-btn secondary" onClick={() => setSearchParams({ section: 'documents' })}>
+          View Documents
         </button>
       </div>
 
@@ -549,41 +622,47 @@ const EnterpriseTaxCompliance = () => {
               <div className="tax-rules-preview">
                 <h4>Current Tax Rules</h4>
                 <div className="rules-list">
-                  {profile.country === 'US' && (
-                    <>
-                      <div className="rule-item">
-                        <span>Federal Rate:</span>
-                        <span>{profile.taxRules.federalRate}%</span>
-                      </div>
-                      <div className="rule-item">
-                        <span>State Rates:</span>
-                        <span>CA: {profile.taxRules.stateRates.CA}%, NY: {profile.taxRules.stateRates.NY}%</span>
-                      </div>
-                    </>
+                  {profile.taxRules?.federalRate != null && (
+                    <div className="rule-item">
+                      <span>Federal Rate:</span>
+                      <span>{profile.taxRules.federalRate}%</span>
+                    </div>
                   )}
-                  {profile.country === 'UK' && (
+                  {profile.taxRules?.corporationTax != null && (
                     <div className="rule-item">
                       <span>Corporation Tax:</span>
                       <span>{profile.taxRules.corporationTax}%</span>
                     </div>
                   )}
-                  {profile.country === 'CA' && (
-                    <>
-                      <div className="rule-item">
-                        <span>Federal Rate:</span>
-                        <span>{profile.taxRules.federalRate}%</span>
-                      </div>
-                      <div className="rule-item">
-                        <span>Provincial Rates:</span>
-                        <span>ON: {profile.taxRules.provincialRates.ON}%, BC: {profile.taxRules.provincialRates.BC}%</span>
-                      </div>
-                    </>
+                  {profile.taxRules?.vatRate != null && (
+                    <div className="rule-item">
+                      <span>VAT Rate:</span>
+                      <span>{profile.taxRules.vatRate}%</span>
+                    </div>
+                  )}
+                  {profile.taxRules?.stateRates?.CA != null && (
+                    <div className="rule-item">
+                      <span>State (CA):</span>
+                      <span>{profile.taxRules.stateRates.CA}%</span>
+                    </div>
+                  )}
+                  {profile.taxRules?.provincialRates?.ON != null && (
+                    <div className="rule-item">
+                      <span>Provincial (ON):</span>
+                      <span>{profile.taxRules.provincialRates.ON}%</span>
+                    </div>
+                  )}
+                  {!profile.taxRules?.federalRate && !profile.taxRules?.corporationTax && !profile.taxRules?.vatRate && (
+                    <div className="rule-item">
+                      <span>No tax rules configured yet</span>
+                    </div>
                   )}
                 </div>
                 <div className="rule-update-info">
-
-                  <span>Last rule update: {new Date(profile.taxRules.lastRuleUpdate).toLocaleDateString()}</span>
-                  {profile.taxRules.autoUpdate && (
+                  {profile.taxRules?.lastRuleUpdate && (
+                    <span>Last rule update: {new Date(profile.taxRules.lastRuleUpdate).toLocaleDateString()}</span>
+                  )}
+                  {profile.taxRules?.autoUpdate && (
                     <span className="auto-update-badge">Auto-updating</span>
                   )}
                 </div>
@@ -641,10 +720,602 @@ const EnterpriseTaxCompliance = () => {
     </div>
   );
 
+  const renderCalculator = () => (
+    <div className="tax-calculator-section">
+      <div className="section-header">
+        <h2>Tax Calculator</h2>
+        <p>Quick tax calculations for corporate, VAT, and personal income</p>
+      </div>
+
+      <div className="calculator-grid">
+        {/* Calculation Input Form */}
+        <form className="tax-calc-form" onSubmit={handleCalculate}>
+          <div className="tax-calc-field">
+            <label>Calculation Type</label>
+            <select value={calcForm.calcType} onChange={(e) => setCalcForm({ ...calcForm, calcType: e.target.value })}>
+              <option value="corporate">Corporate Tax</option>
+              <option value="vat">VAT/GST</option>
+              <option value="personal">Personal Income</option>
+            </select>
+          </div>
+          <div className="tax-calc-field">
+            <label>Jurisdiction</label>
+            <input type="text" placeholder="E.g., US/CA, UK, Germany" value={calcForm.jurisdiction} onChange={(e) => setCalcForm({ ...calcForm, jurisdiction: e.target.value })} />
+          </div>
+          <div className="tax-calc-field">
+            <label>Tax Year</label>
+            <input type="number" value={calcForm.taxYear} onChange={(e) => setCalcForm({ ...calcForm, taxYear: parseInt(e.target.value) })} />
+          </div>
+          <div className="tax-calc-field">
+            <label>Gross Income / Revenue ($)</label>
+            <input type="number" placeholder="0.00" value={calcForm.income} onChange={(e) => setCalcForm({ ...calcForm, income: e.target.value })} />
+          </div>
+          <div className="tax-calc-field">
+            <label>Tax Rate (%)</label>
+            <input type="number" step="0.01" placeholder="0.00" value={calcForm.rate} onChange={(e) => setCalcForm({ ...calcForm, rate: e.target.value })} />
+          </div>
+          <div className="tax-calc-field">
+            <label>Deductions / Expenses ($)</label>
+            <input type="number" placeholder="0.00" value={calcForm.deductions} onChange={(e) => setCalcForm({ ...calcForm, deductions: e.target.value })} />
+          </div>
+          <div className="tax-calc-field">
+            <label>Credits / Offsets ($)</label>
+            <input type="number" placeholder="0.00" value={calcForm.credits} onChange={(e) => setCalcForm({ ...calcForm, credits: e.target.value })} />
+          </div>
+          <button type="submit" className="btn-primary" style={{ gridColumn: '1 / -1' }}>Calculate Tax</button>
+        </form>
+
+        {/* Calculation Result */}
+        {calcResult ? (
+          <div className="calculation-result">
+            <div className="result-header">
+              <h3>Calculation Result</h3>
+              <span className="calc-type-badge">{calcResult.calcType}</span>
+            </div>
+            <div className="result-summary">
+              <div className="result-stat">
+                <span className="label">Gross Income</span>
+                <span className="amount">${calcResult.taxableIncome ? (parseFloat(calcResult.rate) * parseFloat(calcResult.taxableIncome) / 100 + parseFloat(calcResult.credits)).toLocaleString('en-US', { maximumFractionDigits: 2 }) : (parseFloat(calcForm.income) || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+              </div>
+              <div className="result-stat">
+                <span className="label">Taxable Income</span>
+                <span className="amount">${calcResult.taxableIncome.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+              </div>
+              <div className="result-stat">
+                <span className="label">Tax Rate</span>
+                <span className="amount">{calcResult.rate}%</span>
+              </div>
+              <div className="result-stat">
+                <span className="label">Tax Due</span>
+                <span className="amount" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>${calcResult.calculatedTax.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+            <div className="calc-breakdown">
+              <h4>Breakdown</h4>
+              <div className="breakdown-rows">
+                <div className="breakdown-row">
+                  <span>Gross Income:</span>
+                  <span>${(calcResult.taxableIncome + calcResult.deductions).toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span>Deductions:</span>
+                  <span>-${calcResult.deductions.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span>Taxable Base:</span>
+                  <span>${calcResult.taxableIncome.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span>Tax ({calcResult.rate}%):</span>
+                  <span>${(calcResult.taxableIncome * calcResult.rate / 100).toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span>Credits:</span>
+                  <span>-${calcResult.credits.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="breakdown-row final">
+                  <span>Total Tax Due:</span>
+                  <span>${calcResult.calculatedTax.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+              <div className="effective-rate">
+                <span>Effective Tax Rate: {calcResult.effectiveRate.toFixed(2)}%</span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Previous Calculations History */}
+      <div className="calculation-history">
+        <h3>Saved Calculations</h3>
+        <div className="history-list">
+          {taxCalculations && taxCalculations.length > 0 ? (
+            taxCalculations.slice(0, 5).map((calc) => (
+              <div key={calc.id} className="history-item">
+                <div className="item-icon"></div>
+                <div className="item-content">
+                  <h4>{calc.calculation_type} — {calc.jurisdiction || 'Global'}</h4>
+                  <p>Tax Year: {calc.tax_year || 'Not specified'}</p>
+                  <span className="item-date">{new Date(calc.created_at).toLocaleDateString()}</span>
+                </div>
+                <div className="item-amount">
+                  <span className="amount">${(calc.calculated_tax || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="no-history">
+              <p>No saved calculations yet</p>
+              <span>Run a calculation above to create a record</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDocuments = () => (
+    <div className="documents-section">
+      <div className="section-header">
+        <h2>Compliance Documents</h2>
+        <p>Tax, regulatory, and compliance artifacts</p>
+        <div className="header-actions">
+          <button className="btn-secondary" onClick={() => setShowDocForm(true)}>
+            Upload Document
+          </button>
+        </div>
+      </div>
+
+      {showDocForm && (
+        <div className="modal-overlay" onClick={() => setShowDocForm(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Upload Compliance Document</h3>
+              <button className="close-btn" onClick={() => setShowDocForm(false)}>×</button>
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setDocSubmitting(true);
+              try {
+                await createComplianceDocument({
+                  entity: selectedEntityId,
+                  title: docForm.title,
+                  document_type: docForm.document_type,
+                  notes: docForm.notes,
+                });
+                const refreshed = await fetchEntityComplianceDocuments(selectedEntityId);
+                setDocuments((refreshed || []).map(d => ({
+                  id: d.id,
+                  name: d.title,
+                  type: d.document_type === 'license' ? 'form' : d.document_type === 'tax_certificate' ? 'form' : 'report',
+                  status: 'ready',
+                  date: d.created_at,
+                  raw: d,
+                })));
+                setShowDocForm(false);
+                setDocForm({ title: '', document_type: 'tax_certificate', notes: '' });
+              } catch (err) {
+                alert(err?.message || 'Failed to upload document');
+              } finally {
+                setDocSubmitting(false);
+              }
+            }}>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label>Document Title</label>
+                  <input type="text" required value={docForm.title} onChange={(e) => setDocForm({ ...docForm, title: e.target.value })} />
+                </div>
+                <div className="form-field">
+                  <label>Document Type</label>
+                  <select value={docForm.document_type} onChange={(e) => setDocForm({ ...docForm, document_type: e.target.value })}>
+                    <option value="tax_certificate">Tax Certificate</option>
+                    <option value="registration">Registration</option>
+                    <option value="license">License</option>
+                    <option value="permit">Permit</option>
+                    <option value="contract">Contract</option>
+                    <option value="insurance">Insurance</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+                  <label>Notes</label>
+                  <textarea value={docForm.notes} onChange={(e) => setDocForm({ ...docForm, notes: e.target.value })} placeholder="Optional notes about this document" />
+                </div>
+              </div>
+              <button type="submit" className="btn-primary" disabled={docSubmitting}>{docSubmitting ? 'Uploading...' : 'Upload Document'}</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="documents-list">
+        {documents && documents.length > 0 ? (
+          documents.map((doc) => (
+            <div key={doc.id} className="document-card">
+              <div className="doc-icon"></div>
+              <div className="doc-content">
+                <h4>{doc.name}</h4>
+                <p>{doc.type} — {new Date(doc.date).toLocaleDateString()}</p>
+                <span className={`status-badge ${doc.status}`}>{doc.status}</span>
+              </div>
+              <div className="doc-actions">
+                <button className="btn-secondary">Download</button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-documents">
+            <p>No documents uploaded yet</p>
+            <span>Upload your first compliance document to get started</span>
+            <button className="btn-primary" onClick={() => setShowDocForm(true)}>Upload Now</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderMonitoring = () => (
+    <div className="monitoring-section">
+      <div className="section-header">
+        <h2>Compliance Monitoring</h2>
+        <p>Real-time alerts and deadline tracking</p>
+      </div>
+
+      <div className="monitoring-stats">
+        <div className="stat-card">
+          <span className="stat-icon"></span>
+          <div className="stat-content">
+            <h3>{taxProfiles.length}</h3>
+            <p>Active Profiles</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon"></span>
+          <div className="stat-content">
+            <h3>{complianceAlerts.filter(a => a.severity === 'high').length}</h3>
+            <p>Critical Alerts</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon"></span>
+          <div className="stat-content">
+            <h3>{complianceAlerts.filter(a => {
+              const d = new Date(a.date);
+              const now = new Date();
+              return d < now;
+            }).length}</h3>
+            <p>Overdue Items</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <span className="stat-icon"></span>
+          <div className="stat-content">
+            <h3>{complianceAlerts.filter(a => {
+              const d = new Date(a.date);
+              const now = new Date();
+              const daysUntil = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+              return daysUntil > 0 && daysUntil <= 30;
+            }).length}</h3>
+            <p>In Next 30 Days</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="alerts-panel">
+        <h3>Active Compliance Alerts</h3>
+        <div className="alerts-list">
+          {complianceAlerts && complianceAlerts.length > 0 ? (
+            complianceAlerts.map((alert) => {
+              const d = new Date(alert.date);
+              const now = new Date();
+              const daysLeft = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+              return (
+                <div key={alert.id} className={`alert-item severity-${alert.severity}`}>
+                  <div className="alert-icon"></div>
+                  <div className="alert-content">
+                    <h4>{alert.message}</h4>
+                    <p>{alert.raw?.deadline_type || 'Compliance deadline'}</p>
+                    <span className="alert-date">
+                      {daysLeft < 0 ? `Overdue by ${Math.abs(daysLeft)} days` : `Due in ${daysLeft} days`}
+                    </span>
+                  </div>
+                  <div className="alert-status">
+                    <span className={`status-badge ${alert.severity}`}>{alert.severity} Priority</span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="no-alerts">
+              <p>No active alerts</p>
+              <span>All compliance obligations are current</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderVault = () => (
+    <div className="vault-section">
+      <div className="section-header">
+        <h2>Compliance Vault</h2>
+        <p>Secure storage for sensitive compliance documents</p>
+      </div>
+      <div className="vault-content">
+        <div className="vault-stats">
+          <div className="stat-card">
+            <span className="stat-icon"></span>
+            <div className="stat-content">
+              <h3>{documents.length}</h3>
+              <p>Stored Documents</p>
+            </div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-icon"></span>
+            <div className="stat-content">
+              <h3>AES-256</h3>
+              <p>Encryption Standard</p>
+            </div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-icon"></span>
+            <div className="stat-content">
+              <h3>24/7</h3>
+              <p>Access Monitoring</p>
+            </div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-icon"></span>
+            <div className="stat-content">
+              <h3>100%</h3>
+              <p>Availability</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="vault-organization">
+          <h3>Organized Documents</h3>
+          <div className="documents-list">
+            {documents && documents.length > 0 ? (
+              documents.map((doc) => (
+                <div key={doc.id} className="document-card">
+                  <div className="doc-icon"></div>
+                  <div className="doc-content">
+                    <h4>{doc.name}</h4>
+                    <p>{doc.type}</p>
+                  </div>
+                  <div className="doc-security">
+                    <span className="security-badge">🔒 Encrypted</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>No documents in vault</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderFiling = () => {
+    const now = new Date();
+    const overdueCount = upcomingDeadlines.filter((deadline) => new Date(deadline.deadline_date) < now).length;
+    const dueSoonCount = upcomingDeadlines.filter((deadline) => {
+      const daysLeft = Math.ceil((new Date(deadline.deadline_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      return daysLeft >= 0 && daysLeft <= 30;
+    }).length;
+
+    return (
+    <div className="filing-section">
+      <div className="filing-hero-card">
+        <div className="filing-hero-copy">
+          <span className="filing-kicker">Dashboard Compliance — Filing</span>
+          <h2>Filing &amp; Submission Assistance</h2>
+          <p>Guided tax filing and form preparation across all jurisdictions.</p>
+          <div className="header-actions">
+            <button className="btn-primary" onClick={() => setShowDeadlineForm(true)}>
+              Add Deadline
+            </button>
+            <button className="btn-secondary" onClick={() => setSearchParams({ section: 'documents' })}>
+              Open Document Vault
+            </button>
+          </div>
+        </div>
+        <div className="filing-hero-aside">
+          <div className="filing-status-badge">Submission Control Center</div>
+          <div className="filing-hero-note">
+            <strong>{upcomingDeadlines.length}</strong>
+            <span>tracked filing obligations for the selected entity</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="filing-summary-grid">
+        <div className="filing-summary-card">
+          <span className="filing-summary-label">Open Calendar</span>
+          <strong className="filing-summary-value">{upcomingDeadlines.length}</strong>
+          <span className="filing-summary-caption">Scheduled filings and submissions</span>
+        </div>
+        <div className="filing-summary-card warning">
+          <span className="filing-summary-label">Overdue</span>
+          <strong className="filing-summary-value">{overdueCount}</strong>
+          <span className="filing-summary-caption">Deadlines that need immediate action</span>
+        </div>
+        <div className="filing-summary-card accent">
+          <span className="filing-summary-label">Due In 30 Days</span>
+          <strong className="filing-summary-value">{dueSoonCount}</strong>
+          <span className="filing-summary-caption">Returns entering the submission window</span>
+        </div>
+        <div className="filing-summary-card muted">
+          <span className="filing-summary-label">Supporting Docs</span>
+          <strong className="filing-summary-value">{documents.length}</strong>
+          <span className="filing-summary-caption">Artifacts ready for filing packages</span>
+        </div>
+      </div>
+
+      {showDeadlineForm && (
+        <div className="modal-overlay" onClick={() => setShowDeadlineForm(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add Compliance Deadline</h3>
+              <button className="close-btn" onClick={() => setShowDeadlineForm(false)}>×</button>
+            </div>
+            <form onSubmit={handleAddDeadline}>
+              <div className="form-grid">
+                <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+                  <label>Deadline Title</label>
+                  <input type="text" required placeholder="E.g., Q4 Tax Return Filing" value={deadlineForm.title} onChange={(e) => setDeadlineForm({ ...deadlineForm, title: e.target.value })} />
+                </div>
+                <div className="form-field">
+                  <label>Deadline Type</label>
+                  <select value={deadlineForm.deadline_type} onChange={(e) => setDeadlineForm({ ...deadlineForm, deadline_type: e.target.value })}>
+                    <option value="tax_return">Tax Return</option>
+                    <option value="payment">Tax Payment</option>
+                    <option value="filing">Regulatory Filing</option>
+                    <option value="renewal">Renewal</option>
+                    <option value="audit">Audit Response</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label>Due Date</label>
+                  <input type="date" required value={deadlineForm.deadline_date} onChange={(e) => setDeadlineForm({ ...deadlineForm, deadline_date: e.target.value })} />
+                </div>
+              </div>
+              <button type="submit" className="btn-primary" disabled={deadlineSubmitting}>{deadlineSubmitting ? 'Adding...' : 'Add Deadline'}</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <div className="filing-board">
+        <section className="upcoming-filings filing-column">
+          <div className="filing-column-header">
+            <div>
+              <h3>Upcoming Filings &amp; Deadlines</h3>
+              <p>Submission queue ordered by urgency and due date.</p>
+            </div>
+            <span className="filing-column-pill">Live Queue</span>
+          </div>
+          <div className="filings-list filing-timeline">
+            {upcomingDeadlines && upcomingDeadlines.length > 0 ? (
+              upcomingDeadlines.map((deadline) => {
+                const d = new Date(deadline.deadline_date);
+                const daysLeft = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                const filingState = daysLeft < 0 ? 'urgent' : daysLeft <= 7 ? 'warning' : 'normal';
+                return (
+                  <div key={deadline.id} className={`filing-item ${filingState}`}>
+                    <div className="filing-icon"></div>
+                    <div className="filing-content">
+                      <div className="filing-item-top">
+                        <h4>{deadline.title}</h4>
+                        <span className={`filing-chip ${filingState}`}>{deadline.deadline_type.replace('_', ' ')}</span>
+                      </div>
+                      <p>Submission package aligned to the selected entity and jurisdiction.</p>
+                      <span className="filing-days">
+                        {daysLeft < 0 ? `Overdue by ${Math.abs(daysLeft)} days` : `Due in ${daysLeft} days`}
+                      </span>
+                    </div>
+                    <div className="filing-date">
+                      <span>{new Date(deadline.deadline_date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="no-filings">
+                <p>No upcoming filings scheduled</p>
+                <span>Start by creating the first deadline for this entity.</span>
+                <button className="btn-primary" onClick={() => setShowDeadlineForm(true)}>Create Deadline</button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className="filing-playbook filing-column">
+          <div className="filing-column-header">
+            <div>
+              <h3>Submission Playbook</h3>
+              <p>Operational steps for accurate preparation and on-time submission.</p>
+            </div>
+            <span className="filing-column-pill neutral">Guided Flow</span>
+          </div>
+          <div className="filing-step-list">
+            <div className="filing-step-card active">
+              <span className="filing-step-index">01</span>
+              <div>
+                <h4>Assemble return inputs</h4>
+                <p>Pull entity tax calculations, residency rules, and jurisdiction-specific support documents.</p>
+              </div>
+            </div>
+            <div className="filing-step-card">
+              <span className="filing-step-index">02</span>
+              <div>
+                <h4>Validate package completeness</h4>
+                <p>Check filing templates, attachments, and payment references before submission.</p>
+              </div>
+            </div>
+            <div className="filing-step-card">
+              <span className="filing-step-index">03</span>
+              <div>
+                <h4>Submit and track response</h4>
+                <p>Record acknowledgment numbers, filing statuses, and any regulator follow-up items.</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div className="filing-assistance">
+        <div className="filing-column-header">
+          <div>
+            <h3>Filing Support Modules</h3>
+            <p>Reusable assets for submission, review, and regulator response handling.</p>
+          </div>
+          <span className="filing-column-pill accent">Toolkit</span>
+        </div>
+        <div className="assistance-grid">
+          <div className="assistance-card">
+            <div className="card-icon"></div>
+            <h4>Tax Return Templates</h4>
+            <p>Pre-filled forms and schedules for recurring filing scenarios.</p>
+            <button className="btn-secondary">View Templates</button>
+          </div>
+          <div className="assistance-card">
+            <div className="card-icon"></div>
+            <h4>Filing Checklists</h4>
+            <p>Step-by-step controls to review forms, payments, and evidence.</p>
+            <button className="btn-secondary">View Checklists</button>
+          </div>
+          <div className="assistance-card">
+            <div className="card-icon"></div>
+            <h4>Extension Requests</h4>
+            <p>Escalation guidance for deadline extensions and exception handling.</p>
+            <button className="btn-secondary">Learn More</button>
+          </div>
+          <div className="assistance-card">
+            <div className="card-icon"></div>
+            <h4>Filing Status</h4>
+            <p>Track submissions, regulator acknowledgments, and response cycles.</p>
+            <button className="btn-secondary">View Status</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    );
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'overview': return renderOverview();
       case 'profiles': return renderTaxProfiles();
+      case 'calculator': return renderCalculator();
+      case 'documents': return renderDocuments();
+      case 'monitoring': return renderMonitoring();
+      case 'vault': return renderVault();
+      case 'filing': return renderFiling();
       default: return renderOverview();
     }
   };
@@ -706,40 +1377,40 @@ const EnterpriseTaxCompliance = () => {
           Overview
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/compliance/tax-center')}
+          className={`nav-btn ${activeSection === 'profiles' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'profiles' })}
         >
           Tax Profiles
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/compliance/tax-calculator')}
+          className={`nav-btn ${activeSection === 'calculator' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'calculator' })}
         >
           Tax Calculator
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/documents/vault')}
+          className={`nav-btn ${activeSection === 'documents' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'documents' })}
         >
           Documents
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/compliance/monitoring')}
+          className={`nav-btn ${activeSection === 'monitoring' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'monitoring' })}
         >
           Monitoring
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/documents/vault')}
+          className={`nav-btn ${activeSection === 'vault' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'vault' })}
         >
-          Compliance Vault
+          Vault
         </button>
         <button
-          className="nav-btn"
-          onClick={() => navigate('/app/compliance/filing')}
+          className={`nav-btn ${activeSection === 'filing' ? 'active' : ''}`}
+          onClick={() => setSearchParams({ section: 'filing' })}
         >
-          Filing Assistant
+          Filing
         </button>
       </div>
 
