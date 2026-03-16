@@ -37,7 +37,8 @@ const ROLE_LABELS = {
 };
 
 // ─── derive simple workspace cards from entities ─────────────────────────────
-function buildWorkspaceCards(entities, currentUserRole) {
+// Workspace roles are workspace-scoped; never inherit org/platform role here.
+function buildWorkspaceCards(entities) {
   return entities.map((e) => ({
     id: e.id,
     name: e.name,
@@ -46,7 +47,7 @@ function buildWorkspaceCards(entities, currentUserRole) {
     entityType: e.entity_type || 'corporation',
     industry: INDUSTRY_LABELS[e.industry] || e.industry || '—',
     status: e.status || 'active',
-    role: ROLE_LABELS[currentUserRole] || 'Member',
+    role: 'Member',
     registrationNumber: e.registration_number || null,
     fiscalYearEnd: e.fiscal_year_end || null,
   }));
@@ -61,13 +62,10 @@ const GlobalConsole = () => {
   const { user, logout } = useAuth();
   const {
     entities,
-    currentOrganization,
-    organizations,
     activeWorkspace,
     setActiveWorkspace,
     globalNotifications,
     fetchGlobalNotifications,
-    currentUserRole,
     loading,
     complianceDeadlines,
   } = useEnterprise();
@@ -119,7 +117,7 @@ const GlobalConsole = () => {
   }, [complianceDeadlines]);
 
   // Filtered workspaces
-  const workspaceCards = buildWorkspaceCards(entities, currentUserRole);
+  const workspaceCards = buildWorkspaceCards(entities);
   const filtered = workspaceCards.filter((w) => {
     const matchSearch = !search || w.name.toLowerCase().includes(search.toLowerCase()) || w.country.toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === 'all' || w.status === filterStatus;
@@ -130,17 +128,16 @@ const GlobalConsole = () => {
     const entity = entities.find((e) => e.id === workspace.id);
     if (entity) {
       setActiveWorkspace(entity);
-      navigate('/app/overview/dashboard');
+      navigate('/app/accounting/chart-of-accounts');
     }
   };
 
   const handleOpenLastWorkspace = () => {
+    // Only open if a workspace has been explicitly selected — never auto-pick.
     if (activeWorkspace) {
-      navigate('/app/overview/dashboard');
-    } else if (entities.length > 0) {
-      setActiveWorkspace(entities[0]);
-      navigate('/app/overview/dashboard');
+      navigate('/app/accounting/chart-of-accounts');
     }
+    // No workspace selected → stay on console. The button is disabled in this case anyway.
   };
 
   const notifs = globalNotifications && globalNotifications.length > 0
@@ -217,9 +214,7 @@ const GlobalConsole = () => {
           <p className="gc-subtitle">
             Select a workspace to continue, or manage your organization from here.
           </p>
-          {currentOrganization && (
-            <span className="gc-org-badge">{currentOrganization.name}</span>
-          )}
+          <span className="gc-platform-badge">ATC Capital Console</span>
         </div>
         <div className="gc-hero-stats">
           <div className="gc-hero-stat">
@@ -243,9 +238,9 @@ const GlobalConsole = () => {
           <span className="gc-action-icon">+</span>
           Create Workspace
         </button>
-        <button className="gc-action-btn gc-action-secondary" onClick={handleOpenLastWorkspace} disabled={!activeWorkspace && entities.length === 0}>
+        <button className="gc-action-btn gc-action-secondary" onClick={handleOpenLastWorkspace} disabled={!activeWorkspace}>
           <span className="gc-action-icon">▶</span>
-          {activeWorkspace ? `Open "${activeWorkspace.name}"` : 'Open Last Workspace'}
+          Open Last Workspace
         </button>
         <button className="gc-action-btn gc-action-secondary" onClick={() => navigate('/app/settings/team')}>
           <span className="gc-action-icon">+</span>
@@ -410,26 +405,6 @@ const GlobalConsole = () => {
             )}
           </section>
 
-          {/* Organizations summary */}
-          {organizations && organizations.length > 0 && (
-            <section className="gc-section gc-orgs-section">
-              <div className="gc-section-header">
-                <h2>Organizations</h2>
-              </div>
-              <ul className="gc-org-list">
-                {organizations.map((org) => (
-                  <li key={org.id} className="gc-org-item">
-                    <div className="gc-org-avatar">{org.name.charAt(0)}</div>
-                    <div className="gc-org-info">
-                      <span className="gc-org-name">{org.name}</span>
-                      <span className="gc-org-industry">{INDUSTRY_LABELS[org.industry] || org.industry || '—'}</span>
-                    </div>
-                    <span className="gc-org-currency">{org.primary_currency || 'USD'}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
         </aside>
 
       </div>{/* /.gc-main-grid */}

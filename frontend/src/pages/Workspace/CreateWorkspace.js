@@ -151,7 +151,7 @@ const CreateWorkspace = () => {
       }
 
       if (newWorkspace) {
-        navigate('/app/overview/dashboard');
+        navigate('/app/accounting/chart-of-accounts');
       }
     } catch (err) {
       setError(err?.message || 'Failed to create workspace. Please try again.');

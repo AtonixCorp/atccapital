@@ -203,7 +203,7 @@
   max-width: 52ch;
 }
 
-.gc-org-badge {
+.gc-platform-badge {
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.18);

@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useEnterprise } from '../../context/EnterpriseContext';
 import ATCLogo from '../branding/ATCLogo';
 import './Layout.css';
 
 const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { currentOrganization, activeWorkspace } = useEnterprise();
 
   const [sidebarMinimized, setSidebarMinimized] = React.useState(false);
   const [expandedMenus, setExpandedMenus] = React.useState({});
@@ -56,8 +54,8 @@ const Layout = ({ children }) => {
 
   const accountingNav = [
     { to: '/app/accounting/chart-of-accounts', label: 'Chart of Accounts' },
-    { to: '/app/accounting/general-ledger', label: 'General Ledger' },
-    { to: '/app/accounting/journal-entries', label: 'Journal Entries' },
+    { to: '/app/accounting/general-ledger',    label: 'General Ledger' },
+    { to: '/app/accounting/journal-entries',   label: 'Journal Entries' },
     {
       label: 'Sub-Ledgers',
       submenu: [
@@ -74,24 +72,24 @@ const Layout = ({ children }) => {
   ];
 
   const billingNav = [
-    { to: '/app/billing/invoices',        label: 'Invoices' },
-    { to: '/app/billing/bills',           label: 'Bills' },
-    { to: '/app/billing/customers',       label: 'Customers' },
-    { to: '/app/billing/vendors',         label: 'Vendors' },
+    { to: '/app/billing/invoices',           label: 'Invoices' },
+    { to: '/app/billing/bills',              label: 'Bills' },
+    { to: '/app/billing/customers',          label: 'Customers' },
+    { to: '/app/billing/vendors',            label: 'Vendors' },
     { to: '/app/billing/payment-scheduling', label: 'Payment Scheduling' },
-    { to: '/app/billing/collections',     label: 'Collections' },
+    { to: '/app/billing/collections',        label: 'Collections' },
   ];
 
   const reportingNav = [
-    { to: '/app/reporting/statements',      label: 'Financial Statements' },
-    { to: '/app/reporting/trial-balance',   label: 'Trial Balance' },
-    { to: '/app/reporting/analytics',       label: 'Reports & Analytics' },
-    { to: '/app/reporting/risk-exposure',   label: 'Risk & Exposure' },
+    { to: '/app/reporting/statements',    label: 'Financial Statements' },
+    { to: '/app/reporting/trial-balance', label: 'Trial Balance' },
+    { to: '/app/reporting/analytics',     label: 'Reports & Analytics' },
+    { to: '/app/reporting/risk-exposure', label: 'Risk & Exposure' },
   ];
 
   const budgetingNav = [
-    { to: '/app/budgeting/budgets',       label: 'Budgets' },
-    { to: '/app/budgeting/forecasts',     label: 'Forecasts' },
+    { to: '/app/budgeting/budgets',           label: 'Budgets' },
+    { to: '/app/budgeting/forecasts',         label: 'Forecasts' },
     { to: '/app/budgeting/variance-analysis', label: 'Variance Analysis' },
   ];
 
@@ -105,37 +103,44 @@ const Layout = ({ children }) => {
   ];
 
   const documentsNav = [
-    { to: '/app/documents/vault',         label: 'Document Vault' },
-    { to: '/app/documents/receipts',      label: 'Receipts' },
+    { to: '/app/documents/vault',    label: 'Document Vault' },
+    { to: '/app/documents/receipts', label: 'Receipts' },
   ];
 
   const clientsNav = [
-    { to: '/app/clients/directory',       label: 'Clients' },
-    { to: '/app/clients/portal',          label: 'Client Portal' },
+    { to: '/app/clients/directory', label: 'Clients' },
+    { to: '/app/clients/portal',    label: 'Client Portal' },
   ];
 
   const automationNav = [
-    { to: '/app/automation/rules',        label: 'Automation Rules' },
-    { to: '/app/automation/recurring',    label: 'Recurring Entries' },
-    { to: '/app/automation/ai-insights',  label: 'AI Insights' },
-    { to: '/app/automation/ai-advisor',   label: 'AI Advisor' },
+    { to: '/app/automation/rules',      label: 'Automation Rules' },
+    { to: '/app/automation/recurring',  label: 'Recurring Entries' },
+    { to: '/app/automation/ai-insights',label: 'AI Insights' },
+    { to: '/app/automation/ai-advisor', label: 'AI Advisor' },
   ];
 
   const integrationsNav = [
-    { to: '/app/integrations/api-keys',   label: 'API Keys' },
-    { to: '/app/integrations/list',       label: 'Connected Apps' },
+    { to: '/app/integrations/api-keys', label: 'API Keys' },
+    { to: '/app/integrations/list',     label: 'Connected Apps' },
   ];
 
   const settingsNav = [
-    { to: '/app/settings/firm',           label: 'Firm Settings' },
-    { to: '/app/settings/team',           label: 'Team & Permissions' },
-    { to: '/app/settings/security',       label: 'Security' },
-    { to: '/app/settings/subscription',   label: 'Subscription' },
+    { to: '/app/settings/firm',         label: 'Firm Settings' },
+    { to: '/app/settings/team',         label: 'Team & Permissions' },
+    { to: '/app/settings/security',     label: 'Security' },
+    { to: '/app/settings/subscription', label: 'Subscription' },
   ];
 
   const supportNav = [
-    { to: '/app/support/help',            label: 'Help Center' },
-    { to: '/app/support/tickets',         label: 'Support Tickets' },
+    { to: '/app/support/help',    label: 'Help Center' },
+    { to: '/app/support/tickets', label: 'Support Tickets' },
+  ];
+
+  const firmNav = [
+    { to: '/app/firm/dashboard',    label: 'Firm Dashboard' },
+    { to: '/app/firm/white-label',  label: 'White Label' },
+    { to: '/app/firm/marketplace',  label: 'Marketplace' },
+    { to: '/app/firm/integrations', label: 'API Integrations' },
   ];
 
   const toggleSubMenu = (label) => {
@@ -228,11 +233,7 @@ const Layout = ({ children }) => {
               ← All Workspaces
             </NavLink>
           )}
-          {activeWorkspace && !sidebarMinimized && (
-            <div className="sidebar-workspace-name" title={activeWorkspace.name}>
-              {activeWorkspace.name}
-            </div>
-          )}
+
         </div>
 
         {/* Navigation */}
@@ -270,6 +271,9 @@ const Layout = ({ children }) => {
           {renderSection('Integrations', integrationsNav)}
           <li className="nav-divider" role="separator" />
 
+          {renderSection('Firm Management', firmNav)}
+          <li className="nav-divider" role="separator" />
+
           {renderSection('Settings', settingsNav)}
           <li className="nav-divider" role="separator" />
 
@@ -290,16 +294,6 @@ const Layout = ({ children }) => {
         <header className="topbar">
           <div className="topbar-left">
             <h2 className="topbar-title">ATC Capital Console</h2>
-            {currentOrganization && (
-              <span className="topbar-org-context">{currentOrganization.name}</span>
-            )}
-            {activeWorkspace && (
-              <>
-                <span className="topbar-ws-sep">›</span>
-                <span className="topbar-ws-name">{activeWorkspace.name}</span>
-                <span className="topbar-env-badge">Production</span>
-              </>
-            )}
           </div>
           <div className="topbar-right">
             <div className="profile-menu" ref={profileRef}>

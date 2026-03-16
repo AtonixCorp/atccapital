@@ -15,37 +15,51 @@
   position: sticky;
   top: 0;
   z-index: 200;
-  height: 56px;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
-  box-shadow: 0 1px 8px rgba(15, 23, 42, 0.06);
+  height: 54px;
+  background: linear-gradient(90deg, #0d1b2e 0%, #13294a 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 24px;
   flex-shrink: 0;
+  box-shadow: 0 4px 24px rgba(13, 27, 46, 0.28);
 }
 
 .cw-topnav-brand {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+/* Kicker label next to logo */
+.cw-topnav-brand::after {
+  content: 'Create Workspace';
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.50);
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  margin-left: 2px;
+  white-space: nowrap;
 }
 
 .cw-topnav-back {
-  height: 34px;
-  padding: 0 16px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   background: transparent;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.60);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.15s ease;
 }
 .cw-topnav-back:hover {
-  border-color: #94a3b8;
-  color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Tokens */

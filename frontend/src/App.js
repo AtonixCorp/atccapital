@@ -7,7 +7,6 @@ import { FilterProvider } from './context/FilterContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import WorkspaceRoute from './components/WorkspaceRoute';
 import Layout from './components/Layout/Layout';
 import EntityLayout from './components/EntityLayout/EntityLayout';
 import Landing from './pages/Landing/Landing';
@@ -50,7 +49,6 @@ import FXModule from './pages/Enterprise/Accounting/FXModule';
 import NotificationsCenter from './pages/Enterprise/Accounting/NotificationsCenter';
 
 //  New module pages
-import AppDashboard from './modules/overview/Dashboard';
 import AppNotifications from './modules/overview/Notifications';
 import AppTasks from './modules/overview/Tasks';
 import AppChartOfAccounts from './modules/accounting/coa/ChartOfAccounts';
@@ -114,17 +112,19 @@ import GlobalConsole from './pages/GlobalConsole/GlobalConsole';
 import CreateWorkspace from './pages/Workspace/CreateWorkspace';
 
 function App() {
+  // Console module routes — open inside the ATC Capital Console (Layout with sidebar).
+  // WorkspaceRoute / WorkspaceLayout is reserved for workspace-scoped routes only.
   const renderModuleCrudRoutes = (basePath, Component) => [
-    <Route key={`${basePath}-index`} path={basePath} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
-    <Route key={`${basePath}-list`} path={`${basePath}/list`} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
-    <Route key={`${basePath}-create`} path={`${basePath}/create`} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
-    <Route key={`${basePath}-edit`} path={`${basePath}/edit/:id`} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
-    <Route key={`${basePath}-view`} path={`${basePath}/view/:id`} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
+    <Route key={`${basePath}-index`}  path={basePath}               element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-list`}   path={`${basePath}/list`}     element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-create`} path={`${basePath}/create`}   element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-edit`}   path={`${basePath}/edit/:id`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-view`}   path={`${basePath}/view/:id`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
   ];
 
   const renderModulePageRoutes = (basePath, Component) => [
-    <Route key={`${basePath}-index`} path={basePath} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
-    <Route key={`${basePath}-list`} path={`${basePath}/list`} element={<WorkspaceRoute><Layout><Component /></Layout></WorkspaceRoute>} />,
+    <Route key={`${basePath}-index`} path={basePath}           element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
+    <Route key={`${basePath}-list`}  path={`${basePath}/list`} element={<ProtectedRoute><Layout><Component /></Layout></ProtectedRoute>} />,
   ];
 
   return (
@@ -340,7 +340,6 @@ function App() {
 
               {/*  New Module Routes  */}
               {/* Overview */}
-              {renderModulePageRoutes('/app/overview/dashboard', AppDashboard)}
               {renderModulePageRoutes('/app/overview/notifications', AppNotifications)}
               {renderModuleCrudRoutes('/app/overview/tasks', AppTasks)}
 

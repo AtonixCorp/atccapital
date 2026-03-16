@@ -207,7 +207,6 @@ const EnterpriseOrgOverview = () => {
 
         <div className="org-dashboard-actions">
           <button className="btn-secondary btn-sm" onClick={() => navigate('/app/enterprise/entities')}>Manage Entities</button>
-          <button className="btn-secondary btn-sm" onClick={() => navigate('/app/overview/dashboard')}>Accounting Dashboard</button>
           <button
             className="btn-primary btn-sm"
             onClick={() => {
@@ -349,9 +348,6 @@ const EnterpriseOrgOverview = () => {
                     <div className="ed-ob-actions">
                       <button className="btn-primary btn-sm" onClick={() => navigate('/app/enterprise/entities')}>
                         Add First Entity
-                      </button>
-                      <button className="btn-secondary btn-sm" onClick={() => navigate('/app/overview/dashboard')}>
-                        Go to Accounting Dashboard
                       </button>
                     </div>
                   </div>

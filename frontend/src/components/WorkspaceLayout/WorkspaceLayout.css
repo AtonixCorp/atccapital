@@ -1,0 +1,377 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WorkspaceLayout — sidebar-free workspace shell
+   ATC Capital Design System
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.ws-layout {
+  --ws-ink:       #0f172a;
+  --ws-muted:     #64748b;
+  --ws-surface:   #ffffff;
+  --ws-bg:        #f1f5f9;
+  --ws-line:      rgba(148, 163, 184, 0.18);
+  --ws-accent:    #3b82f6;
+  --ws-accent-10: rgba(59, 130, 246, 0.10);
+
+  /* Header tokens */
+  --nav-bg-from:  #0d1b2e;
+  --nav-bg-to:    #13294a;
+  --nav-text:     rgba(255, 255, 255, 0.88);
+  --nav-muted:    rgba(255, 255, 255, 0.50);
+  --nav-divider:  rgba(255, 255, 255, 0.12);
+
+  min-height: 100vh;
+  background: var(--ws-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ━━━ TOP NAV ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.ws-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: 54px;
+  background: linear-gradient(90deg, var(--nav-bg-from) 0%, var(--nav-bg-to) 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 0;
+  flex-shrink: 0;
+  box-shadow: 0 4px 24px rgba(13, 27, 46, 0.28);
+}
+
+/* ── Left: logo + breadcrumb ── */
+.ws-topnav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.ws-logo-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.ws-logo-btn:hover { background: var(--nav-divider); }
+
+/* Breadcrumb */
+.ws-context {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ws-context-console {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--nav-muted);
+  font-family: inherit;
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ws-context-console:hover { color: #fff; }
+
+.ws-context-sep {
+  color: var(--nav-divider);
+  font-size: 14px;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+.ws-context-org {
+  color: var(--nav-muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.ws-context-ws {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+/* Environment badge */
+.ws-env-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.10);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  border-radius: 20px;
+  padding: 2px 8px 2px 6px;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.ws-env-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  animation: ws-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ws-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.30); }
+  50%       { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0.10); }
+}
+
+/* ── Center: module quick-nav ── */
+.ws-qnav {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  height: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 12px;
+}
+.ws-qnav::-webkit-scrollbar { display: none; }
+
+.ws-qnav-link {
+  display: inline-flex;
+  align-items: center;
+  height: 54px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nav-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.ws-qnav-link:hover  { color: rgba(255, 255, 255, 0.88); }
+.ws-qnav-link.active {
+  color: #fff;
+  font-weight: 600;
+  border-bottom-color: var(--ws-accent);
+}
+
+/* ── Right: hamburger + avatar ── */
+.ws-topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+/* Mobile hamburger */
+.ws-mobile-nav-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--nav-divider);
+  border-radius: 7px;
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--nav-text);
+  align-items: center;
+  justify-content: center;
+}
+
+/* Avatar button */
+.ws-profile { position: relative; }
+
+.ws-avatar-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ws-avatar-btn:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.30);
+}
+
+/* Profile dropdown */
+.ws-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 230px;
+  background: var(--ws-surface);
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(13, 27, 46, 0.18);
+  overflow: hidden;
+  z-index: 300;
+}
+
+.ws-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f8fafc;
+}
+
+.ws-dropdown-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ws-dropdown-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-dropdown-email {
+  font-size: 11px;
+  color: var(--ws-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-dropdown-divider {
+  height: 1px;
+  background: rgba(148, 163, 184, 0.18);
+  margin: 4px 0;
+}
+
+.ws-dropdown-ws-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+}
+.ws-dropdown-ws-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ws-muted);
+}
+.ws-dropdown-ws-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ws-ink);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--ws-ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+}
+.ws-dropdown-item:hover { background: #f1f5f9; }
+.ws-dropdown-logout { color: #dc2626; }
+.ws-dropdown-logout:hover { background: #fef2f2; }
+
+/* ━━━ MAIN CONTENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.ws-main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ━━━ RESPONSIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 960px) {
+  .ws-mobile-nav-btn { display: flex; }
+
+  .ws-qnav {
+    display: none;
+    position: absolute;
+    top: 54px;
+    left: 0;
+    right: 0;
+    height: auto;
+    background: #0d1b2e;
+    border-bottom: 1px solid var(--nav-divider);
+    box-shadow: 0 8px 24px rgba(13, 27, 46, 0.20);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 6px 0;
+    overflow: visible;
+    z-index: 190;
+  }
+  .ws-qnav.open { display: flex; }
+
+  .ws-qnav-link {
+    height: 44px;
+    width: 100%;
+    padding: 0 24px;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+  .ws-qnav-link.active {
+    border-bottom: none;
+    border-left-color: var(--ws-accent);
+    background: rgba(59, 130, 246, 0.12);
+  }
+
+  .ws-context-org { display: none; }
+}
+
+@media (max-width: 600px) {
+  .ws-topnav { padding: 0 12px; }
+  .ws-context-ws { max-width: 100px; }
+  .ws-env-badge { display: none; }
+}

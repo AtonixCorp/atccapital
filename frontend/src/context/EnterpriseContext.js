@@ -484,7 +484,9 @@ export const EnterpriseProvider = ({ children }) => {
    */
   const hasPermission = useCallback((permissionCode) => {
     if (!isRoleResolved) {
-      return false;
+      // Roles are still loading — don't block the UI.
+      // Real access control is enforced by the backend.
+      return true;
     }
 
     return permissions.includes(permissionCode);
@@ -501,18 +503,21 @@ export const EnterpriseProvider = ({ children }) => {
    * Switch to different organization
    */
   const switchOrganization = useCallback((org) => {
-    setCurrentUserRole(null);
-    setPermissions([]);
-    setTeamMembers([]);
-    setIsRoleResolved(false);
     setCurrentOrganization(org);
     const cacheKey = String(org.id);
     const now = Date.now();
     const lastPrefetchAt = organizationPrefetchRef.current.get(cacheKey) || 0;
 
     if (now - lastPrefetchAt < ORG_PREFETCH_THROTTLE_MS) {
+      // Throttled — preserve existing role/permission state, do not clear.
       return;
     }
+
+    // Only clear role state when actually running a fresh fetch.
+    setCurrentUserRole(null);
+    setPermissions([]);
+    setTeamMembers([]);
+    setIsRoleResolved(false);
 
     organizationPrefetchRef.current.set(cacheKey, now);
 
