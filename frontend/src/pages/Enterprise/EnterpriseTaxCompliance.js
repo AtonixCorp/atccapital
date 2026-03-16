@@ -374,32 +374,32 @@ const EnterpriseTaxCompliance = () => {
     <div className="compliance-overview">
       {/* Quick Stats */}
       <div className="overview-stats">
-        <div className="stat-card">
-          <div className="stat-icon"></div>
+        <div className="stat-card stat-card-blue">
+          <div className="stat-icon stat-icon-globe">🌐</div>
           <div className="stat-content">
             <h3>{taxProfiles.filter(p => p.status === 'active').length}</h3>
             <p>Active Countries</p>
             <span className="stat-trend neutral">Based on entity profiles</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon"></div>
+        <div className="stat-card stat-card-green">
+          <div className="stat-icon stat-icon-calc">$</div>
           <div className="stat-content">
             <h3>${calculations.quarterlyProjection.amount.toLocaleString()}</h3>
-            <p>Quarterly Tax Projection</p>
+            <p>Quarterly Projection</p>
             <span className="stat-trend neutral">No projection model yet</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon"></div>
+        <div className="stat-card stat-card-red">
+          <div className="stat-icon stat-icon-alert">!</div>
           <div className="stat-content">
             <h3>{complianceAlerts.filter(a => a.severity === 'high').length}</h3>
             <p>Critical Alerts</p>
             <span className="stat-trend neutral">Derived from deadlines</span>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon"></div>
+        <div className="stat-card stat-card-purple">
+          <div className="stat-icon stat-icon-docs">&#9679;</div>
           <div className="stat-content">
             <h3>{documents.filter(d => d.status === 'ready').length}</h3>
             <p>Ready Documents</p>
@@ -587,8 +587,8 @@ const EnterpriseTaxCompliance = () => {
         {taxProfiles.map(profile => (
           <div key={profile.id} className="profile-card">
             <div className="profile-header">
-              <div className="country-flag">
-                {availableCountries.find(c => c.code === profile.country)?.flag || profile.country}
+              <div className="country-flag country-code-badge">
+                {availableCountries.find(c => c.name === profile.country || c.code === profile.country)?.code || profile.country.slice(0, 2).toUpperCase()}
               </div>
               <div className={`status-badge ${profile.status}`}>
                 {profile.status}
@@ -963,22 +963,24 @@ const EnterpriseTaxCompliance = () => {
       </div>
 
       <div className="monitoring-stats">
-        <div className="stat-card">
-          <span className="stat-icon"></span>
+        <div className="stat-card stat-card-blue">
+          <span className="stat-icon">&#9673;</span>
           <div className="stat-content">
             <h3>{taxProfiles.length}</h3>
             <p>Active Profiles</p>
+            <span className="stat-trend neutral">Watched jurisdictions</span>
           </div>
         </div>
-        <div className="stat-card">
-          <span className="stat-icon"></span>
+        <div className="stat-card stat-card-red">
+          <span className="stat-icon">!</span>
           <div className="stat-content">
             <h3>{complianceAlerts.filter(a => a.severity === 'high').length}</h3>
             <p>Critical Alerts</p>
+            <span className="stat-trend neutral">High-severity items</span>
           </div>
         </div>
-        <div className="stat-card">
-          <span className="stat-icon"></span>
+        <div className="stat-card stat-card-orange">
+          <span className="stat-icon">&#9650;</span>
           <div className="stat-content">
             <h3>{complianceAlerts.filter(a => {
               const d = new Date(a.date);
@@ -986,10 +988,11 @@ const EnterpriseTaxCompliance = () => {
               return d < now;
             }).length}</h3>
             <p>Overdue Items</p>
+            <span className="stat-trend neutral">Past deadline</span>
           </div>
         </div>
-        <div className="stat-card">
-          <span className="stat-icon"></span>
+        <div className="stat-card stat-card-amber">
+          <span className="stat-icon">&#9201;</span>
           <div className="stat-content">
             <h3>{complianceAlerts.filter(a => {
               const d = new Date(a.date);
@@ -998,6 +1001,7 @@ const EnterpriseTaxCompliance = () => {
               return daysUntil > 0 && daysUntil <= 30;
             }).length}</h3>
             <p>In Next 30 Days</p>
+            <span className="stat-trend neutral">Coming due soon</span>
           </div>
         </div>
       </div>
@@ -1045,32 +1049,36 @@ const EnterpriseTaxCompliance = () => {
       </div>
       <div className="vault-content">
         <div className="vault-stats">
-          <div className="stat-card">
-            <span className="stat-icon"></span>
+          <div className="stat-card stat-card-blue">
+            <span className="stat-icon">&#128193;</span>
             <div className="stat-content">
               <h3>{documents.length}</h3>
               <p>Stored Documents</p>
+              <span className="stat-trend neutral">In compliance vault</span>
             </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-icon"></span>
+          <div className="stat-card stat-card-green">
+            <span className="stat-icon">&#128274;</span>
             <div className="stat-content">
               <h3>AES-256</h3>
               <p>Encryption Standard</p>
+              <span className="stat-trend neutral">Military grade</span>
             </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-icon"></span>
+          <div className="stat-card stat-card-purple">
+            <span className="stat-icon">&#128065;</span>
             <div className="stat-content">
               <h3>24/7</h3>
               <p>Access Monitoring</p>
+              <span className="stat-trend neutral">Continuous audit</span>
             </div>
           </div>
-          <div className="stat-card">
-            <span className="stat-icon"></span>
+          <div className="stat-card stat-card-amber">
+            <span className="stat-icon">&#10003;</span>
             <div className="stat-content">
               <h3>100%</h3>
               <p>Availability</p>
+              <span className="stat-trend neutral">SLA guaranteed</span>
             </div>
           </div>
         </div>

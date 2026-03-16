@@ -2083,3 +2083,569 @@
     flex-wrap: wrap;
   }
 }
+
+/* ============================================================
+   TAX & COMPLIANCE PAGE — ENHANCED VISUAL SYSTEM
+   Complete restyle: hero, nav, stat cards, sections, alerts
+   ============================================================ */
+
+/* 1. Page-specific hero gradient — deep indigo/navy/teal */
+.enterprise-tax-compliance {
+  --overview-hero-bg: linear-gradient(140deg, #0f172a 0%, #1e1b4b 38%, #0c4a6e 80%, #0f4f57 100%);
+}
+
+/* 2. Sticky section navigation with glass-morphism */
+.enterprise-tax-compliance .section-navigation {
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* 3. Section nav active state with indigo accent */
+.enterprise-tax-compliance .nav-btn.active {
+  background: linear-gradient(135deg, #0f172a, #1e40af);
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+  color: #f8fafc;
+}
+
+.enterprise-tax-compliance .nav-btn:hover:not(.active) {
+  background: #f1f5f9;
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+/* 4. Action stats bar — top accent borders per metric */
+.enterprise-tax-compliance .action-page-stats {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.enterprise-tax-compliance .action-page-stat {
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+}
+
+.enterprise-tax-compliance .action-page-stat::before {
+  border-radius: 22px 22px 0 0;
+  content: '';
+  display: block;
+  height: 3px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(1)::before {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(2)::before {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(3)::before {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(1) .action-page-stat-value { color: #1d4ed8; }
+.enterprise-tax-compliance .action-page-stat:nth-child(2) .action-page-stat-value { color: #dc2626; }
+.enterprise-tax-compliance .action-page-stat:nth-child(3) .action-page-stat-value { color: #7c3aed; }
+
+/* 5. Stat card color variants — top border + icon tint */
+.enterprise-tax-compliance .stat-card {
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.enterprise-tax-compliance .stat-card:hover {
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.enterprise-tax-compliance .stat-card::before {
+  border-radius: 22px 22px 0 0;
+  content: '';
+  display: block;
+  height: 3px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.enterprise-tax-compliance .stat-card-blue::before  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.enterprise-tax-compliance .stat-card-green::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.enterprise-tax-compliance .stat-card-red::before   { background: linear-gradient(90deg, #ef4444, #f87171); }
+.enterprise-tax-compliance .stat-card-orange::before{ background: linear-gradient(90deg, #f97316, #fb923c); }
+.enterprise-tax-compliance .stat-card-amber::before { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+.enterprise-tax-compliance .stat-card-purple::before{ background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+.enterprise-tax-compliance .stat-card-blue .stat-icon {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  color: #1d4ed8;
+  font-size: 18px;
+  line-height: 1;
+}
+.enterprise-tax-compliance .stat-card-green .stat-icon {
+  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+  color: #047857;
+  font-size: 18px;
+  line-height: 1;
+}
+.enterprise-tax-compliance .stat-card-red .stat-icon {
+  background: linear-gradient(135deg, #fee2e2, #fff5f5);
+  color: #dc2626;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+.enterprise-tax-compliance .stat-card-orange .stat-icon {
+  background: linear-gradient(135deg, #ffedd5, #fff7ed);
+  color: #c2410c;
+  font-size: 16px;
+  line-height: 1;
+}
+.enterprise-tax-compliance .stat-card-amber .stat-icon {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  color: #b45309;
+  font-size: 18px;
+  line-height: 1;
+}
+.enterprise-tax-compliance .stat-card-purple .stat-icon {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+  color: #7c3aed;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* 6. Overview stat card content spacing */
+.enterprise-tax-compliance .stat-content {
+  display: grid;
+  gap: 4px;
+}
+
+.enterprise-tax-compliance .stat-content h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: 0;
+}
+
+.enterprise-tax-compliance .stat-content p {
+  color: var(--compliance-muted);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.enterprise-tax-compliance .stat-trend {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.enterprise-tax-compliance .stat-trend.neutral { color: #94a3b8; }
+.enterprise-tax-compliance .stat-trend.up      { color: #059669; }
+.enterprise-tax-compliance .stat-trend.down    { color: #dc2626; }
+
+/* 7. Quick actions bar — styled left accent */
+.enterprise-tax-compliance .quick-actions {
+  border-left: 4px solid #3b82f6;
+  border-radius: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+/* 8. Compliance health improvements */
+.enterprise-tax-compliance .compliance-health {
+  display: grid;
+  gap: 22px;
+}
+
+.enterprise-tax-compliance .health-score {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+}
+
+.enterprise-tax-compliance .score-circle {
+  background: linear-gradient(135deg, #0f172a, #1e40af);
+  flex-shrink: 0;
+}
+
+.enterprise-tax-compliance .score-status.excellent { color: #047857; font-weight: 800; }
+.enterprise-tax-compliance .score-status.good      { color: #0369a1; font-weight: 800; }
+.enterprise-tax-compliance .score-status.fair      { color: #b45309; font-weight: 800; }
+.enterprise-tax-compliance .score-status.warning   { color: #dc2626; font-weight: 800; }
+
+.enterprise-tax-compliance .score-details {
+  display: grid;
+  gap: 6px;
+}
+
+.enterprise-tax-compliance .score-change {
+  color: var(--compliance-muted);
+  font-size: 12px;
+}
+
+/* 9. Health metric rows */
+.enterprise-tax-compliance .health-metrics {
+  display: grid;
+  gap: 12px;
+}
+
+.enterprise-tax-compliance .metric-item {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 160px 1fr 50px;
+}
+
+.enterprise-tax-compliance .metric-label {
+  color: var(--compliance-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.enterprise-tax-compliance .metric-value {
+  color: var(--compliance-ink);
+  font-weight: 800;
+  text-align: right;
+}
+
+/* 10. Activity items — colored left border by type */
+.enterprise-tax-compliance .activity-item {
+  border-left: 3px solid transparent;
+  border-radius: 16px;
+  padding-left: 14px !important;
+  transition: border-left-color 160ms ease, background 160ms ease;
+}
+
+.enterprise-tax-compliance .activity-item:has(.activity-icon.info)    { border-left-color: #3b82f6; }
+.enterprise-tax-compliance .activity-item:has(.activity-icon.success)  { border-left-color: #10b981; }
+.enterprise-tax-compliance .activity-item:has(.activity-icon.warning)  { border-left-color: #f59e0b; }
+
+.enterprise-tax-compliance .activity-icon.info {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  color: #1d4ed8;
+}
+
+.enterprise-tax-compliance .activity-icon.success {
+  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+  color: #047857;
+}
+
+.enterprise-tax-compliance .activity-icon.warning {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  color: #b45309;
+}
+
+.enterprise-tax-compliance .activity-content p {
+  color: var(--compliance-ink);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.enterprise-tax-compliance .activity-content span {
+  color: var(--compliance-muted);
+  font-size: 12px;
+}
+
+/* 11. Deadline items — urgency states with left border */
+.enterprise-tax-compliance .deadline-item {
+  border-left: 3px solid #e2e8f0;
+  border-radius: 18px;
+  padding-left: 14px !important;
+  transition: border-left-color 160ms ease;
+}
+
+.enterprise-tax-compliance .deadline-item.urgent {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.enterprise-tax-compliance .deadline-item.normal {
+  border-left-color: #10b981;
+}
+
+.enterprise-tax-compliance .deadline-info h4 {
+  color: var(--compliance-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.enterprise-tax-compliance .deadline-info p {
+  color: var(--compliance-muted);
+  font-size: 12px;
+  margin: 0 0 4px;
+  text-transform: capitalize;
+}
+
+.enterprise-tax-compliance .deadline-date {
+  color: var(--compliance-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* 12. Monitoring alert enhancements (inside main page) */
+.enterprise-tax-compliance .alerts-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.enterprise-tax-compliance .alerts-panel h3 {
+  border-bottom: 1px solid var(--compliance-line);
+  margin: 0;
+  padding-bottom: 14px;
+}
+
+.enterprise-tax-compliance .alert-item {
+  border-left: 4px solid transparent;
+  border-radius: 16px;
+  padding: 14px 16px !important;
+  transition: box-shadow 160ms ease;
+}
+
+.enterprise-tax-compliance .alert-item:hover {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.enterprise-tax-compliance .alert-item.severity-high   { border-left-color: #ef4444; }
+.enterprise-tax-compliance .alert-item.severity-medium { border-left-color: #f59e0b; }
+.enterprise-tax-compliance .alert-item.severity-low    { border-left-color: #10b981; }
+
+.enterprise-tax-compliance .alert-icon {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  border-radius: 50%;
+  height: 36px;
+  width: 36px;
+}
+
+.enterprise-tax-compliance .alert-item.severity-high .alert-icon {
+  background: linear-gradient(135deg, #fee2e2, #fff5f5);
+}
+
+.enterprise-tax-compliance .alert-item.severity-medium .alert-icon {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+}
+
+.enterprise-tax-compliance .alert-item.severity-low .alert-icon {
+  background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+}
+
+.enterprise-tax-compliance .alert-content h4 {
+  color: var(--compliance-ink);
+  font-size: 0.93rem;
+  font-weight: 700;
+  margin: 0 0 3px;
+}
+
+/* 13. Profile card — country code badge */
+.enterprise-tax-compliance .country-code-badge {
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e40af);
+  border-radius: 12px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 900;
+  height: 42px;
+  justify-content: center;
+  letter-spacing: 0.03em;
+  min-width: 42px;
+  text-transform: uppercase;
+}
+
+.enterprise-tax-compliance .profile-stats {
+  background: #f8fafc;
+  border-radius: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 14px;
+}
+
+.enterprise-tax-compliance .profile-stats .stat {
+  display: flex;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.enterprise-tax-compliance .profile-stats .label {
+  color: var(--compliance-muted);
+  font-weight: 600;
+}
+
+.enterprise-tax-compliance .profile-stats .value.detected {
+  color: #047857;
+  font-weight: 700;
+}
+
+.enterprise-tax-compliance .tax-rules-preview {
+  background: #f8fafc;
+  border: 1px solid var(--compliance-line);
+  border-radius: 16px;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.enterprise-tax-compliance .tax-rules-preview h4 {
+  color: var(--compliance-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.enterprise-tax-compliance .rule-item {
+  align-items: center;
+  border-bottom: 1px solid var(--compliance-line);
+  color: var(--compliance-ink);
+  display: flex;
+  font-size: 13px;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.enterprise-tax-compliance .rule-item:last-child {
+  border-bottom: none;
+}
+
+/* 14. Vault section improvements */
+.enterprise-tax-compliance .vault-organization .document-card {
+  border-radius: 16px;
+  padding: 14px 16px;
+  transition: box-shadow 160ms ease;
+}
+
+.enterprise-tax-compliance .vault-organization .document-card:hover {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+}
+
+.enterprise-tax-compliance .doc-content h4 {
+  color: var(--compliance-ink);
+  font-size: 0.93rem;
+  font-weight: 700;
+  margin: 0 0 3px;
+}
+
+.enterprise-tax-compliance .doc-content p {
+  color: var(--compliance-muted);
+  font-size: 12px;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+/* 15. Document card improvements */
+.enterprise-tax-compliance .document-card {
+  gap: 14px;
+  padding: 14px 16px !important;
+}
+
+.enterprise-tax-compliance .doc-icon {
+  align-items: center;
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  border-radius: 12px;
+  color: #1d4ed8;
+  display: inline-flex;
+  font-size: 16px;
+  height: 40px;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.enterprise-tax-compliance .doc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 16. Section header improvement */
+.enterprise-tax-compliance .section-header {
+  border-bottom: 1px solid var(--compliance-line);
+  padding-bottom: 16px;
+}
+
+.enterprise-tax-compliance .section-header h2 {
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+  margin: 0 0 4px;
+}
+
+.enterprise-tax-compliance .section-header p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* 17. No-data empty state improvements */
+.enterprise-tax-compliance .no-alerts,
+.enterprise-tax-compliance .no-documents,
+.enterprise-tax-compliance .no-history {
+  background: #f8fafc;
+  border: 2px dashed var(--compliance-line);
+  border-radius: 20px;
+  gap: 10px;
+  padding: 48px 32px;
+}
+
+.enterprise-tax-compliance .no-alerts p,
+.enterprise-tax-compliance .no-documents p,
+.enterprise-tax-compliance .no-history p {
+  color: var(--compliance-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+/* 18. Calculator — result card polish */
+.enterprise-tax-compliance .calculation-result {
+  border-left: 4px solid #3b82f6;
+}
+
+.enterprise-tax-compliance .result-stat {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.enterprise-tax-compliance .breakdown-row.final {
+  font-size: 0.95rem;
+}
+
+/* 19. Responsive — keep grid from collapsing too early */
+@media (max-width: 1200px) {
+  .enterprise-tax-compliance .overview-stats,
+  .enterprise-tax-compliance .monitoring-stats,
+  .enterprise-tax-compliance .vault-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .enterprise-tax-compliance .overview-stats,
+  .enterprise-tax-compliance .monitoring-stats,
+  .enterprise-tax-compliance .vault-stats,
+  .enterprise-tax-compliance .action-page-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .enterprise-tax-compliance .section-navigation {
+    top: 0;
+    gap: 6px;
+    padding: 10px;
+  }
+}
