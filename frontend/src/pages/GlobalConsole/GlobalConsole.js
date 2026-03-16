@@ -128,14 +128,14 @@ const GlobalConsole = () => {
     const entity = entities.find((e) => e.id === workspace.id);
     if (entity) {
       setActiveWorkspace(entity);
-      navigate('/app/accounting/chart-of-accounts');
+      navigate(`/app/workspace/${entity.id}/overview`);
     }
   };
 
   const handleOpenLastWorkspace = () => {
     // Only open if a workspace has been explicitly selected — never auto-pick.
     if (activeWorkspace) {
-      navigate('/app/accounting/chart-of-accounts');
+      navigate(`/app/workspace/${activeWorkspace.id}/overview`);
     }
     // No workspace selected → stay on console. The button is disabled in this case anyway.
   };

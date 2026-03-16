@@ -376,6 +376,117 @@
   line-height: 1.6;
 }
 
+/* ─── Fiscal Year End Calendar Picker ────────────────────────────── */
+.cw-fy-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1.5px solid var(--cw-line);
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cw-ink);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.cw-fy-trigger:hover  { border-color: var(--cw-accent); }
+.cw-fy-trigger:focus-visible { outline: none; border-color: var(--cw-accent); box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
+.cw-fy-trigger-icon  { font-size: 16px; }
+.cw-fy-trigger-arrow { margin-left: auto; font-size: 10px; color: var(--cw-muted); }
+
+.cw-fy-picker {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 0;
+  z-index: 400;
+  background: #fff;
+  border: 1.5px solid var(--cw-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(13,27,46,0.18);
+  padding: 16px;
+  width: 280px;
+  animation: cw-fy-in 0.12s ease;
+}
+@keyframes cw-fy-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cw-fy-picker-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cw-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.cw-fy-picker-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cw-fy-back {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cw-accent);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.cw-fy-back:hover { text-decoration: underline; }
+
+/* Month grid — 4 cols × 3 rows */
+.cw-fy-months {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.cw-fy-month-btn {
+  height: 38px;
+  border: 1.5px solid var(--cw-line);
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cw-ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+.cw-fy-month-btn:hover    { border-color: var(--cw-accent); background: #eff6ff; color: var(--cw-accent); }
+.cw-fy-month-btn.selected { border-color: var(--cw-accent); background: var(--cw-accent); color: #fff; }
+
+/* Day grid — 7 cols */
+.cw-fy-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cw-fy-day-btn {
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 12px;
+  color: var(--cw-ink);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.12s;
+}
+.cw-fy-day-btn:hover    { background: #eff6ff; color: var(--cw-accent); border-color: var(--cw-accent); }
+.cw-fy-day-btn.selected { background: var(--cw-accent); color: #fff; border-color: var(--cw-accent); font-weight: 700; }
+
 /* ─── Sidebar ─────────────────────────────────────────────────────── */
 .cw-sidebar {
   width: 280px;

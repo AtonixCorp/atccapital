@@ -695,13 +695,25 @@ export const EnterpriseProvider = ({ children }) => {
    * Also triggers default chart-of-accounts setup on the backend.
    */
   const createWorkspace = useCallback(async (workspaceData) => {
+    // Convert MM-DD → YYYY-MM-DD for the API (use next upcoming occurrence)
+    const rawFye = workspaceData.fiscal_year_end || workspaceData.fiscalYearEnd || '12-31';
+    const toFullDate = (mmdd) => {
+      const [mm, dd] = mmdd.split('-').map(Number);
+      if (!mm || !dd) return mmdd; // already full date or unexpected format
+      if (String(mmdd).length === 10) return mmdd; // already YYYY-MM-DD
+      const now = new Date();
+      const cur = now.getFullYear();
+      const candidate = new Date(cur, mm - 1, dd);
+      const year = candidate > now ? cur : cur + 1;
+      return `${year}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+    };
     const payload = {
       organization_id: workspaceData.organizationId,
       name: workspaceData.name,
       country: workspaceData.country,
       entity_type: workspaceData.businessType || 'corporation',
       local_currency: workspaceData.currency,
-      fiscal_year_end: workspaceData.fiscalYearEnd || '12-31',
+      fiscal_year_end: toFullDate(rawFye),
       status: 'active',
     };
     const newEntity = await createEntity(payload);

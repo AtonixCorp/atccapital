@@ -110,6 +110,18 @@ import CLIDocs from './pages/CLIDocs/CLIDocs';
 import GlobalErrorCenter from './components/GlobalErrorCenter';
 import GlobalConsole from './pages/GlobalConsole/GlobalConsole';
 import CreateWorkspace from './pages/Workspace/CreateWorkspace';
+import WorkspaceRoute from './components/WorkspaceRoute';
+import WorkspaceLayout from './components/WorkspaceLayout/WorkspaceLayout';
+import WorkspaceOverview     from './pages/Workspace/modules/WorkspaceOverview';
+import WorkspaceMembers      from './pages/Workspace/modules/WorkspaceMembers';
+import WorkspaceGroups       from './pages/Workspace/modules/WorkspaceGroups';
+import WorkspaceMeetings     from './pages/Workspace/modules/WorkspaceMeetings';
+import WorkspaceCalendar     from './pages/Workspace/modules/WorkspaceCalendar';
+import WorkspaceFiles        from './pages/Workspace/modules/WorkspaceFiles';
+import WorkspacePermissions  from './pages/Workspace/modules/WorkspacePermissions';
+import WorkspaceSettings     from './pages/Workspace/modules/WorkspaceSettings';
+import WorkspaceEmail        from './pages/Workspace/modules/WorkspaceEmail';
+import WorkspaceMarketing    from './pages/Workspace/modules/WorkspaceMarketing';
 
 function App() {
   // Console module routes — open inside the ATC Capital Console (Layout with sidebar).
@@ -413,6 +425,33 @@ function App() {
               {/* Support */}
               {renderModulePageRoutes('/app/support/help', AppHelpCenter)}
               {renderModulePageRoutes('/app/support/tickets', AppSupportTickets)}
+
+              {/* ── Workspace Module Routes ──────────────────────────────────────────── */}
+              {/* Each workspace route is guarded by WorkspaceRoute and rendered inside   */}
+              {/* WorkspaceLayout — completely isolated from the ATC Capital Console.   */}
+              <Route path="/app/workspace/:workspaceId/overview"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceOverview /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/members"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceMembers /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/groups"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceGroups /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/meetings"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceMeetings /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/calendar"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceCalendar /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/files"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceFiles /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/permissions"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspacePermissions /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/settings"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceSettings /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/email"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceEmail /></WorkspaceLayout></WorkspaceRoute>} />
+              <Route path="/app/workspace/:workspaceId/marketing"
+                element={<WorkspaceRoute><WorkspaceLayout><WorkspaceMarketing /></WorkspaceLayout></WorkspaceRoute>} />
+              {/* Redirect bare workspace path → overview */}
+              <Route path="/app/workspace/:workspaceId"
+                element={<Navigate to="overview" replace />} />
             </Routes>
               </Router>
               </FilterProvider>
