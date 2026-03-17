@@ -1,10 +1,10 @@
 .enterprise-tax-compliance {
   --compliance-surface: #ffffff;
-  --compliance-line: rgba(148, 163, 184, 0.24);
-  --compliance-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  --compliance-muted: #64748b;
-  --compliance-ink: #0f172a;
-  --compliance-soft: #f8fafc;
+  --compliance-line: #E0E2E5;
+  --compliance-shadow: 0 18px 40px rgba(30, 35, 40, 0.08);
+  --compliance-muted: #6B7280;
+  --compliance-ink: #1E2328;
+  --compliance-soft: #F8F9FB;
 }
 
 .enterprise-tax-compliance .section-navigation {
@@ -25,10 +25,10 @@
 .enterprise-tax-compliance .suggestion-btn,
 .enterprise-tax-compliance .question-btn,
 .enterprise-tax-compliance .action-btn {
-  background: #eef2f7;
+  background: #F2F3F4;
   border: 1px solid transparent;
   border-radius: 999px;
-  color: #334155;
+  color: #1E2328;
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
@@ -43,7 +43,7 @@
 .enterprise-tax-compliance .action-btn:hover,
 .enterprise-tax-compliance .suggestion-btn:hover,
 .enterprise-tax-compliance .question-btn:hover {
-  background: #0f172a;
+  background: #1E2328;
   color: #f8fafc;
 }
 
@@ -51,9 +51,9 @@
 .enterprise-tax-compliance .filter-btn,
 .enterprise-tax-compliance .org-tab,
 .enterprise-tax-compliance .nav-btn {
-  background: #f8fafc;
+  background: #F8F9FB;
   border-color: var(--compliance-line);
-  color: #334155;
+  color: #1E2328;
 }
 
 .enterprise-tax-compliance .nav-btn.active,
@@ -61,7 +61,7 @@
 .enterprise-tax-compliance .filter-btn.active,
 .enterprise-tax-compliance .quick-action-btn:hover,
 .enterprise-tax-compliance .quick-action-btn.secondary:hover {
-  border-color: #0f172a;
+  border-color: #1E2328;
   transform: translateY(-1px);
 }
 
@@ -2648,4 +2648,105 @@
     gap: 6px;
     padding: 10px;
   }
+}
+
+/* Brand enforcement overrides */
+.enterprise-tax-compliance {
+  --overview-hero-bg: #1E2328;
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(1)::before,
+.enterprise-tax-compliance .action-page-stat:nth-child(2)::before,
+.enterprise-tax-compliance .action-page-stat:nth-child(3)::before,
+.enterprise-tax-compliance .stat-card-blue::before,
+.enterprise-tax-compliance .stat-card-green::before,
+.enterprise-tax-compliance .stat-card-red::before,
+.enterprise-tax-compliance .stat-card-orange::before,
+.enterprise-tax-compliance .stat-card-amber::before,
+.enterprise-tax-compliance .stat-card-purple::before {
+  background: #C41E3A;
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(1) .action-page-stat-value,
+.enterprise-tax-compliance .action-page-stat:nth-child(3) .action-page-stat-value,
+.enterprise-tax-compliance .stat-content h3,
+.enterprise-tax-compliance .profile-stats .value.detected,
+.enterprise-tax-compliance .score-status.excellent,
+.enterprise-tax-compliance .score-status.good,
+.enterprise-tax-compliance .activity-icon.info,
+.enterprise-tax-compliance .doc-icon {
+  color: #1E2328;
+}
+
+.enterprise-tax-compliance .action-page-stat:nth-child(2) .action-page-stat-value,
+.enterprise-tax-compliance .score-status.warning,
+.enterprise-tax-compliance .stat-trend.down {
+  color: #C41E3A;
+}
+
+.enterprise-tax-compliance .stat-card-blue .stat-icon,
+.enterprise-tax-compliance .stat-card-green .stat-icon,
+.enterprise-tax-compliance .stat-card-orange .stat-icon,
+.enterprise-tax-compliance .stat-card-amber .stat-icon,
+.enterprise-tax-compliance .stat-card-purple .stat-icon,
+.enterprise-tax-compliance .activity-icon.info,
+.enterprise-tax-compliance .activity-icon.success,
+.enterprise-tax-compliance .activity-icon.warning,
+.enterprise-tax-compliance .alert-icon,
+.enterprise-tax-compliance .alert-item.severity-medium .alert-icon,
+.enterprise-tax-compliance .alert-item.severity-low .alert-icon,
+.enterprise-tax-compliance .doc-icon {
+  background: #F2F3F4;
+}
+
+.enterprise-tax-compliance .stat-card-red .stat-icon,
+.enterprise-tax-compliance .alert-item.severity-high .alert-icon {
+  background: #FAE9EC;
+  color: #C41E3A;
+}
+
+.enterprise-tax-compliance .stat-trend.neutral,
+.enterprise-tax-compliance .stat-trend.up,
+.enterprise-tax-compliance .score-status.fair {
+  color: #6B7280;
+}
+
+.enterprise-tax-compliance .quick-actions,
+.enterprise-tax-compliance .calculation-result {
+  border-left-color: #C41E3A;
+}
+
+.enterprise-tax-compliance .score-circle,
+.enterprise-tax-compliance .country-code-badge {
+  background: #1E2328;
+}
+
+.enterprise-tax-compliance .activity-item:has(.activity-icon.info),
+.enterprise-tax-compliance .activity-item:has(.activity-icon.success),
+.enterprise-tax-compliance .activity-item:has(.activity-icon.warning),
+.enterprise-tax-compliance .deadline-item.normal,
+.enterprise-tax-compliance .alert-item.severity-low {
+  border-left-color: #1E2328;
+}
+
+.enterprise-tax-compliance .deadline-item.urgent,
+.enterprise-tax-compliance .alert-item.severity-high {
+  border-left-color: #C41E3A;
+}
+
+.enterprise-tax-compliance .deadline-item.urgent {
+  background: rgba(196, 30, 58, 0.04);
+}
+
+.enterprise-tax-compliance .alert-item.severity-medium {
+  border-left-color: #6B7280;
+}
+
+.enterprise-tax-compliance .profile-stats,
+.enterprise-tax-compliance .tax-rules-preview,
+.enterprise-tax-compliance .result-stat,
+.enterprise-tax-compliance .no-alerts,
+.enterprise-tax-compliance .no-documents,
+.enterprise-tax-compliance .no-history {
+  background: #F8F9FB;
 }

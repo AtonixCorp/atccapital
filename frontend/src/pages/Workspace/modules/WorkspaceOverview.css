@@ -4,13 +4,13 @@
 
 .wso-root {
   --card-radius: 14px;
-  --card-shadow: 0 2px 16px rgba(13, 27, 46, 0.08);
+  --card-shadow: 0 2px 16px rgba(30, 35, 40, 0.08);
 }
 
 /* ━━ Entity Profile Card ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .wso-entity-card {
   background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid #E0E2E5;
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   margin-bottom: 24px;
@@ -23,15 +23,15 @@
   align-items: center;
   gap: 20px;
   padding: 24px 28px 20px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-  background: linear-gradient(135deg, #f8fafc 0%, #f0f7ff 100%);
+  border-bottom: 1px solid #E0E2E5;
+  background: #F8F9FB;
 }
 
 .wso-entity-avatar {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  background: #1E2328;
   color: #fff;
   font-size: 20px;
   font-weight: 800;
@@ -40,7 +40,7 @@
   justify-content: center;
   flex-shrink: 0;
   letter-spacing: 0.03em;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.30);
+  box-shadow: 0 4px 14px rgba(30, 35, 40, 0.18);
 }
 
 .wso-entity-identity {
@@ -51,7 +51,7 @@
 .wso-entity-name {
   font-size: 18px;
   font-weight: 800;
-  color: #0d1b2e;
+  color: #1E2328;
   margin: 0 0 8px;
   line-height: 1.2;
 }
@@ -76,43 +76,43 @@
 }
 
 .wso-badge-active {
-  color: #15803d;
-  background: rgba(21, 128, 61, 0.10);
-  border: 1px solid rgba(21, 128, 61, 0.22);
+  color: #1E2328;
+  background: rgba(30, 35, 40, 0.08);
+  border: 1px solid rgba(30, 35, 40, 0.18);
 }
 .wso-badge-active::before {
   content: '';
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #22c55e;
+  background: #1E2328;
 }
 
 .wso-badge-dormant {
-  color: #b45309;
-  background: rgba(180, 83, 9, 0.10);
-  border: 1px solid rgba(180, 83, 9, 0.22);
+  color: #6B7280;
+  background: rgba(107, 114, 128, 0.10);
+  border: 1px solid rgba(107, 114, 128, 0.18);
 }
 
 .wso-badge-winddown {
-  color: #b91c1c;
-  background: rgba(185, 28, 28, 0.08);
-  border: 1px solid rgba(185, 28, 28, 0.20);
+  color: #C41E3A;
+  background: rgba(196, 30, 58, 0.08);
+  border: 1px solid rgba(196, 30, 58, 0.18);
 }
 
 .wso-badge-type {
-  color: #1d4ed8;
-  background: rgba(29, 78, 216, 0.08);
-  border: 1px solid rgba(29, 78, 216, 0.18);
+  color: #C41E3A;
+  background: rgba(196, 30, 58, 0.08);
+  border: 1px solid rgba(196, 30, 58, 0.18);
   text-transform: none;
   font-weight: 600;
   letter-spacing: 0;
 }
 
 .wso-badge-currency {
-  color: #6d28d9;
-  background: rgba(109, 40, 217, 0.08);
-  border: 1px solid rgba(109, 40, 217, 0.18);
+  color: #1E2328;
+  background: #F2F3F4;
+  border: 1px solid #E0E2E5;
   font-weight: 700;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .wso-link {
-  color: #2563eb;
+  color: #C41E3A;
   text-decoration: none;
   font-size: 12px;
   word-break: break-all;
@@ -184,8 +184,8 @@
   flex-wrap: wrap;
   gap: 24px;
   padding: 12px 28px;
-  background: #f8fafc;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  background: #F8F9FB;
+  border-top: 1px solid #E0E2E5;
 }
 
 .wso-footer-item {
@@ -209,7 +209,7 @@
 .wso-btn-primary {
   margin-left: auto;
   padding: 8px 18px;
-  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  background: #C41E3A;
   color: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -217,18 +217,18 @@
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.15s, box-shadow 0.15s;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.30);
+  box-shadow: 0 2px 10px rgba(196, 30, 58, 0.18);
   white-space: nowrap;
 }
 .wso-btn-primary:hover {
   opacity: 0.88;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.40);
+  box-shadow: 0 4px 16px rgba(196, 30, 58, 0.22);
 }
 
 /* ━━ Entity Quick-Access ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .wso-quicklinks {
   background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid #E0E2E5;
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   padding: 20px 24px 24px;

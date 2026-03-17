@@ -1,7 +1,7 @@
 /* =============================================================================
    ATC CAPITAL — ENTITY LAYOUT SIDEBAR & SHELL
    Extends Layout.css for entity-scoped pages
-   Color system: Midnight (#0B0C10), Cyan (#00B5E2), Silver (#C5C6C7)
+  Color system: Graphite (#1E2328), White (#FFFFFF), Crimson (#C41E3A)
    ============================================================================= */
 
 /* --------------------------------------------------------------------------
@@ -12,7 +12,7 @@
 .entity-sidebar {
   width: 260px;
   background: #fff;
-  border-right: 1px solid #E5E7EB;
+  border-right: 1px solid #E0E2E5;
   position: fixed;
   height: 100vh;
   left: 0;
@@ -34,10 +34,10 @@
    -------------------------------------------------------------------------- */
 
 .entity-sidebar-header {
-  background: linear-gradient(145deg, #0B0C10 0%, #1a1c22 100%);
+  background: #1E2328;
   padding: 0;
   flex-shrink: 0;
-  border-bottom: 2px solid #00B5E2;
+  border-bottom: 2px solid #C41E3A;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@
   right: -20px;
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle, rgba(0,181,226,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(196,30,58,0.12) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -69,10 +69,10 @@
 .entity-sidebar-accent {
   width: 6px;
   height: 6px;
-  background: #00B5E2;
+  background: #C41E3A;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 6px rgba(0, 181, 226, 0.6);
+  box-shadow: 0 0 6px rgba(196, 30, 58, 0.35);
 }
 
 .entity-sidebar-name {
@@ -451,4 +451,80 @@
   .entity-topbar-meta {
     display: none;
   }
+}
+
+/* Brand enforcement overrides */
+.entity-sidebar {
+  background: #1E2328;
+  border-right-color: #2E3440;
+}
+
+.entity-back-nav,
+.entity-sidebar-footer {
+  background: #1E2328;
+  border-color: #2E3440;
+}
+
+.entity-back-btn,
+.entity-nav-link,
+.entity-collapse-btn {
+  color: rgba(255,255,255,0.72);
+}
+
+.entity-back-btn:hover,
+.entity-nav-link:hover,
+.entity-submenu .entity-nav-link:hover,
+.entity-collapse-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.95);
+  border-color: rgba(255,255,255,0.18);
+}
+
+.entity-back-btn:hover .entity-back-arrow,
+.entity-nav-link.active,
+.entity-submenu .entity-nav-link.active,
+.entity-topbar-badge {
+  color: #C41E3A;
+}
+
+.entity-nav-link.active,
+.entity-submenu .entity-nav-link.active,
+.entity-topbar-badge {
+  background: rgba(196, 30, 58, 0.10);
+}
+
+.entity-nav-link.active::before {
+  background: #C41E3A;
+}
+
+.entity-nav-section-label,
+.entity-submenu-chevron,
+.entity-topbar-meta {
+  color: rgba(255,255,255,0.38);
+}
+
+.entity-nav-divider {
+  background: #2E3440;
+}
+
+.entity-main-wrapper {
+  background: #F8F9FB;
+}
+
+.entity-topbar {
+  background: #1E2328;
+  border-bottom-color: #2E3440;
+  box-shadow: 0 1px 3px rgba(30,35,40,0.12);
+}
+
+.entity-topbar-title {
+  color: #FFFFFF;
+}
+
+.entity-topbar-meta {
+  border-left-color: rgba(255,255,255,0.14);
+}
+
+.entity-topbar-badge {
+  border-color: rgba(196, 30, 58, 0.18);
 }

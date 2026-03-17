@@ -1,7 +1,6 @@
 /* =============================================================================
    ATC CAPITAL — LAYOUT SYSTEM (Dashboard Shell)
-   Uses global design tokens from globals.css
-  Three-color system: Midnight (#0B0C10), Cyan (#00B5E2), Silver (#C5C6C7)
+   Three-Color Sovereign System: Graphite #1E2328 | White #FFFFFF | Crimson #C41E3A
    ============================================================================= */
 
 /* Premium Financial Dashboard Layout */
@@ -16,8 +15,8 @@
 /* Professional Enterprise Sidebar */
 .sidebar {
   width: 260px;
-  background: var(--color-white);
-  color: var(--color-midnight);
+  background: var(--atc-graphite);
+  color: rgba(255,255,255,0.85);
   position: fixed;
   height: 100vh;
   left: 0;
@@ -27,7 +26,7 @@
   overflow-y: auto;
   transition: all var(--transition-base);
   z-index: 1000;
-  border-right: 1px solid #E5E7EB;
+  border-right: none;
 }
 
 .sidebar.minimized {
@@ -95,8 +94,8 @@
 
 .sidebar-toggle {
   background: transparent;
-  border: 1px solid var(--border-color-default);
-  color: var(--color-silver-dark);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.55);
   font-size: 1rem;
   cursor: pointer;
   padding: var(--space-sm);
@@ -110,16 +109,16 @@
 }
 
 .sidebar-toggle:hover {
-  background: var(--color-silver-very-light);
-  color: var(--color-midnight);
-  border-color: var(--color-cyan);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  border-color: rgba(255,255,255,0.25);
 }
 
 /* Professional Controls Section */
 .sidebar-controls {
   padding: var(--space-base) var(--space-base);
-  border-bottom: 1px solid var(--border-color-default);
-  background: var(--color-white);
+  border-bottom: 1px solid var(--atc-graphite-border);
+  background: var(--atc-graphite);
 }
 
 /* Professional Navigation Menu */
@@ -151,7 +150,7 @@
   padding: 0 16px;
   min-height: 44px;
   margin: 1px 8px;
-  color: #374151;
+  color: rgba(255,255,255,0.70);
   text-decoration: none;
   transition: background var(--transition-fast), color var(--transition-fast);
   font-size: 14px;
@@ -168,13 +167,13 @@
 }
 
 .nav-link:hover {
-  background: #F9FAFB;
-  color: #111827;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.95);
 }
 
 .nav-link.active {
-  background: #F3F4F6;
-  color: var(--color-cyan);
+  background: rgba(196,30,58,0.15);
+  color: var(--atc-crimson);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -202,8 +201,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  background: #F9FAFB;
-  border-left: 2px solid #E6F0FA;
+  background: rgba(255,255,255,0.04);
+  border-left: 2px solid var(--atc-crimson);
 }
 
 .submenu-item {
@@ -224,7 +223,7 @@
 
 .nav-divider {
   height: 1px;
-  background: var(--border-color-default);
+  background: var(--atc-graphite-border);
   margin: var(--space-lg) var(--space-lg);
   list-style: none;
 }
@@ -235,15 +234,15 @@
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #6B7280;
+  color: rgba(255,255,255,0.35);
   list-style: none;
 }
 
 /* Workspace section gets a highlighted label */
 .nav-section-label.workspace-label {
-  color: var(--color-midnight, #0f1c2e);
+  color: rgba(255,255,255,0.55);
   font-weight: 700;
-  background: rgba(0, 59, 115, 0.06);
+  background: rgba(255,255,255,0.05);
   border-radius: 6px;
   margin: 0 8px;
   padding: 6px 10px 6px;
@@ -262,7 +261,7 @@
 }
 
 .nav-section-toggle:hover {
-  color: #374151;
+  color: rgba(255,255,255,0.90);
 }
 
 .section-chevron {
@@ -285,14 +284,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6B7280;
+  color: rgba(255,255,255,0.45);
   transition: color var(--transition-fast);
   flex-shrink: 0;
 }
 
 .nav-link:hover .nav-icon,
 .nav-link.active .nav-icon {
-  color: var(--color-cyan);
+  color: var(--atc-crimson);
 }
 
 /* ── MAIN WRAPPER — right-side app shell ── */
@@ -317,8 +316,8 @@
 /* ── TOP BAR ── */
 .topbar {
   height: 64px;
-  background: var(--color-white);
-  border-bottom: 1px solid var(--border-color-default);
+  background: var(--atc-graphite);
+  border-bottom: 1px solid var(--atc-graphite-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -339,7 +338,7 @@
 .topbar-title {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  color: var(--atc-color-text-primary);
+  color: rgba(255,255,255,0.95);
   margin: 0;
   letter-spacing: -0.2px;
 }
@@ -367,7 +366,7 @@
 .topbar-name {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-midnight);
+  color: rgba(255,255,255,0.90);
 }
 
 /* Profile dropdown */
@@ -379,11 +378,11 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-cyan) 0%, #005f80 100%);
+  background: var(--atc-crimson);
   color: #fff;
   font-weight: 700;
   font-size: 15px;
-  border: 2px solid var(--border-color-default);
+  border: 2px solid rgba(255,255,255,0.20);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -427,7 +426,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-cyan) 0%, #005f80 100%);
+  background: var(--atc-crimson);
   color: #fff;
   font-weight: 700;
   font-size: 16px;
@@ -485,19 +484,19 @@
 }
 
 .profile-dropdown-logout {
-  color: #dc2626;
+  color: var(--atc-crimson);
   font-weight: 600;
 }
 
 .profile-dropdown-logout:hover {
-  background: #fef2f2;
+  background: var(--atc-crimson-tint);
 }
 
 .topbar-toggle {
   background: none;
   border: none;
   font-size: var(--font-size-lg);
-  color: var(--color-silver-dark);
+  color: rgba(255,255,255,0.55);
   cursor: pointer;
   padding: 4px 6px;
   line-height: 1;
@@ -505,14 +504,14 @@
 }
 
 .topbar-toggle:hover {
-  color: var(--color-midnight);
+  color: rgba(255,255,255,0.95);
 }
 
 .topbar-org-context {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  color: var(--color-silver-dark);
-  border-left: 1px solid var(--border-color-default);
+  color: rgba(255,255,255,0.45);
+  border-left: 1px solid rgba(255,255,255,0.15);
   padding-left: var(--space-base);
   max-width: 180px;
   overflow: hidden;
@@ -522,16 +521,16 @@
 
 /* Workspace context strip in topbar */
 .topbar-ws-sep {
-  color: var(--color-silver-dark);
+  color: rgba(255,255,255,0.25);
   font-size: 16px;
   padding: 0 6px;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .topbar-ws-name {
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: #1e3a5f;
+  color: rgba(255,255,255,0.90);
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -543,9 +542,9 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: #ecfdf5;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
+  background: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.70);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 20px;
   padding: 2px 8px;
   flex-shrink: 0;
@@ -554,8 +553,8 @@
 /* Professional Footer */
 .sidebar-footer {
   padding: var(--space-base) var(--space-lg);
-  border-top: 1px solid var(--border-color-default);
-  background: var(--color-white);
+  border-top: 1px solid var(--atc-graphite-border);
+  background: var(--atc-graphite);
   margin-top: auto;
   display: flex;
   justify-content: center;
@@ -564,8 +563,8 @@
 .sidebar-collapse-btn {
   width: 100%;
   background: none;
-  border: 1px solid var(--border-color-default);
-  color: var(--color-silver-dark);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.50);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-base);
   padding: 6px 0;
@@ -574,8 +573,8 @@
 }
 
 .sidebar-collapse-btn:hover {
-  background: var(--color-silver-very-light);
-  color: var(--color-midnight);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.90);
 }
 
 /* Professional Main Content */
@@ -596,7 +595,7 @@
 }
 
 .layout .page-title {
-  color: #111827;
+  color: var(--atc-graphite);
   font-size: 24px;
   font-weight: 700;
   line-height: 32px;
@@ -606,14 +605,14 @@
 
 .layout .card {
   background: var(--color-white);
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--atc-graphite-rule);
   border-radius: var(--radius-lg);
   padding: 24px;
   margin-bottom: 0;
 }
 
 .layout .card:hover {
-  border-color: #D1D5DB;
+  border-color: #C5C8CC;
 }
 
 .layout input,

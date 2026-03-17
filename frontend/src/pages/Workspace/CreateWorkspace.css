@@ -6,7 +6,7 @@
 /* ── Page wrapper + topnav ──────────────────────────────────────────── */
 .cw-page {
   min-height: 100vh;
-  background: var(--cw-bg, #f1f5f9);
+  background: var(--cw-bg, #F8F9FB);
   display: flex;
   flex-direction: column;
 }
@@ -16,13 +16,13 @@
   top: 0;
   z-index: 200;
   height: 54px;
-  background: linear-gradient(90deg, #0d1b2e 0%, #13294a 100%);
+  background: #1E2328;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   flex-shrink: 0;
-  box-shadow: 0 4px 24px rgba(13, 27, 46, 0.28);
+  box-shadow: 0 4px 24px rgba(30, 35, 40, 0.18);
 }
 
 .cw-topnav-brand {
@@ -64,17 +64,17 @@
 
 /* Tokens */
 .create-workspace {
-  --cw-ink:       #0f172a;
-  --cw-muted:     #64748b;
+  --cw-ink:       #1E2328;
+  --cw-muted:     #6B7280;
   --cw-surface:   #ffffff;
-  --cw-bg:        #f1f5f9;
-  --cw-line:      rgba(148, 163, 184, 0.25);
-  --cw-accent:    #2563eb;
-  --cw-accent-10: rgba(37, 99, 235, 0.10);
-  --cw-green:     #16a34a;
-  --cw-red:       #dc2626;
+  --cw-bg:        #F8F9FB;
+  --cw-line:      #E0E2E5;
+  --cw-accent:    #C41E3A;
+  --cw-accent-10: rgba(196, 30, 58, 0.10);
+  --cw-green:     #1E2328;
+  --cw-red:       #C41E3A;
   --cw-radius:    12px;
-  --cw-shadow:    0 4px 24px rgba(15, 23, 42, 0.08);
+  --cw-shadow:    0 4px 24px rgba(30, 35, 40, 0.08);
 }
 
 /* Layout */
@@ -108,7 +108,7 @@
 /* ─── Card Header ─────────────────────────────────────────────────── */
 .cw-header {
   padding: 40px 48px 32px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1d4ed8 100%);
+  background: #1E2328;
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -559,4 +559,24 @@
   .cw-field-wide { grid-column: 1; }
   .cw-steps .cw-step-label { display: none; }
   .cw-error { margin: 0 24px 4px; }
+}
+
+/* Brand enforcement overrides */
+.cw-btn-primary:hover:not(:disabled) {
+  background: #A8172F;
+}
+
+.cw-btn-create {
+  background: #C41E3A;
+  box-shadow: 0 4px 12px rgba(196, 30, 58, 0.18);
+}
+
+.cw-btn-create:hover:not(:disabled) {
+  background: #A8172F;
+  box-shadow: 0 6px 16px rgba(196, 30, 58, 0.22);
+}
+
+.cw-error {
+  background: #FAE9EC;
+  border-color: #E6A3AE;
 }

@@ -1,26 +1,27 @@
 /* ============================================================================
    ENTITY PAGES DESIGN SYSTEM
    All entity-scoped pages (dashboards, accounting, bookkeeping, etc.)
+   3-Color System: Graphite #1E2328 | White #FFFFFF | Crimson #C41E3A
    ============================================================================ */
 
-/* Color Palette */
+/* Color Palette — 3-color compliant */
 :root {
-  --primary: #003B73;
-  --primary-dark: #004f99;
-  --page-bg: #f4f6fa;
-  --card-bg: #fff;
-  --text-primary: #111827;
+  --primary:       #C41E3A;   /* Crimson — primary actions */
+  --primary-dark:  #A8172F;   /* Crimson hover */
+  --page-bg:       #F8F9FB;   /* Off-white surface */
+  --card-bg:       #FFFFFF;
+  --text-primary:  #1E2328;   /* Graphite */
   --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --border: #E5E7EB;
-  --green: #10B981;
-  --amber: #F59E0B;
-  --red: #EF4444;
-  --blue: #0D6EFD;
-  --gray-50: #F9FAFB;
-  --gray-100: #F3F4F6;
-  --gray-200: #E5E7EB;
-  --gray-700: #374151;
+  --text-muted:    #9CA3AF;
+  --border:        #E0E2E5;
+  --green:         #1E2328;   /* Positive → Graphite bold, never green */
+  --amber:         #5F6B7A;   /* Warning → Graphite muted, never yellow */
+  --red:           #C41E3A;   /* Negative → Crimson */
+  --blue:          #1E2328;   /* No blues — Graphite */
+  --gray-50:       #F8F9FB;
+  --gray-100:      #F2F3F4;
+  --gray-200:      #E0E2E5;
+  --gray-700:      #374151;
   --shadow-sm: 0 1px 4px rgba(0,0,0,0.07);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 20px rgba(0,0,0,0.1);
@@ -153,9 +154,9 @@
 
 .btn-danger,
 .btn-delete {
-  background: #FEE2E2;
-  color: #991B1B;
-  border: 1px solid #FECACA;
+  background: var(--atc-crimson-tint, #FAE9EC);
+  color: var(--atc-crimson, #C41E3A);
+  border: 1px solid var(--atc-crimson-border, #E6A3AE);
   border-radius: 7px;
   padding: 8px 14px;
   font-size: 12px;
@@ -166,17 +167,18 @@
 
 .btn-danger:hover,
 .btn-delete:hover {
-  background: #FCA5A5;
+  background: var(--atc-crimson, #C41E3A);
+  color: #FFFFFF;
 }
 
 .btn-warning {
-  background: #FEF3C7;
-  color: #92400E;
-  border: 1px solid #FCD34D;
+  background: var(--atc-graphite-hover, #F2F3F4);
+  color: var(--atc-graphite, #1E2328);
+  border: 1px solid var(--atc-graphite-rule, #E0E2E5);
 }
 
 .btn-warning:hover {
-  background: #FDE68A;
+  background: var(--atc-graphite-rule, #E0E2E5);
 }
 
 .btn-sm {

@@ -549,10 +549,7 @@ body {
 .dashboard-page {
   position: relative;
   padding: 28px;
-  background:
-    radial-gradient(circle at top left, rgba(0, 126, 176, 0.14), transparent 30%),
-    radial-gradient(circle at top right, rgba(17, 24, 39, 0.10), transparent 24%),
-    linear-gradient(180deg, #f6fbff 0%, #eef4f8 48%, #f7f9fc 100%);
+  background: #F8F9FB;
 }
 
 .dashboard-overview-shell {
@@ -939,8 +936,8 @@ body {
 
 .dashboard-page .transactions-table thead th {
   padding: 14px 16px;
-  background: linear-gradient(180deg, #f5f9fc 0%, #eef4f8 100%);
-  color: var(--color-silver-dark);
+  background: #1E2328;
+  color: rgba(255,255,255,0.78);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -1149,11 +1146,11 @@ body {
   margin-bottom: var(--space-sm);
 }
 
-.kpi-icon--blue   { background: var(--color-info); }
-.kpi-icon--purple { background: #8B5CF6; }
-.kpi-icon--green  { background: var(--color-success); }
+.kpi-icon--blue   { background: var(--color-midnight); }
+.kpi-icon--purple { background: var(--color-midnight-light); }
+.kpi-icon--green  { background: var(--color-midnight); }
 .kpi-icon--teal   { background: var(--color-cyan); }
-.kpi-icon--orange { background: var(--color-warning); }
+.kpi-icon--orange { background: var(--color-silver-dark); }
 .kpi-icon--red    { background: var(--color-error); }
 
 .kpi-card-label {

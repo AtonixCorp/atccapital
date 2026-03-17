@@ -19,7 +19,7 @@
 .wsm-page-title {
   font-size: 22px;
   font-weight: 700;
-  color: #0d1b2e;
+  color: #1E2328;
   margin: 0 0 4px;
 }
 
@@ -60,11 +60,11 @@
 .wsm-stat-value {
   font-size: 18px;
   font-weight: 700;
-  color: #0d1b2e;
+  color: #1E2328;
 }
 
-.wsm-status-active   { color: #059669; }
-.wsm-status-draft    { color: #d97706; }
+.wsm-status-active   { color: #1E2328; }
+.wsm-status-draft    { color: #6B7280; }
 .wsm-status-archived { color: #6b7280; }
 
 /* ── Section + grid ─────────────────────────────────────────────────────── */
@@ -115,10 +115,10 @@
   padding: 0 12px;
   font-size: 13px;
   outline: none;
-  color: #0d1b2e;
+  color: #1E2328;
   background: #fff;
 }
-.wsm-search:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.wsm-search:focus { border-color: #C41E3A; box-shadow: 0 0 0 3px rgba(196,30,58,.12); }
 
 .wsm-chips {
   display: flex;
@@ -138,14 +138,14 @@
   cursor: pointer;
   transition: all .15s;
 }
-.wsm-chip:hover  { border-color: #2563eb; color: #2563eb; }
-.wsm-chip.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; font-weight: 600; }
+.wsm-chip:hover  { border-color: #C41E3A; color: #C41E3A; }
+.wsm-chip.active { border-color: #C41E3A; background: #FAE9EC; color: #C41E3A; font-weight: 600; }
 
 /* ── Buttons ────────────────────────────────────────────────────────────── */
 .wsm-btn-primary {
   height: 36px;
   padding: 0 16px;
-  background: #2563eb;
+  background: #C41E3A;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -155,7 +155,7 @@
   white-space: nowrap;
   transition: background .15s;
 }
-.wsm-btn-primary:hover { background: #1d4ed8; }
+.wsm-btn-primary:hover { background: #A8172F; }
 
 .wsm-btn-secondary {
   height: 36px;
@@ -170,7 +170,7 @@
   white-space: nowrap;
   transition: all .15s;
 }
-.wsm-btn-secondary:hover { border-color: #2563eb; color: #2563eb; }
+.wsm-btn-secondary:hover { border-color: #C41E3A; color: #C41E3A; }
 
 /* ── Table ──────────────────────────────────────────────────────────────── */
 .wsm-table-wrap {
@@ -514,4 +514,85 @@
   .wsm-page-header { flex-direction: column; }
   .wsm-stats-row { flex-direction: column; }
   .wsm-sections-grid { grid-template-columns: 1fr; }
+}
+
+/* Brand enforcement overrides */
+.wsm-table td,
+.wsm-cal-title,
+.wsm-event-name,
+.wsm-module-name {
+  color: #1E2328;
+}
+
+.wsm-badge-owner,
+.wsm-badge-admin,
+.wsm-badge-member,
+.wsm-badge-active {
+  background: rgba(30, 35, 40, 0.08);
+  color: #1E2328;
+}
+
+.wsm-badge-draft,
+.wsm-badge-viewer {
+  background: #F2F3F4;
+  color: #6B7280;
+}
+
+.wsm-input:focus,
+.wsm-select:focus,
+.wsm-textarea:focus {
+  border-color: #C41E3A;
+  box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.12);
+}
+
+.wsm-perm-check {
+  color: #1E2328;
+}
+
+.wsm-dropzone:hover {
+  border-color: #C41E3A;
+  background: #FAE9EC;
+  color: #C41E3A;
+}
+
+.wsm-event-card {
+  border-left-color: #C41E3A;
+}
+
+.wsm-event-time,
+.wsm-permission-note,
+.wsm-btn-secondary:hover {
+  color: #C41E3A;
+}
+
+.wsm-permission-note {
+  background: #FAE9EC;
+  border-color: #E6A3AE;
+}
+
+.wsm-btn-secondary:hover,
+.wsm-module-toggle input:checked + .wsm-toggle-slider {
+  border-color: #C41E3A;
+}
+
+.wsm-module-toggle input:checked + .wsm-toggle-slider {
+  background: #C41E3A;
+}
+
+.wsm-danger-zone {
+  background: #FAE9EC;
+  border-color: #E6A3AE;
+}
+
+.wsm-danger-zone-title,
+.wsm-btn-danger {
+  color: #FFFFFF;
+}
+
+.wsm-btn-danger {
+  background: #C41E3A;
+}
+
+.wsm-btn-danger:hover {
+  background: #A8172F;
 }
