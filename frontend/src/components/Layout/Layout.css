@@ -1,7 +1,7 @@
 /* =============================================================================
-   ATC CAPITAL — LAYOUT SYSTEM (Dashboard Shell)
-   Three-Color Sovereign System: Graphite #1E2328 | White #FFFFFF | Crimson #C41E3A
-   ============================================================================= */
+  ATC CAPITAL — LAYOUT SYSTEM (Dashboard Shell)
+  Strict palette: black, white, and #EE6C4D only.
+  ============================================================================= */
 
 /* Premium Financial Dashboard Layout */
 .layout {
@@ -172,8 +172,8 @@
 }
 
 .nav-link.active {
-  background: rgba(196,30,58,0.15);
-  color: var(--atc-crimson);
+  background: rgba(var(--color-primary-rgb), 0.18);
+  color: var(--color-white);
   font-weight: var(--font-weight-semibold);
 }
 
@@ -202,7 +202,7 @@
   padding: 0;
   margin: 0;
   background: rgba(255,255,255,0.04);
-  border-left: 2px solid var(--atc-crimson);
+  border-left: 2px solid var(--color-primary);
 }
 
 .submenu-item {

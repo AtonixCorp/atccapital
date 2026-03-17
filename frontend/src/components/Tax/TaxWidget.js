@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { taxAPI } from '../../services/api';
+import localCountries from '../../data/tax/countries.json';
+import { normalizeTaxDirectory } from '../../utils/taxDirectory';
+
+const fallbackCountries = normalizeTaxDirectory(localCountries);
 
 const TaxWidget = () => {
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState(fallbackCountries);
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(fallbackCountries[0] || null);
 
   useEffect(() => {
     taxAPI.list()
-      .then(res => setCountries(res.data || []))
-      .catch(() => setCountries([]));
+      .then((res) => {
+        const nextCountries = normalizeTaxDirectory(res.data, fallbackCountries);
+        setCountries(nextCountries);
+        setSelected((currentSelected) => {
+          if (!currentSelected) {
+            return nextCountries[0] || null;
+          }
+
+          return nextCountries.find((country) => country.code === currentSelected.code) || nextCountries[0] || null;
+        });
+      })
+      .catch(() => setCountries(fallbackCountries));
   }, []);
 
   const filtered = countries.filter(c =>

@@ -26,16 +26,16 @@
 .about-hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, var(--color-midnight) 0%, #121a29 70%, #1b2738 100%);
-  border-bottom: 1px solid rgba(0, 181, 226, 0.35);
+  background: var(--color-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .about-hero-bg {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(0, 181, 226, 0.16), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(0, 181, 226, 0.10), transparent 45%);
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.14), transparent 40%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.1));
   pointer-events: none;
 }
 
@@ -80,7 +80,7 @@
 
 .about-hero-sub {
   margin: 0;
-  color: rgba(197, 198, 199, 0.95);
+  color: rgba(255, 255, 255, 0.95);
   max-width: 72ch;
   line-height: 1.7;
 }
@@ -98,16 +98,16 @@
   align-items: center;
   justify-content: center;
   padding: 0 24px;
-  border: 1px solid rgba(197, 198, 199, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   color: var(--color-white);
   background: transparent;
   text-decoration: none;
 }
 
 .btn-outline-hero:hover {
-  border-color: var(--color-cyan);
-  color: var(--color-cyan);
-  background: rgba(0, 181, 226, 0.08);
+  border-color: var(--color-white);
+  color: var(--color-white);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Shared headings */
@@ -191,9 +191,9 @@
 }
 
 .problem-resolve-banner {
-  border: 1px solid rgba(0, 181, 226, 0.35);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.35);
   background: var(--color-cyan-very-light);
-  color: var(--color-cyan-text);
+  color: var(--color-text);
   padding: 12px 14px;
   font-weight: var(--font-weight-semibold);
 }

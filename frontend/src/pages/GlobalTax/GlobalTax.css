@@ -10,8 +10,8 @@
 }
 
 .tax-hero {
-  background: linear-gradient(135deg, var(--color-midnight) 0%, #111827 100%);
-  border-bottom: 1px solid rgba(0, 181, 226, 0.3);
+  background: var(--color-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .tax-hero-content {
@@ -30,7 +30,7 @@
 
 .tax-hero-subtitle {
   margin: 0 0 12px;
-  color: var(--color-cyan);
+  color: var(--color-white);
   font-size: clamp(1rem, 2vw, 1.25rem);
   font-weight: var(--font-weight-semibold);
 }
@@ -38,15 +38,43 @@
 .tax-hero-description {
   max-width: 72ch;
   margin: 0;
-  color: rgba(197, 198, 199, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   font-size: var(--font-size-base);
+}
+
+.tax-overview-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tax-overview-card {
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  display: grid;
+  gap: 4px;
+}
+
+.tax-overview-card strong {
+  color: var(--color-white);
+  font-size: var(--font-size-lg);
+}
+
+.overview-label {
+  color: rgba(0, 0, 0, 0.72);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .tax-search-section {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(249, 250, 251, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-color-default);
 }
@@ -59,6 +87,15 @@
   grid-template-columns: 1fr 220px auto;
   gap: 12px;
   align-items: center;
+}
+
+.tax-status-banner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 14px;
+  color: var(--color-cyan-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .search-input-wrapper {
@@ -89,7 +126,7 @@
 .tax-region-select:focus {
   outline: none;
   border-color: var(--color-cyan-dark);
-  box-shadow: 0 0 0 3px rgba(0, 126, 176, 0.15);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.16);
 }
 
 .results-count {
@@ -302,8 +339,8 @@
 
 .country-code-badge {
   background: var(--color-cyan-light);
-  color: var(--color-cyan-text);
-  border-color: rgba(0, 181, 226, 0.35);
+  color: var(--color-text);
+  border-color: rgba(var(--color-primary-rgb), 0.35);
 }
 
 .region-badge {
@@ -384,7 +421,7 @@
 .reference-link {
   background: var(--color-white);
   color: var(--color-cyan-text);
-  border: 1px solid rgba(0, 181, 226, 0.35);
+  border: 1px solid rgba(var(--color-primary-rgb), 0.35);
 }
 
 .secondary-link:hover,
@@ -465,6 +502,10 @@
 }
 
 @media (max-width: 860px) {
+  .tax-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
   .tax-search-container {
     grid-template-columns: 1fr;
     gap: 10px;

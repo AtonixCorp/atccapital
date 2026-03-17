@@ -972,11 +972,9 @@
 }
 
 .enterprise-tax-compliance .filing-hero-card {
-  background:
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.2), transparent 32%),
-    linear-gradient(135deg, #0f172a, #12325f 58%, #164e63);
+  background: #EE6C4D;
   border-radius: 28px;
-  color: #e2e8f0;
+  color: #ffffff;
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.7fr);
@@ -986,7 +984,7 @@
 }
 
 .enterprise-tax-compliance .filing-kicker {
-  color: rgba(226, 232, 240, 0.72);
+  color: rgba(255, 255, 255, 0.76);
   display: inline-block;
   font-size: 11px;
   font-weight: 800;
@@ -1003,7 +1001,7 @@
 }
 
 .enterprise-tax-compliance .filing-hero-card p {
-  color: rgba(226, 232, 240, 0.78);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   max-width: 58ch;
 }
@@ -1425,11 +1423,9 @@
 }
 
 .filing-assistant-page .filing-assistant-hero {
-  background:
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.22), transparent 32%),
-    linear-gradient(135deg, #0f172a, #12325f 58%, #164e63);
+  background: #EE6C4D;
   border-radius: 28px;
-  color: #e2e8f0;
+  color: #ffffff;
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
@@ -1445,13 +1441,13 @@
 }
 
 .filing-assistant-page .filing-assistant-hero p {
-  color: rgba(226, 232, 240, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   max-width: 58ch;
 }
 
 .filing-assistant-page .filing-kicker {
-  color: rgba(226, 232, 240, 0.72);
+  color: rgba(255, 255, 255, 0.76);
   display: inline-block;
   font-size: 11px;
   font-weight: 800;
@@ -1710,11 +1706,9 @@
 }
 
 .tax-monitoring-page .monitoring-hero-card {
-  background:
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.18), transparent 28%),
-    linear-gradient(135deg, #0f172a, #1e293b 58%, #0f766e);
+  background: #EE6C4D;
   border-radius: 28px;
-  color: #e2e8f0;
+  color: #ffffff;
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.65fr);
@@ -1722,7 +1716,7 @@
 }
 
 .tax-monitoring-page .monitoring-kicker {
-  color: rgba(226, 232, 240, 0.72);
+  color: rgba(255, 255, 255, 0.76);
   display: inline-block;
   font-size: 11px;
   font-weight: 800;
@@ -1739,7 +1733,7 @@
 }
 
 .tax-monitoring-page .monitoring-hero-card p {
-  color: rgba(226, 232, 240, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
   max-width: 62ch;
 }
@@ -2091,7 +2085,7 @@
 
 /* 1. Page-specific hero gradient — deep indigo/navy/teal */
 .enterprise-tax-compliance {
-  --overview-hero-bg: linear-gradient(140deg, #0f172a 0%, #1e1b4b 38%, #0c4a6e 80%, #0f4f57 100%);
+  --overview-hero-bg: #EE6C4D;
 }
 
 /* 2. Sticky section navigation with glass-morphism */
@@ -2652,7 +2646,7 @@
 
 /* Brand enforcement overrides */
 .enterprise-tax-compliance {
-  --overview-hero-bg: #1E2328;
+  --overview-hero-bg: #EE6C4D;
 }
 
 .enterprise-tax-compliance .action-page-stat:nth-child(1)::before,

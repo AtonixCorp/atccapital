@@ -1,60 +1,60 @@
 /**
- * ATC CAPITAL — GLOBAL DESIGN SYSTEM
- * Sovereign 3-Color Brand System v3.0
+ * MAT ATC CAPITAL — CORE COLOR SYSTEM
  *
- * ┌─────────────────────────────────────────────────────────────┐
- * │  GRAPHITE  #1E2328  — Institutional base (structure, calm) │
- * │  WHITE     #FFFFFF  — Clarity layer (data, content)        │
- * │  CRIMSON   #C41E3A  — Accent (action, authority, brand)    │
- * └─────────────────────────────────────────────────────────────┘
+ * Primary:    #EE6C4D
+ * Text:       #000000
+ * Background: #FFFFFF
  *
- * Font: Inter (primary), SF Pro, Segoe UI, Roboto
- * Base size: 14px | Labels: 12px | Page title: 24px | Section title: 18px
- * Spacing: 4px base unit
- *
- * RULE: Only these three colors appear on screen.
- * Crimson must never exceed 10% of any screen.
- * No blues, greens, yellows, purples, or gradients.
+ * Platform rule:
+ * - Use the three core colors only.
+ * - Secondary and muted states must be opacity variants of the text color.
+ * - Primary actions and accents must use the primary brand color.
  */
 
 /* =============================================================================
    ROOT DESIGN TOKENS — ATC CAPITAL 3-COLOR SYSTEM
    ============================================================================= */
 :root {
-  /* ── GRAPHITE SCALE ──────────────────────────────────────────────────────── */
-  --atc-graphite:          #1E2328;   /* Primary institutional dark */
-  --atc-graphite-dark:     #161A1E;   /* Deepest graphite — pressed states */
-  --atc-graphite-panel:    #252B33;   /* Panels/popovers on dark backgrounds */
-  --atc-graphite-border:   #2E3440;   /* Borders on graphite surfaces */
-  --atc-graphite-rule:     #E0E2E5;   /* Dividers/rules on white surfaces */
-  --atc-graphite-hover:    #F2F3F4;   /* Row hover, subtle area tint on white */
-  --atc-graphite-muted:    #8B95A2;   /* Muted/secondary text on graphite */
+  --color-primary: #EE6C4D;
+  --color-primary-rgb: 238, 108, 77;
+  --color-text: #000000;
+  --color-text-rgb: 0, 0, 0;
+  --color-background: #FFFFFF;
+  --color-background-rgb: 255, 255, 255;
+  --color-black: #000000;
 
-  /* ── PURE WHITE SCALE ───────────────────────────────────────────────────── */
-  --atc-white:             #FFFFFF;   /* Primary content background */
-  --atc-white-soft:        #F8F9FB;   /* Alternate row / very subtle surface */
+  /* ── CORE BRAND ALIASES ─────────────────────────────────────────────────── */
+  --atc-graphite: var(--color-text);
+  --atc-graphite-dark: rgba(var(--color-text-rgb), 0.92);
+  --atc-graphite-panel: rgba(var(--color-text-rgb), 0.82);
+  --atc-graphite-border: rgba(var(--color-text-rgb), 0.18);
+  --atc-graphite-rule: rgba(var(--color-text-rgb), 0.12);
+  --atc-graphite-hover: rgba(var(--color-text-rgb), 0.04);
+  --atc-graphite-muted: rgba(var(--color-text-rgb), 0.64);
 
-  /* ── CRIMSON SCALE (max 10% screen usage) ───────────────────────────────── */
-  --atc-crimson:           #C41E3A;   /* Primary accent — CTAs, highlights */
-  --atc-crimson-hover:     #A8172F;   /* Hover state */
-  --atc-crimson-pressed:   #8C1226;   /* Active / pressed */
-  --atc-crimson-tint:      #FAE9EC;   /* Focus rings, light accent bg */
-  --atc-crimson-border:    #E6A3AE;   /* Subtle crimson border */
+  --atc-white: var(--color-background);
+  --atc-white-soft: var(--color-background);
 
-  /* ── DESIGN-SYSTEM BASE TOKENS (mapped to 3-color palette) ─────────────── */
-  --atc-color-primary:         var(--atc-graphite);
-  --atc-color-primary-hover:   var(--atc-graphite-panel);
-  --atc-color-primary-soft:    var(--atc-graphite-hover);
-  --atc-color-accent:          var(--atc-crimson);
-  --atc-color-accent-soft:     var(--atc-crimson-tint);
-  --atc-color-bg:              var(--atc-white-soft);
-  --atc-color-surface:         var(--atc-white);
-  --atc-color-text-primary:    var(--atc-graphite);
-  --atc-color-text-muted:      #6B7280;
-  --atc-color-border:          var(--atc-graphite-rule);
-  --atc-color-error:           var(--atc-crimson);
-  --atc-color-warning:         #5F6B7A;
-  --atc-color-success:         var(--atc-graphite);
+  --atc-crimson: var(--color-primary);
+  --atc-crimson-hover: var(--color-primary);
+  --atc-crimson-pressed: var(--color-primary);
+  --atc-crimson-tint: rgba(var(--color-primary-rgb), 0.12);
+  --atc-crimson-border: rgba(var(--color-primary-rgb), 0.3);
+
+  /* ── SYSTEM TOKENS ──────────────────────────────────────────────────────── */
+  --atc-color-primary: var(--color-primary);
+  --atc-color-primary-hover: var(--color-primary);
+  --atc-color-primary-soft: rgba(var(--color-primary-rgb), 0.12);
+  --atc-color-accent: var(--color-primary);
+  --atc-color-accent-soft: rgba(var(--color-primary-rgb), 0.12);
+  --atc-color-bg: var(--color-background);
+  --atc-color-surface: var(--color-background);
+  --atc-color-text-primary: var(--color-text);
+  --atc-color-text-muted: rgba(var(--color-text-rgb), 0.64);
+  --atc-color-border: rgba(var(--color-text-rgb), 0.12);
+  --atc-color-error: var(--color-primary);
+  --atc-color-warning: rgba(var(--color-text-rgb), 0.72);
+  --atc-color-success: var(--color-text);
 
   --atc-font-family-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   --atc-font-size-hero: 2.5rem;
@@ -69,56 +69,46 @@
 
   /* ── COLOR SYSTEM (full legacy alias map) ───────────────────────────────── */
 
-  /* Graphite as institutional structure color */
-  --color-midnight:            var(--atc-graphite);
-  --color-midnight-light:      var(--atc-graphite-panel);
-  --color-midnight-lighter:    var(--atc-graphite-border);
+    --color-midnight: var(--color-text);
+    --color-midnight-light: rgba(var(--color-text-rgb), 0.82);
+    --color-midnight-lighter: rgba(var(--color-text-rgb), 0.64);
 
-  /* Primary brand palette — Crimson for actions */
-  --primary-600: var(--atc-crimson);
-  --primary-500: var(--atc-crimson-hover);
-  --primary-100: var(--atc-crimson-tint);
+    --primary-600: var(--color-primary);
+    --primary-500: var(--color-primary);
+    --primary-100: rgba(var(--color-primary-rgb), 0.12);
 
-  /* Legacy "cyan" tokens remapped to Crimson (action color) */
-  --color-cyan:            var(--atc-crimson);
-  --color-cyan-hover:      var(--atc-crimson-hover);
-  --color-cyan-dark:       var(--atc-crimson-pressed);
-  --color-cyan-text:       var(--atc-crimson);
-  --color-cyan-light:      var(--atc-crimson-tint);
-  --color-cyan-very-light: #FEF0F3;
+    --color-cyan: var(--color-primary);
+    --color-cyan-hover: var(--color-primary);
+    --color-cyan-dark: var(--color-primary);
+    --color-cyan-text: var(--color-primary);
+    --color-cyan-light: rgba(var(--color-primary-rgb), 0.12);
+    --color-cyan-very-light: rgba(var(--color-primary-rgb), 0.08);
 
-  /* Neutral Grays (no external hue — pure graphite scale) */
-  --gray-900: var(--atc-graphite);
-  --gray-700: #374151;
-  --gray-500: #6B7280;
-  --gray-300: var(--atc-graphite-rule);
-  --gray-100: var(--atc-graphite-hover);
+    --gray-900: var(--color-text);
+    --gray-700: rgba(var(--color-text-rgb), 0.82);
+    --gray-500: rgba(var(--color-text-rgb), 0.64);
+    --gray-300: rgba(var(--color-text-rgb), 0.12);
+    --gray-100: rgba(var(--color-text-rgb), 0.04);
 
-  --color-silver:            #C5C6C7;
-  --color-silver-dark:       #6B7280;
-  --color-silver-light:      #D3D6DA;
-  --color-silver-very-light: #F2F3F4;
-  --color-silver-white:      #F8F9FB;
+    --color-silver: rgba(var(--color-text-rgb), 0.28);
+    --color-silver-dark: rgba(var(--color-text-rgb), 0.64);
+    --color-silver-light: rgba(var(--color-text-rgb), 0.18);
+    --color-silver-very-light: rgba(var(--color-text-rgb), 0.04);
+    --color-silver-white: var(--color-background);
 
-  --color-white: #FFFFFF;
-  --color-black: #000000;
+    --color-white: var(--color-background);
+    --success-600: var(--color-text);
+    --warning-600: rgba(var(--color-text-rgb), 0.72);
+    --error-600: var(--color-primary);
 
-  /* Semantic colors — per ATC Capital brand directive:
-     Positive values → Graphite bold (never green)
-     Negative values → Crimson
-     Warnings → Graphite muted (never yellow)                */
-  --success-600:          var(--atc-graphite);
-  --warning-600:          #5F6B7A;
-  --error-600:            var(--atc-crimson);
-
-  --color-success:        var(--atc-graphite);
-  --color-success-light:  var(--atc-graphite-hover);
-  --color-warning:        #5F6B7A;
-  --color-warning-light:  var(--atc-graphite-hover);
-  --color-error:          var(--atc-crimson);
-  --color-error-light:    var(--atc-crimson-tint);
-  --color-info:           var(--atc-graphite);
-  --color-info-light:     var(--atc-graphite-hover);
+    --color-success: var(--color-text);
+    --color-success-light: rgba(var(--color-text-rgb), 0.08);
+    --color-warning: rgba(var(--color-text-rgb), 0.72);
+    --color-warning-light: rgba(var(--color-text-rgb), 0.08);
+    --color-error: var(--color-primary);
+    --color-error-light: rgba(var(--color-primary-rgb), 0.12);
+    --color-info: rgba(var(--color-text-rgb), 0.82);
+    --color-info-light: rgba(var(--color-text-rgb), 0.08);
   
   /* === TYPOGRAPHY === */
   --font-family: var(--atc-font-family-sans);
@@ -166,9 +156,9 @@
   --border-width-base: 1.5px;
   --border-width-thick: 2px;
   
-  --border-color-default: #E5E7EB;                        /* card/table borders */
-  --border-color-active: var(--primary-600);              /* focus */
-  --border-color-error: var(--error-600);                 /* validation errors */
+  --border-color-default: rgba(var(--color-text-rgb), 0.12);
+  --border-color-active: var(--color-primary);
+  --border-color-error: var(--color-primary);
   
   /* === SHADOWS — Minimal institutional depth === */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -212,8 +202,8 @@ body {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-regular);
   line-height: 1.43;
-  color: var(--atc-color-text-primary);
-  background: var(--atc-color-surface);
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 /* =============================================================================
@@ -264,13 +254,13 @@ p {
 }
 
 a {
-  color: var(--color-cyan-text);
+  color: var(--color-text);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-cyan-dark);
+  color: var(--color-primary);
 }
 
 /* =============================================================================
@@ -371,7 +361,7 @@ button, .btn {
 
 .btn-secondary, .btn.btn-secondary {
   background: var(--color-white);
-  color: var(--primary-600);
+  color: var(--color-text);
   border: 1px solid var(--primary-600);
 }
 

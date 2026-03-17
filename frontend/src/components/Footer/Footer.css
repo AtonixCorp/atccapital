@@ -1,16 +1,13 @@
 /* =============================================================================
    ATC CAPITAL — SITE FOOTER
-   Primary: #00B5E2 (Quantum Cyan)
-   Background: #0B0C10 (Imperial Midnight)
-   Text: #C5C6C7 (Neutral Silver)
-   Institutional standard — structured, no heavy shadows or gradients
+   Background and accents are limited to black, white, and #EE6C4D.
    =============================================================================
  */
 
 /* ── Outer shell ──────────────────────────────────────────────────────────── */
 .app-footer {
-  background: var(--atc-color-primary);
-  color: var(--color-silver);
+  background: #293241;
+  color: rgba(255, 255, 255, 0.72);
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
   border-top: 1px solid rgba(255, 255, 255, 0.14);
@@ -149,7 +146,7 @@
 }
 
 .footer-bottom-links a:hover {
-  color: var(--color-cyan);
+  color: var(--color-primary);
 }
 
 .footer-bottom-links .separator {

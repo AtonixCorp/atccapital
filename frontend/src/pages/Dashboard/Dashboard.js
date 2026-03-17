@@ -75,22 +75,22 @@ const Dashboard = () => {
     : [];
 
   const THEME = {
-    base: 'var(--color-white)',
-    panel: 'var(--color-silver-white)',
+    base: 'var(--color-background)',
+    panel: 'var(--color-background)',
     border: 'var(--border-color-default)',
-    text: 'var(--color-midnight)',
+    text: 'var(--color-text)',
     muted: 'var(--color-silver-dark)',
-    primary: 'var(--color-cyan-dark)',
-    accent: 'var(--color-cyan)'
+    primary: 'var(--color-primary)',
+    accent: 'var(--color-primary)'
   };
 
   const COLORS = [
-    'rgba(75, 93, 255, 0.95)',
-    'rgba(90, 200, 250, 0.95)',
-    'rgba(28, 28, 30, 0.55)',
-    'rgba(75, 93, 255, 0.55)',
-    'rgba(90, 200, 250, 0.55)',
-    'rgba(28, 28, 30, 0.35)'
+    'rgba(var(--color-primary-rgb), 1)',
+    'rgba(var(--color-primary-rgb), 0.78)',
+    'rgba(var(--color-text-rgb), 0.64)',
+    'rgba(var(--color-primary-rgb), 0.56)',
+    'rgba(var(--color-text-rgb), 0.36)',
+    'rgba(var(--color-text-rgb), 0.18)'
   ];
 
   const sourceFilterLabel =

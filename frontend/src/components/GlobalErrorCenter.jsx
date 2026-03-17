@@ -3,22 +3,22 @@ import { subscribeToUiErrors } from '../utils/errorReporting';
 
 const toneBySeverity = {
   error: {
-    background: '#7f1d1d',
-    border: '#fecaca',
-    title: '#fee2e2',
-    body: '#fecaca',
+    background: '#FFFFFF',
+    border: '#EE6C4D',
+    title: '#000000',
+    body: '#000000',
   },
   warning: {
-    background: '#78350f',
-    border: '#fde68a',
-    title: '#fef3c7',
-    body: '#fde68a',
+    background: '#FFFFFF',
+    border: '#000000',
+    title: '#000000',
+    body: '#000000',
   },
   info: {
-    background: '#1e3a8a',
-    border: '#bfdbfe',
-    title: '#dbeafe',
-    body: '#bfdbfe',
+    background: '#FFFFFF',
+    border: '#000000',
+    title: '#000000',
+    body: '#000000',
   },
 };
 
@@ -78,7 +78,7 @@ export default function GlobalErrorCenter() {
               background: tone.background,
               border: `1px solid ${tone.border}`,
               borderRadius: 12,
-              boxShadow: '0 12px 32px rgba(15, 23, 42, 0.35)',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.18)',
               padding: '14px 16px',
             }}
           >
@@ -87,7 +87,7 @@ export default function GlobalErrorCenter() {
                 <div style={{ fontSize: 13, fontWeight: 700, color: tone.title }}>{item.title}</div>
                 <div style={{ fontSize: 12, color: tone.body, marginTop: 4, lineHeight: 1.45 }}>{item.message}</div>
                 {item.source || item.status ? (
-                  <div style={{ fontSize: 11, color: tone.body, opacity: 0.9, marginTop: 8 }}>
+                  <div style={{ fontSize: 11, color: tone.body, opacity: 0.72, marginTop: 8 }}>
                     {[item.source, item.status ? `HTTP ${item.status}` : null].filter(Boolean).join(' • ')}
                   </div>
                 ) : null}

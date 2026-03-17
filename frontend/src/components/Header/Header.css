@@ -1,9 +1,7 @@
 /* =============================================================================
-   ATC CAPITAL — INSTITUTIONAL HEADER
-   Two-Tier Global Banking Standard Header
-   Uses global design tokens from globals.css
-  Primary: #00B5E2 (Quantum Cyan)  |  Font: Inter / SF Pro  |  No shadows
-   ============================================================================= */
+  ATC CAPITAL — INSTITUTIONAL HEADER
+  Two-tier header using black, white, and #EE6C4D only.
+  ============================================================================= */
 
 /* ── Sticky container ──────────────────────────────────────────────────────── */
 .atc-header {
@@ -19,8 +17,8 @@
    ============================================================================= */
 .atc-utility-bar {
   height: 38px;
-  background: var(--atc-color-surface);
-  border-bottom: 1px solid var(--atc-color-border);
+  background: #293241;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .atc-utility-inner {
@@ -39,7 +37,7 @@
 .atc-utility-brand {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--atc-color-text-primary);
+  color: var(--color-white);
   white-space: nowrap;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -61,7 +59,7 @@
   cursor: pointer;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--atc-color-text-primary);
+  color: var(--color-white);
   font-family: var(--font-family);
   padding: 0;
   line-height: 1;
@@ -129,7 +127,7 @@
 .atc-utility-links a {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--atc-color-text-muted);
+  color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
   font-family: var(--font-family);
   white-space: nowrap;
@@ -137,7 +135,7 @@
 }
 
 .atc-utility-links a:hover {
-  color: var(--atc-color-primary);
+  color: var(--color-white);
 }
 
 /* Language select inside utility bar */
@@ -149,7 +147,7 @@
 .atc-lang-select {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--atc-color-text-muted);
+  color: rgba(255, 255, 255, 0.78);
   font-family: var(--font-family);
   background: none;
   border: none;
@@ -168,7 +166,7 @@
 .atc-signin {
   font-size: var(--font-size-sm) !important;
   font-weight: var(--font-weight-bold) !important;
-  color: var(--atc-color-primary) !important;
+  color: var(--color-white) !important;
   white-space: nowrap;
 }
 

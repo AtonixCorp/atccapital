@@ -247,8 +247,8 @@ const Landing = () => {
       <section className="vision-section">
         <div className="vision-container">
           <div className="section-header">
-            <p className="section-eyebrow" style={{ color: 'rgba(255,255,255,0.7)' }}>Platform Vision</p>
-            <h2 className="section-title" style={{ color: 'var(--color-white)' }}>
+            <p className="section-eyebrow">Platform Vision</p>
+            <h2 className="section-title">
               "One Platform. All Financial Operations. Fully Connected."
             </h2>
           </div>

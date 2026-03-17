@@ -54,7 +54,7 @@ const Header = () => {
             >
               <span>{selectedCountry.name}</span>
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
-                <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5"
+                <path d="M1 1L5 5L9 1" stroke="#000000" strokeWidth="1.5"
                       strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>

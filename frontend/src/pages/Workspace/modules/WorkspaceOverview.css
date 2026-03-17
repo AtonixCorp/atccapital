@@ -24,14 +24,14 @@
   gap: 20px;
   padding: 24px 28px 20px;
   border-bottom: 1px solid #E0E2E5;
-  background: #F8F9FB;
+  background: #EE6C4D;
 }
 
 .wso-entity-avatar {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: #1E2328;
+  background: #000000;
   color: #fff;
   font-size: 20px;
   font-weight: 800;
@@ -51,7 +51,7 @@
 .wso-entity-name {
   font-size: 18px;
   font-weight: 800;
-  color: #1E2328;
+  color: #ffffff;
   margin: 0 0 8px;
   line-height: 1.2;
 }

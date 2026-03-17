@@ -19,9 +19,9 @@
 
 /* Hero */
 .product-hero {
-  background: linear-gradient(150deg, var(--color-midnight) 0%, #121826 65%, #1b2536 100%);
+  background: var(--color-primary);
   padding: 88px 0 72px;
-  border-bottom: 1px solid rgba(0, 181, 226, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .product-hero .hero-content {
@@ -43,7 +43,7 @@
 .product-hero p {
   margin: 0;
   max-width: 70ch;
-  color: rgba(197, 198, 199, 0.92);
+  color: rgba(255, 255, 255, 0.92);
   font-size: var(--font-size-base);
   line-height: 1.7;
 }
@@ -56,8 +56,8 @@
 }
 
 .product-page .stat {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(197, 198, 199, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   padding: var(--space-base);
   display: flex;
   flex-direction: column;
@@ -65,14 +65,14 @@
 }
 
 .product-page .stat-number {
-  color: var(--color-cyan);
+  color: var(--color-black);
   font-size: clamp(1.25rem, 2.2vw, 1.8rem);
   font-weight: var(--font-weight-bold);
   line-height: 1.15;
 }
 
 .product-page .stat-label {
-  color: rgba(197, 198, 199, 0.9);
+  color: rgba(0, 0, 0, 0.78);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -151,10 +151,10 @@
 
 /* CTA */
 .product-cta {
-  background: var(--color-midnight);
+  background: var(--color-primary);
   color: var(--color-white);
   padding: 72px 0;
-  border-top: 1px solid rgba(0, 181, 226, 0.25);
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .product-cta .container {
@@ -171,7 +171,7 @@
 .product-cta p {
   margin: 0 auto;
   max-width: 70ch;
-  color: rgba(197, 198, 199, 0.92);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .product-cta .cta-buttons {
@@ -190,9 +190,9 @@
 }
 
 .product-cta .btn-outline:hover {
-  border-color: var(--color-cyan);
-  background: rgba(0, 181, 226, 0.1);
-  color: var(--color-cyan);
+  border-color: var(--color-white);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-white);
 }
 
 /* Responsive */

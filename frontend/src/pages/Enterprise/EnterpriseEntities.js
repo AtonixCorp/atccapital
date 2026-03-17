@@ -177,18 +177,18 @@ const EnterpriseEntities = () => {
   };
 
   const statusColors = {
-    active:    { bg: '#D1FAE5', color: '#065F46', dot: '#10B981' },
-    dormant:   { bg: '#FEF3C7', color: '#92400E', dot: '#F59E0B' },
-    wind_down: { bg: '#FEE2E2', color: '#991B1B', dot: '#EF4444' },
+    active:    { bg: 'rgba(238, 108, 77, 0.12)', color: '#EE6C4D', dot: '#EE6C4D' },
+    dormant:   { bg: 'rgba(0, 0, 0, 0.08)', color: '#000000', dot: '#000000' },
+    wind_down: { bg: 'rgba(0, 0, 0, 0.08)', color: '#000000', dot: '#EE6C4D' },
   };
 
-  const getStatusStyle = (status) => statusColors[status] || { bg: '#F3F4F6', color: '#374151', dot: '#9CA3AF' };
+  const getStatusStyle = (status) => statusColors[status] || { bg: 'rgba(0, 0, 0, 0.06)', color: '#000000', dot: '#000000' };
 
   const kpis = [
-    { label: 'Total Entities', value: entities.length, accent: '#003B73' },
-    { label: 'Active', value: entities.filter(e => e.status === 'active').length, accent: '#10B981' },
-    { label: 'Countries', value: new Set(entities.map(e => e.country)).size, accent: '#6366F1' },
-    { label: 'Currencies', value: new Set(entities.map(e => e.local_currency)).size, accent: '#F59E0B' },
+    { label: 'Total Entities', value: entities.length, accent: '#000000' },
+    { label: 'Active', value: entities.filter(e => e.status === 'active').length, accent: '#EE6C4D' },
+    { label: 'Countries', value: new Set(entities.map(e => e.country)).size, accent: '#000000' },
+    { label: 'Currencies', value: new Set(entities.map(e => e.local_currency)).size, accent: '#EE6C4D' },
   ];
 
   return (
@@ -203,7 +203,7 @@ const EnterpriseEntities = () => {
             <div className="action-page-actions">
               <button
                 onClick={() => handleOpenModal()}
-                style={{ background: '#ffffff', color: '#0f172a', border: 'none', borderRadius: 999, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                style={{ background: '#ffffff', color: '#000000', border: 'none', borderRadius: 999, padding: '10px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
               >
                 Add Entity
               </button>
@@ -330,7 +330,7 @@ const EnterpriseEntities = () => {
                     >
                       <td>
                         <div style={{ fontWeight: 600 }}>{entity.name}</div>
-                        {entity.registration_number && <div style={{ fontSize: 11, color: '#9CA3AF' }}>{entity.registration_number}</div>}
+                        {entity.registration_number && <div style={{ fontSize: 11, color: 'rgba(0, 0, 0, 0.48)' }}>{entity.registration_number}</div>}
                       </td>
                       <td className="table-row-muted">{entity.country}</td>
                       <td className="table-row-muted" style={{ textTransform: 'capitalize' }}>{entity.entity_type?.replace(/_/g, ' ')}</td>

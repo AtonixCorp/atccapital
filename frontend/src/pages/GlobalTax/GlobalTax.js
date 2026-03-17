@@ -2,20 +2,39 @@ import React, { useEffect, useState } from 'react';
 
 import { taxAPI } from '../../services/api';
 import localCountries from '../../data/tax/countries.json';
+import { normalizeTaxDirectory } from '../../utils/taxDirectory';
 import './GlobalTax.css';
 
+const fallbackCountries = normalizeTaxDirectory(localCountries);
+
 const GlobalTax = () => {
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState(fallbackCountries);
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(fallbackCountries[0] || null);
   const [regionFilter, setRegionFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     taxAPI.list()
-      .then(res => setCountries(res.data || localCountries))
-      .catch(() => setCountries(localCountries))
+      .then((res) => {
+        const nextCountries = normalizeTaxDirectory(res.data, fallbackCountries);
+        setCountries(nextCountries);
+        setSelected((currentSelected) => {
+          if (!currentSelected) {
+            return nextCountries[0] || null;
+          }
+
+          return nextCountries.find((country) => country.code === currentSelected.code) || nextCountries[0] || null;
+        });
+        setIsUsingFallback(nextCountries === fallbackCountries);
+      })
+      .catch(() => {
+        setCountries(fallbackCountries);
+        setSelected((currentSelected) => currentSelected || fallbackCountries[0] || null);
+        setIsUsingFallback(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -27,6 +46,11 @@ const GlobalTax = () => {
     .filter(c => (regionFilter ? c.region === regionFilter : true))
     .filter(c => c.name.toLowerCase().includes(query.toLowerCase()) || c.code.toLowerCase().includes(query.toLowerCase()));
 
+  const totalRegions = new Set(countries.map((country) => country.region).filter(Boolean)).size;
+  const selectedCountry = selected && filtered.some((country) => country.code === selected.code)
+    ? selected
+    : filtered[0] || selected;
+
   return (
     <div className="global-tax-page">
       {/* Hero Section */}
@@ -37,6 +61,20 @@ const GlobalTax = () => {
           <p className="tax-hero-description">Access verified tax authority information, payment portals, and expert summaries from PwC, Deloitte, and EY.
             No login required.
           </p>
+          <div className="tax-overview-grid">
+            <div className="tax-overview-card">
+              <span className="overview-label">Jurisdictions</span>
+              <strong>{countries.length}</strong>
+            </div>
+            <div className="tax-overview-card">
+              <span className="overview-label">Regions</span>
+              <strong>{totalRegions}</strong>
+            </div>
+            <div className="tax-overview-card">
+              <span className="overview-label">Sources</span>
+              <strong>PwC, Deloitte, EY</strong>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -60,11 +98,16 @@ const GlobalTax = () => {
           </select>
           <span className="results-count">{filtered.length} jurisdictions</span>
         </div>
+        {isUsingFallback && (
+          <div className="tax-status-banner">
+            Showing the bundled jurisdiction directory while the live tax endpoint is unavailable.
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
       <div className="tax-content-wrapper">
-        {loading ? (
+        {loading && countries.length === 0 ? (
           <div className="tax-loading">
             <div className="spinner"></div>
             <p>Loading tax data...</p>
@@ -81,7 +124,7 @@ const GlobalTax = () => {
                 {filtered.map(c => (
                   <div
                     key={c.code}
-                    className={`tax-list-item ${selected?.code === c.code ? 'active' : ''}`}
+                    className={`tax-list-item ${selectedCountry?.code === c.code ? 'active' : ''}`}
                     onClick={() => setSelected(c)}
                   >
                     <div className="item-content">
@@ -99,7 +142,7 @@ const GlobalTax = () => {
 
             {/* Details Panel */}
             <div className="tax-details-wrapper">
-              {!selected ? (
+              {!selectedCountry ? (
                 <div className="empty-panel">
                   <div className="empty-icon"></div>
                   <h3>Select a Jurisdiction</h3>
@@ -110,10 +153,10 @@ const GlobalTax = () => {
                   {/* Header */}
                   <div className="details-header">
                     <div className="header-title">
-                      <h2>{selected.name}</h2>
-                      <span className="country-code-badge">{selected.code}</span>
+                      <h2>{selectedCountry.name}</h2>
+                      <span className="country-code-badge">{selectedCountry.code}</span>
                     </div>
-                    <span className="region-badge">{selected.region}</span>
+                    <span className="region-badge">{selectedCountry.region}</span>
                   </div>
 
                   {/* Tax Authority */}
@@ -122,14 +165,14 @@ const GlobalTax = () => {
                     <div className="authority-info">
                       <div className="info-row">
                         <span className="label">Official Name:</span>
-                        <span className="value">{selected.tax_authority?.name || '—'}</span>
+                        <span className="value">{selectedCountry.tax_authority?.name || '—'}</span>
                       </div>
-                      {selected.tax_authority?.website && (
-                        <a href={selected.tax_authority.website} rel="noreferrer" className="primary-link">Visit Tax Authority Website →
+                      {selectedCountry.tax_authority?.website && (
+                        <a href={selectedCountry.tax_authority.website} rel="noreferrer" className="primary-link">Visit Tax Authority Website →
                         </a>
                       )}
-                      {selected.tax_authority?.payment_portal && (
-                        <a href={selected.tax_authority.payment_portal} rel="noreferrer" className="secondary-link">Payment Portal →
+                      {selectedCountry.tax_authority?.payment_portal && (
+                        <a href={selectedCountry.tax_authority.payment_portal} rel="noreferrer" className="secondary-link">Payment Portal →
                         </a>
                       )}
                     </div>
@@ -139,20 +182,20 @@ const GlobalTax = () => {
                   <div className="section-card summaries-card">
                     <h4 className="section-title">Tax Summaries</h4>
                     <div className="summaries-grid">
-                      {selected.links?.corporate_tax_summary && (
-                        <a href={selected.links.corporate_tax_summary} rel="noreferrer" className="summary-link">
+                      {selectedCountry.links?.corporate_tax_summary && (
+                        <a href={selectedCountry.links.corporate_tax_summary} rel="noreferrer" className="summary-link">
                           <span className="icon"></span>
                           <span>Corporate Tax</span>
                         </a>
                       )}
-                      {selected.links?.personal_income_tax_summary && (
-                        <a href={selected.links.personal_income_tax_summary} rel="noreferrer" className="summary-link">
+                      {selectedCountry.links?.personal_income_tax_summary && (
+                        <a href={selectedCountry.links.personal_income_tax_summary} rel="noreferrer" className="summary-link">
                           <span className="icon"></span>
                           <span>Personal Tax</span>
                         </a>
                       )}
-                      {selected.links?.vat_or_indirect_tax_summary && (
-                        <a href={selected.links.vat_or_indirect_tax_summary} rel="noreferrer" className="summary-link">
+                      {selectedCountry.links?.vat_or_indirect_tax_summary && (
+                        <a href={selectedCountry.links.vat_or_indirect_tax_summary} rel="noreferrer" className="summary-link">
                           <span className="icon"></span>
                           <span>VAT / GST</span>
                         </a>
@@ -164,7 +207,7 @@ const GlobalTax = () => {
                   <div className="section-card references-card">
                     <h4 className="section-title">Expert References</h4>
                     <div className="references-list">
-                      {selected.links?.global_references?.map((r, i) => (
+                      {selectedCountry.links?.global_references?.map((r, i) => (
                         <a key={i} href={r.url} rel="noreferrer" className="reference-link">
                           <span className="ref-icon"></span>
                           <span>{r.label}</span>
@@ -174,20 +217,20 @@ const GlobalTax = () => {
                   </div>
 
                   {/* Actions */}
-                  {selected.supported_tasks && selected.supported_tasks.length > 0 && (
+                  {selectedCountry.supported_tasks && selectedCountry.supported_tasks.length > 0 && (
                     <div className="section-card actions-card">
                       <h4 className="section-title">Quick Actions</h4>
                       <div className="actions-grid">
-                        {selected.supported_tasks?.includes('open_tax_payment_portal') && selected.tax_authority?.payment_portal && (
+                        {selectedCountry.supported_tasks?.includes('open_tax_payment_portal') && selectedCountry.tax_authority?.payment_portal && (
                           <a
-                            href={selected.tax_authority.payment_portal}
+                            href={selectedCountry.tax_authority.payment_portal}
                             rel="noreferrer"
                             className="action-btn primary-btn"
                           >Pay Tax Online
                           </a>
                         )}
-                        {selected.supported_tasks?.includes('basic_tax_estimator') && (
-                          <button className="action-btn secondary-btn" onClick={() => alert('Basic estimator coming soon for ' + selected.name)}>Estimate Tax
+                        {selectedCountry.supported_tasks?.includes('basic_tax_estimator') && (
+                          <button className="action-btn secondary-btn" onClick={() => alert('Basic estimator coming soon for ' + selectedCountry.name)}>Estimate Tax
                           </button>
                         )}
                       </div>

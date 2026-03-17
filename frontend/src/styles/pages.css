@@ -97,15 +97,15 @@ body {
 .support-hero,
 .help-hero,
 .tax-hero {
-  background: var(--color-white);
+  background: var(--color-primary);
+  color: var(--color-white);
 }
 
 /* Dark narrative sections */
 .about-future-section,
 .pricing-cta,
 .features-cta,
-.product-cta,
-.contact-hero {
+.product-cta {
   background: var(--color-midnight);
   color: var(--color-white);
 }
@@ -177,6 +177,25 @@ body {
 .contact-page p {
   color: var(--color-silver-dark);
   max-width: 72ch;
+}
+
+.contact-hero h1,
+.contact-hero p,
+.features-hero h1,
+.features-hero p,
+.pricing-hero h1,
+.pricing-hero p,
+.privacy-hero h1,
+.privacy-hero p,
+.support-hero h1,
+.support-hero p,
+.help-hero h1,
+.help-hero p,
+.product-hero h1,
+.product-hero p,
+.about-hero-inner h1,
+.about-hero-sub {
+  color: var(--color-white);
 }
 
 /* Grid helpers reused by many public pages */
@@ -564,9 +583,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 30px;
   padding: 28px;
-  background:
-    linear-gradient(135deg, rgba(6, 43, 74, 0.96), rgba(0, 107, 153, 0.92) 58%, rgba(111, 198, 255, 0.78));
-  box-shadow: 0 28px 60px rgba(10, 37, 62, 0.16);
+  background: var(--color-primary);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.16);
 }
 
 .dashboard-hero-card::before {
