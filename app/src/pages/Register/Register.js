@@ -219,7 +219,7 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  '{showPassword ? "Hide" : "Show"}'
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
@@ -241,7 +241,7 @@ const Register = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
-                  '{showConfirmPassword ? "Hide" : "Show"}'
+                  {showConfirmPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
