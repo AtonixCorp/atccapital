@@ -73,7 +73,7 @@ const Landing = () => {
                   { desc: 'Wire Transfer — HSBC London',     amount: '−$12,000', time: '2m ago',  up: false },
                   { desc: 'Invoice Settlement — Acme Corp',  amount: '+$45,200', time: '1h ago',  up: true  },
                   { desc: 'FX Conversion — EUR/USD',         amount: '+$8,340',  time: '3h ago',  up: true  },
-                ].map((tx, i) => (
+                ].slice(0, 2).map((tx, i) => (
                   <div className="atc-activity-row" key={i}>
                     <div>
                       <div className="atc-activity-desc">{tx.desc}</div>
