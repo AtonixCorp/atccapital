@@ -66,7 +66,7 @@
 }
 
 .atc-country-btn:focus-visible {
-  outline: 2px solid var(--atc-color-primary);
+  outline: 2px solid rgba(255, 255, 255, 0.92);
   outline-offset: 2px;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .atc-country-option[aria-selected='true'] {
-  color: var(--atc-color-primary);
+  color: var(--atc-color-text-primary);
 }
 
 /* Utility links — right */
@@ -175,7 +175,7 @@
 }
 
 .atc-lang-select:focus-visible {
-  outline: 2px solid var(--atc-color-primary);
+  outline: 2px solid rgba(255, 255, 255, 0.92);
   outline-offset: 2px;
 }
 
@@ -236,8 +236,8 @@
 
 .atc-nav-link:hover,
 .atc-nav-link--active {
-  color: var(--atc-color-primary);
-  border-bottom-color: var(--atc-color-primary);
+  color: var(--atc-color-text-primary);
+  border-bottom-color: rgba(var(--color-text-rgb), 0.9);
 }
 
 /* CTA buttons — right */
@@ -277,12 +277,12 @@
   height: 42px;
   padding: 0 22px;
   background: transparent;
-  color: var(--atc-color-primary);
+  color: var(--atc-color-text-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   font-family: var(--font-family);
   text-decoration: none;
-  border: 1.5px solid var(--atc-color-primary);
+  border: 1.5px solid rgba(var(--color-text-rgb), 0.22);
   border-radius: var(--atc-radius-control);
   display: inline-flex;
   align-items: center;
@@ -293,7 +293,7 @@
 }
 
 .atc-cta-secondary:hover {
-  background: var(--atc-color-primary-soft);
+  background: rgba(var(--color-text-rgb), 0.04);
 }
 
 /* Hamburger */
@@ -340,7 +340,7 @@
 }
 
 .atc-mobile-link:hover {
-  color: var(--atc-color-primary);
+  color: var(--atc-color-text-primary);
 }
 
 .atc-mobile-actions {
@@ -353,7 +353,7 @@
 .atc-mobile-signin {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--atc-color-primary);
+  color: var(--atc-color-text-primary);
   text-decoration: none;
   font-family: var(--font-family);
   text-align: center;
