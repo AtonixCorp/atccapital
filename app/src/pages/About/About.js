@@ -215,7 +215,7 @@ const About = () => {
       <section className="about-future-section">
         <div className="container">
           <div className="future-inner">
-            <p className="about-eyebrow" style={{ color: 'rgba(255,255,255,0.6)' }}>Long-Term Vision</p>
+            <p className="about-eyebrow about-eyebrow--inverse">Long-Term Vision</p>
             <h2>The Future of ATC Capital</h2>
             <p className="future-sub">ATC Capital is not just a platform — it is a movement. A transformation.
               A new standard for how the world manages financial operations.

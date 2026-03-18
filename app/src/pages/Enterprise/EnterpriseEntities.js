@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnterprise } from '../../context/EnterpriseContext';
 import { countries, getBanksByCountryCode } from '../../utils/countries';
+import { countryDropdownOptions, countryDropdownOptionsByName } from '../../utils/countryDropdowns';
 import './EnterpriseActionPages.css';
 import '../../styles/EntityPages.css';
 
@@ -80,7 +81,7 @@ const EnterpriseEntities = () => {
 
     // Auto-populate currency and banks when country is selected
     if (name === 'country' && value) {
-      const selectedCountry = countries.find(country => country.name === value);
+      const selectedCountry = countryDropdownOptionsByName.get(value) || countries.find(country => country.name === value);
       if (selectedCountry) {
         // Extract currency code from currency object
         const currencyCode = selectedCountry.currency?.code || selectedCountry.currency || 'USD';
@@ -391,7 +392,7 @@ const EnterpriseEntities = () => {
                     <label className="entity-form-label">Country *</label>
                     <select className="entity-form-input" name="country" value={formData.country} onChange={handleInputChange} required>
                       <option value="">Select a country</option>
-                      {countries.map(country => (
+                      {countryDropdownOptions.map(country => (
                         <option key={country.code} value={country.name}>{country.name}</option>
                       ))}
                     </select>

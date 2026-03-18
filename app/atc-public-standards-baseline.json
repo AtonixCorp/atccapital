@@ -1,0 +1,2980 @@
+{
+  "generatedAt": "2026-03-18T02:39:58.751Z",
+  "findings": [
+    {
+      "key": "src/components/Footer/Footer.css|forbidden-pill-radius|190|border-radius: 999px",
+      "file": "src/components/Footer/Footer.css",
+      "line": 190,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|120|padding-top: 20px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 120,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 20px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|121|padding-bottom: 20px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 121,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 20px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|127|gap: 20px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 127,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 20px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|179|gap: 10px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 179,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|225|padding-left: 20px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 225,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 20px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|226|padding-right: 20px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 226,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-right: 20px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|23|padding-top: 64px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 23,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 64px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|231|padding-top: 40px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 231,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 40px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|232|padding-bottom: 28px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 232,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 28px;"
+    },
+    {
+      "key": "src/components/Footer/Footer.css|off-grid-spacing|77|gap: 10px;",
+      "file": "src/components/Footer/Footer.css",
+      "line": 77,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|forbidden-effect|88|box-shadow:",
+      "file": "src/components/Header/Header.css",
+      "line": 88,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|124|gap: 20px;",
+      "file": "src/components/Header/Header.css",
+      "line": 124,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 20px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|185|padding: 0 40px;",
+      "file": "src/components/Header/Header.css",
+      "line": 185,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|196|margin-right: 40px;",
+      "file": "src/components/Header/Header.css",
+      "line": 196,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-right: 40px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|214|padding-bottom: 3px;",
+      "file": "src/components/Header/Header.css",
+      "line": 214,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 3px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|261|padding: 0 22px;",
+      "file": "src/components/Header/Header.css",
+      "line": 261,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 22px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|287|gap: 5px;",
+      "file": "src/components/Header/Header.css",
+      "line": 287,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 5px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|320|padding: 14px 0;",
+      "file": "src/components/Header/Header.css",
+      "line": 320,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 0;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|351|gap: 20px;",
+      "file": "src/components/Header/Header.css",
+      "line": 351,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 20px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|379|padding: 0 20px;",
+      "file": "src/components/Header/Header.css",
+      "line": 379,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 20px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|56|gap: 6px;",
+      "file": "src/components/Header/Header.css",
+      "line": 56,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 6px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|94|gap: 10px;",
+      "file": "src/components/Header/Header.css",
+      "line": 94,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/components/Header/Header.css|off-grid-spacing|96|padding: 9px 16px;",
+      "file": "src/components/Header/Header.css",
+      "line": 96,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 9px 16px;"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-clamp|125|clamp(",
+      "file": "src/pages/About/About.css",
+      "line": 125,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-clamp|76|clamp(",
+      "file": "src/pages/About/About.css",
+      "line": 76,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-hex-color|413|#121b2b",
+      "file": "src/pages/About/About.css",
+      "line": 413,
+      "rule": "forbidden-hex-color",
+      "snippet": "#121b2b"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-hex-color|413|#1b2639",
+      "file": "src/pages/About/About.css",
+      "line": 413,
+      "rule": "forbidden-hex-color",
+      "snippet": "#1b2639"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|336|rgba(0, 181, 226, 0.35)",
+      "file": "src/pages/About/About.css",
+      "line": 336,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.35)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|414|rgba(0, 181, 226, 0.25)",
+      "file": "src/pages/About/About.css",
+      "line": 414,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.25)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|415|rgba(0, 181, 226, 0.25)",
+      "file": "src/pages/About/About.css",
+      "line": 415,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.25)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|426|rgba(197, 198, 199, 0.95)",
+      "file": "src/pages/About/About.css",
+      "line": 426,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.95)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|442|rgba(197, 198, 199, 0.3)",
+      "file": "src/pages/About/About.css",
+      "line": 442,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.3)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|462|rgba(0, 181, 226, 0.25)",
+      "file": "src/pages/About/About.css",
+      "line": 462,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.25)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|477|rgba(197, 198, 199, 0.95)",
+      "file": "src/pages/About/About.css",
+      "line": 477,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.95)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|492|rgba(197, 198, 199, 0.45)",
+      "file": "src/pages/About/About.css",
+      "line": 492,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.45)"
+    },
+    {
+      "key": "src/pages/About/About.css|forbidden-rgb-color|498|rgba(0, 181, 226, 0.08)",
+      "file": "src/pages/About/About.css",
+      "line": 498,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.08)"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|149|gap: 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 149,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|157|gap: 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 157,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|158|padding: 0 14px;",
+      "file": "src/pages/About/About.css",
+      "line": 158,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|197|padding: 12px 14px;",
+      "file": "src/pages/About/About.css",
+      "line": 197,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 12px 14px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|21|padding: 80px 0;",
+      "file": "src/pages/About/About.css",
+      "line": 21,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 80px 0;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|229|gap: 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 229,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|334|padding: 0 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 334,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|358|padding: 0 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 358,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|389|padding-left: 18px;",
+      "file": "src/pages/About/About.css",
+      "line": 389,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|394|margin-bottom: 6px;",
+      "file": "src/pages/About/About.css",
+      "line": 394,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|433|gap: 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 433,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|522|padding: 56px 0;",
+      "file": "src/pages/About/About.css",
+      "line": 522,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 56px 0;"
+    },
+    {
+      "key": "src/pages/About/About.css|off-grid-spacing|54|margin: 0 0 10px;",
+      "file": "src/pages/About/About.css",
+      "line": 54,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-clamp|27|clamp(",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 27,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-effect|84|box-shadow:",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 84,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-effect|85|backdrop-filter:",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 85,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|101|#395161",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 101,
+      "rule": "forbidden-hex-color",
+      "snippet": "#395161"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|105|#0e2d3d",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 105,
+      "rule": "forbidden-hex-color",
+      "snippet": "#0e2d3d"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|113|#0e2430",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 113,
+      "rule": "forbidden-hex-color",
+      "snippet": "#0e2430"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|114|#dff7ff",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 114,
+      "rule": "forbidden-hex-color",
+      "snippet": "#dff7ff"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|127|#395161",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 127,
+      "rule": "forbidden-hex-color",
+      "snippet": "#395161"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|142|#f5fbfe",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 142,
+      "rule": "forbidden-hex-color",
+      "snippet": "#f5fbfe"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|143|#284152",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 143,
+      "rule": "forbidden-hex-color",
+      "snippet": "#284152"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|147|#dff4fb",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 147,
+      "rule": "forbidden-hex-color",
+      "snippet": "#dff4fb"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|148|#0d2a39",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 148,
+      "rule": "forbidden-hex-color",
+      "snippet": "#0d2a39"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|3|#eef6fb",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 3,
+      "rule": "forbidden-hex-color",
+      "snippet": "#eef6fb"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|3|#f5fbfe",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 3,
+      "rule": "forbidden-hex-color",
+      "snippet": "#f5fbfe"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|4|#11212d",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 4,
+      "rule": "forbidden-hex-color",
+      "snippet": "#11212d"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|53|#f7fbfd",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 53,
+      "rule": "forbidden-hex-color",
+      "snippet": "#f7fbfd"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-hex-color|95|#0e2d3d",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 95,
+      "rule": "forbidden-hex-color",
+      "snippet": "#0e2d3d"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-pill-radius|18|border-radius: 999px",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 18,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-pill-radius|50|border-radius: 999px",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 50,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-rgb-color|69|rgba(11, 31, 42, 0.03)",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 69,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(11, 31, 42, 0.03)"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-rgb-color|81|rgba(17, 33, 45, 0.08)",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 81,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(17, 33, 45, 0.08)"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|forbidden-rgb-color|84|rgba(17, 33, 45, 0.06)",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 84,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(17, 33, 45, 0.06)"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|111|padding: 14px 16px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 111,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|126|padding-left: 18px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 126,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|133|gap: 10px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 133,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|140|padding: 14px 16px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 140,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|15|margin-bottom: 14px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 15,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 14px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|16|padding: 6px 12px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 16,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 6px 12px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|161|padding: 108px 0 42px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 161,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 108px 0 42px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|165|padding: 22px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 165,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 22px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|170|gap: 6px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 170,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 6px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|43|margin-top: 28px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 43,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 28px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|49|padding: 10px 16px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 49,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 16px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|65|padding: 42px 0;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 65,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 42px 0;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|8|padding: 120px 0 56px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 8,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 120px 0 56px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|80|padding: 28px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 80,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 28px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|93|margin: 0 0 14px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 93,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/pages/CLIDocs/CLIDocs.css|off-grid-spacing|99|margin: 0 0 14px;",
+      "file": "src/pages/CLIDocs/CLIDocs.css",
+      "line": 99,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|forbidden-clamp|127|clamp(",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 127,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|forbidden-clamp|214|clamp(",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 214,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|forbidden-clamp|46|clamp(",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 46,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|forbidden-effect|106|box-shadow:",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 106,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|126|margin-top: 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 126,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|168|padding: 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 168,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|187|padding: 76px 0;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 187,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 76px 0;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|220|margin-top: 14px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 220,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 14px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|282|gap: 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 282,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|283|padding: 16px 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 283,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 16px 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|29|padding: 76px 0 48px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 29,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 76px 0 48px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|309|margin: 0 0 10px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 309,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|318|margin-top: 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 318,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|321|gap: 10px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 321,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|348|margin: 18px 0 0;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 348,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 18px 0 0;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|349|padding-left: 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 349,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|359|margin-top: 14px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 359,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 14px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|388|padding: 56px 0;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 388,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 56px 0;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|52|margin: 20px 0 0;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 52,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 20px 0 0;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|61|margin-top: 28px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 61,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 28px;"
+    },
+    {
+      "key": "src/pages/Deployment/Deployment.css|off-grid-spacing|72|padding: 0 18px;",
+      "file": "src/pages/Deployment/Deployment.css",
+      "line": 72,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 18px;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-clamp|123|clamp(",
+      "file": "src/pages/Features/Features.css",
+      "line": 123,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-clamp|183|clamp(",
+      "file": "src/pages/Features/Features.css",
+      "line": 183,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-clamp|38|clamp(",
+      "file": "src/pages/Features/Features.css",
+      "line": 38,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|142|rgba(0, 181, 226, 0.35)",
+      "file": "src/pages/Features/Features.css",
+      "line": 142,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.35)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|144|rgba(0, 181, 226, 0.02)",
+      "file": "src/pages/Features/Features.css",
+      "line": 144,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.02)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|144|rgba(0, 181, 226, 0.12)",
+      "file": "src/pages/Features/Features.css",
+      "line": 144,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.12)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|149|rgba(0, 181, 226, 0.08)",
+      "file": "src/pages/Features/Features.css",
+      "line": 149,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.08)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|150|rgba(0, 181, 226, 0.08)",
+      "file": "src/pages/Features/Features.css",
+      "line": 150,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.08)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|173|rgba(0, 181, 226, 0.25)",
+      "file": "src/pages/Features/Features.css",
+      "line": 173,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.25)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|190|rgba(197, 198, 199, 0.92)",
+      "file": "src/pages/Features/Features.css",
+      "line": 190,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.92)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|205|rgba(197, 198, 199, 0.45)",
+      "file": "src/pages/Features/Features.css",
+      "line": 205,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.45)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|forbidden-rgb-color|211|rgba(0, 181, 226, 0.1)",
+      "file": "src/pages/Features/Features.css",
+      "line": 211,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.1)"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|107|margin-bottom: 6px;",
+      "file": "src/pages/Features/Features.css",
+      "line": 107,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|116|padding: 74px 0;",
+      "file": "src/pages/Features/Features.css",
+      "line": 116,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 74px 0;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|172|padding: 72px 0;",
+      "file": "src/pages/Features/Features.css",
+      "line": 172,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|236|padding-top: 56px;",
+      "file": "src/pages/Features/Features.css",
+      "line": 236,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 56px;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|237|padding-bottom: 56px;",
+      "file": "src/pages/Features/Features.css",
+      "line": 237,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 56px;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|24|padding: 88px 0 72px;",
+      "file": "src/pages/Features/Features.css",
+      "line": 24,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0 72px;"
+    },
+    {
+      "key": "src/pages/Features/Features.css|off-grid-spacing|54|padding: 78px 0;",
+      "file": "src/pages/Features/Features.css",
+      "line": 54,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 78px 0;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-clamp|26|clamp(",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 26,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-clamp|324|clamp(",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 324,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-clamp|34|clamp(",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 34,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-effect|129|box-shadow:",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 129,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-effect|78|backdrop-filter:",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 78,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-pill-radius|211|border-radius: 999px",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 211,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|forbidden-pill-radius|334|border-radius: 999px",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 334,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|118|padding: 0 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 118,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|20|padding: 56px 24px 48px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 20,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 56px 24px 48px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|226|gap: 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 226,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|228|padding: 12px 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 228,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 12px 14px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|301|padding: 18px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 301,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 18px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|303|gap: 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 303,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|318|gap: 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 318,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|333|padding: 0 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 333,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|355|padding: 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 355,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|359|margin: 0 0 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 359,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|374|gap: 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 374,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|462|padding: 0 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 462,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|511|gap: 10px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 511,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|53|padding: 14px 16px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 53,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/pages/GlobalTax/GlobalTax.css|off-grid-spacing|95|padding: 0 24px 14px;",
+      "file": "src/pages/GlobalTax/GlobalTax.css",
+      "line": 95,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 24px 14px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-clamp|133|clamp(",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 133,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-clamp|38|clamp(",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 38,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-effect|73|box-shadow:",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 73,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|251|rgba(0, 181, 226, 0.03)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 251,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.03)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|251|rgba(0, 181, 226, 0.12)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 251,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.12)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|256|rgba(0, 181, 226, 0.08)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 256,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.08)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|257|rgba(0, 181, 226, 0.08)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 257,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.08)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|269|rgba(11, 12, 16, 0.8)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 269,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(11, 12, 16, 0.8)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|377|rgba(0, 181, 226, 0.5)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 377,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.5)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|379|rgba(0, 181, 226, 0.02)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 379,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.02)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|forbidden-rgb-color|379|rgba(0, 181, 226, 0.1)",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 379,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.1)"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|114|padding: 72px 0;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 114,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|141|gap: 10px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 141,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|156|gap: 10px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 156,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|157|padding: 14px 16px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 157,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|171|padding: 0 16px 14px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 171,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 16px 14px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|23|padding: 84px 0 70px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 23,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 84px 0 70px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|296|padding: 0 14px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 296,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|323|gap: 10px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 323,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|333|margin: 0 0 6px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 333,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 6px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|418|padding-top: 56px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 418,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 56px;"
+    },
+    {
+      "key": "src/pages/HelpCenter/HelpCenter.css|off-grid-spacing|419|padding-bottom: 56px;",
+      "file": "src/pages/HelpCenter/HelpCenter.css",
+      "line": 419,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 56px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|forbidden-clamp|561|clamp(",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 561,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|forbidden-clamp|645|clamp(",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 645,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|forbidden-clamp|879|clamp(",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 879,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|101|padding: 0 30px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 101,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 30px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|160|gap: 5px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 160,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 5px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|182|margin-bottom: 6px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 182,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|198|margin: 0 0 20px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 198,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 20px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|206|margin-bottom: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 206,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|256|padding: 10px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 256,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|276|margin-top: 2px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 276,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 2px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|304|padding: 80px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 304,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 80px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|310|padding: 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 310,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|34|padding: 80px 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 34,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 80px 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|351|margin-bottom: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 351,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|37|gap: 80px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 37,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 80px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|384|padding-bottom: 1px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 384,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 1px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|401|padding: 60px 32px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 401,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 60px 32px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|418|padding: 56px 24px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 418,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 56px 24px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|439|padding: 60px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 439,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 60px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|454|padding: 40px 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 454,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 40px 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|458|padding: 0 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 458,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|488|padding: 56px 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 488,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 56px 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|492|margin: 0 0 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 492,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|503|gap: 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 503,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|534|padding: 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 534,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|537|gap: 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 537,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|567|margin: 14px 0 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 567,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 14px 0 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|586|padding: 0 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 586,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|617|padding: 88px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 617,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|626|padding: 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 626,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|631|margin: 0 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 631,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|635|margin: 0 0 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 635,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|644|margin: 0 0 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 644,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|65|margin: 0 0 40px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 65,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 40px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|665|gap: 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 665,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|670|padding: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 670,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|684|margin: 0 0 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 684,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|702|gap: 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 702,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|708|padding: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 708,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|715|margin-bottom: 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 715,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|720|margin: 0 0 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 720,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|727|padding-left: 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 727,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|731|margin-bottom: 6px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 731,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|752|padding: 88px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 752,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|760|padding: 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 760,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|781|margin-top: 18px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 781,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 18px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|792|gap: 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 792,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|811|padding: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 811,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|828|gap: 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 828,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|837|gap: 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 837,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|838|padding: 0 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 838,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|857|padding: 88px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 857,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|864|padding: 0 40px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 864,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 40px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|869|margin: 0 0 10px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 869,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|878|margin: 0 0 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 878,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|891|margin-top: 28px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 891,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 28px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|895|gap: 14px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 895,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|909|padding: 0 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 909,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|957|padding: 64px 0;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 957,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 64px 0;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|963|padding-left: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 963,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|964|padding-right: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 964,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-right: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|985|padding-left: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 985,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|986|padding-right: 20px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 986,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-right: 20px;"
+    },
+    {
+      "key": "src/pages/Landing/Landing.css|off-grid-spacing|990|margin-bottom: 28px;",
+      "file": "src/pages/Landing/Landing.css",
+      "line": 990,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 28px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-clamp|209|clamp(",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 209,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-clamp|285|clamp(",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 285,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-clamp|38|clamp(",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 38,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-effect|149|box-shadow:",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 149,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|100|rgba(197, 198, 199, 0.38)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 100,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.38)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|149|rgba(0, 181, 226, 0.12)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 149,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.12)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|161|rgba(0, 181, 226, 0.35)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 161,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.35)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|350|rgba(0, 181, 226, 0.25)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 350,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.25)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|360|rgba(197, 198, 199, 0.92)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 360,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.92)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|375|rgba(197, 198, 199, 0.45)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 375,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.45)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|forbidden-rgb-color|381|rgba(0, 181, 226, 0.1)",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 381,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.1)"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|127|padding: 78px 0;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 127,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 78px 0;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|141|padding: 22px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 141,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 22px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|178|margin-bottom: 10px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 178,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 10px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|196|padding: 10px 0 14px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 196,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 0 14px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|205|margin-right: 3px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 205,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-right: 3px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|230|padding-left: 18px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 230,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|236|margin-bottom: 6px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 236,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|24|padding: 88px 0 72px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 24,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0 72px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|277|padding: 72px 0;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 277,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|316|padding: 72px 0;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 316,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|349|padding: 72px 0;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 349,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|411|padding-top: 56px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 411,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 56px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|412|padding-bottom: 56px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 412,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 56px;"
+    },
+    {
+      "key": "src/pages/Pricing/Pricing.css|off-grid-spacing|58|padding: 8px 10px;",
+      "file": "src/pages/Pricing/Pricing.css",
+      "line": 58,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 8px 10px;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|forbidden-clamp|167|clamp(",
+      "file": "src/pages/Product/Product.css",
+      "line": 167,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Product/Product.css|forbidden-clamp|38|clamp(",
+      "file": "src/pages/Product/Product.css",
+      "line": 38,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Product/Product.css|forbidden-clamp|69|clamp(",
+      "file": "src/pages/Product/Product.css",
+      "line": 69,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Product/Product.css|forbidden-clamp|91|clamp(",
+      "file": "src/pages/Product/Product.css",
+      "line": 91,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Product/Product.css|forbidden-rgb-color|189|rgba(197, 198, 199, 0.45)",
+      "file": "src/pages/Product/Product.css",
+      "line": 189,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.45)"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|146|margin-bottom: 6px;",
+      "file": "src/pages/Product/Product.css",
+      "line": 146,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|156|padding: 72px 0;",
+      "file": "src/pages/Product/Product.css",
+      "line": 156,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|219|padding-top: 56px;",
+      "file": "src/pages/Product/Product.css",
+      "line": 219,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 56px;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|220|padding-bottom: 56px;",
+      "file": "src/pages/Product/Product.css",
+      "line": 220,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 56px;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|23|padding: 88px 0 72px;",
+      "file": "src/pages/Product/Product.css",
+      "line": 23,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 88px 0 72px;"
+    },
+    {
+      "key": "src/pages/Product/Product.css|off-grid-spacing|84|padding: 80px 0;",
+      "file": "src/pages/Product/Product.css",
+      "line": 84,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 80px 0;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-clamp|119|clamp(",
+      "file": "src/pages/Support/Support.css",
+      "line": 119,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-clamp|38|clamp(",
+      "file": "src/pages/Support/Support.css",
+      "line": 38,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-effect|420|backdrop-filter:",
+      "file": "src/pages/Support/Support.css",
+      "line": 420,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-effect|501|box-shadow:",
+      "file": "src/pages/Support/Support.css",
+      "line": 501,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-effect|74|box-shadow:",
+      "file": "src/pages/Support/Support.css",
+      "line": 74,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-hex-color|309|#047857",
+      "file": "src/pages/Support/Support.css",
+      "line": 309,
+      "rule": "forbidden-hex-color",
+      "snippet": "#047857"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-rgb-color|307|rgba(16, 185, 129, 0.35)",
+      "file": "src/pages/Support/Support.css",
+      "line": 307,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(16, 185, 129, 0.35)"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-rgb-color|419|rgba(11, 12, 16, 0.56)",
+      "file": "src/pages/Support/Support.css",
+      "line": 419,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(11, 12, 16, 0.56)"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-rgb-color|501|rgba(0, 126, 176, 0.15)",
+      "file": "src/pages/Support/Support.css",
+      "line": 501,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.15)"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-rgb-color|574|rgba(197, 198, 199, 0.35)",
+      "file": "src/pages/Support/Support.css",
+      "line": 574,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(197, 198, 199, 0.35)"
+    },
+    {
+      "key": "src/pages/Support/Support.css|forbidden-rgb-color|604|rgba(0, 181, 226, 0.35)",
+      "file": "src/pages/Support/Support.css",
+      "line": 604,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 181, 226, 0.35)"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|196|padding-left: 18px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 196,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-left: 18px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|24|padding: 84px 0 72px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 24,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 84px 0 72px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|253|gap: 6px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 253,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 6px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|306|padding: 0 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 306,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|369|padding: 0 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 369,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|391|gap: 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 391,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|473|margin-bottom: 6px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 473,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 6px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|487|padding: 10px 12px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 487,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 12px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|507|gap: 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 507,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|552|padding: 10px 12px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 552,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 12px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|56|gap: 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 56,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|588|margin-bottom: 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 588,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|599|padding: 8px 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 599,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 8px 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|624|padding: 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 624,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|631|padding: 0 10px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 631,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|673|padding-top: 56px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 673,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-top: 56px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|674|padding-bottom: 56px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 674,
+      "rule": "off-grid-spacing",
+      "snippet": "padding-bottom: 56px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|82|padding: 0 18px;",
+      "file": "src/pages/Support/Support.css",
+      "line": 82,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 18px;"
+    },
+    {
+      "key": "src/pages/Support/Support.css|off-grid-spacing|98|padding: 72px 0;",
+      "file": "src/pages/Support/Support.css",
+      "line": 98,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 72px 0;"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-effect|1577|box-shadow:",
+      "file": "src/styles/globals.css",
+      "line": 1577,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-effect|1685|box-shadow:",
+      "file": "src/styles/globals.css",
+      "line": 1685,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-effect|316|box-shadow:",
+      "file": "src/styles/globals.css",
+      "line": 316,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-effect|542|box-shadow:",
+      "file": "src/styles/globals.css",
+      "line": 542,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-pill-radius|1544|border-radius: 999px",
+      "file": "src/styles/globals.css",
+      "line": 1544,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-pill-radius|1569|border-radius: 999px",
+      "file": "src/styles/globals.css",
+      "line": 1569,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-rgb-color|1674|rgba(11, 12, 16, 0.55)",
+      "file": "src/styles/globals.css",
+      "line": 1674,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(11, 12, 16, 0.55)"
+    },
+    {
+      "key": "src/styles/globals.css|forbidden-rgb-color|531|rgba(11, 12, 16, 0.5)",
+      "file": "src/styles/globals.css",
+      "line": 531,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(11, 12, 16, 0.5)"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1089|gap: 20px;",
+      "file": "src/styles/globals.css",
+      "line": 1089,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 20px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1098|padding: 0 14px;",
+      "file": "src/styles/globals.css",
+      "line": 1098,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 14px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1172|padding: 0 20px 10px;",
+      "file": "src/styles/globals.css",
+      "line": 1172,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 20px 10px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1181|gap: 2px;",
+      "file": "src/styles/globals.css",
+      "line": 1181,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 2px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1185|padding: 0 10px;",
+      "file": "src/styles/globals.css",
+      "line": 1185,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 10px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1191|gap: 10px;",
+      "file": "src/styles/globals.css",
+      "line": 1191,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 10px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1441|padding: 2px 8px;",
+      "file": "src/styles/globals.css",
+      "line": 1441,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 8px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1568|padding: 0 5px;",
+      "file": "src/styles/globals.css",
+      "line": 1568,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 0 5px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1831|margin-bottom: -2px;",
+      "file": "src/styles/globals.css",
+      "line": 1831,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: -2px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|1991|padding: 2px 8px;",
+      "file": "src/styles/globals.css",
+      "line": 1991,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 8px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|2004|padding: 2px 8px;",
+      "file": "src/styles/globals.css",
+      "line": 2004,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 8px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|2089|padding: 2px 7px;",
+      "file": "src/styles/globals.css",
+      "line": 2089,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 7px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|2102|padding: 2px 7px;",
+      "file": "src/styles/globals.css",
+      "line": 2102,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 7px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|320|padding: 10px 12px;",
+      "file": "src/styles/globals.css",
+      "line": 320,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 12px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|632|margin-top: 2px;",
+      "file": "src/styles/globals.css",
+      "line": 632,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 2px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|796|margin: -1px;",
+      "file": "src/styles/globals.css",
+      "line": 796,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: -1px;"
+    },
+    {
+      "key": "src/styles/globals.css|off-grid-spacing|869|padding: 2px 8px;",
+      "file": "src/styles/globals.css",
+      "line": 869,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 8px;"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-clamp|157|clamp(",
+      "file": "src/styles/pages.css",
+      "line": 157,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-clamp|635|clamp(",
+      "file": "src/styles/pages.css",
+      "line": 635,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-clamp|749|clamp(",
+      "file": "src/styles/pages.css",
+      "line": 749,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-clamp|909|clamp(",
+      "file": "src/styles/pages.css",
+      "line": 909,
+      "rule": "forbidden-clamp",
+      "snippet": "clamp("
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|383|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 383,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|587|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 587,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|658|backdrop-filter:",
+      "file": "src/styles/pages.css",
+      "line": 658,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|687|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 687,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|724|backdrop-filter:",
+      "file": "src/styles/pages.css",
+      "line": 724,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|771|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 771,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|780|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 780,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-effect|827|box-shadow:",
+      "file": "src/styles/pages.css",
+      "line": 827,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-hex-color|571|#F8F9FB",
+      "file": "src/styles/pages.css",
+      "line": 571,
+      "rule": "forbidden-hex-color",
+      "snippet": "#F8F9FB"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-hex-color|957|#1E2328",
+      "file": "src/styles/pages.css",
+      "line": 957,
+      "rule": "forbidden-hex-color",
+      "snippet": "#1E2328"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-pill-radius|1036|border-radius: 999px",
+      "file": "src/styles/pages.css",
+      "line": 1036,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-pill-radius|622|border-radius: 999px",
+      "file": "src/styles/pages.css",
+      "line": 622,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-pill-radius|925|border-radius: 999px",
+      "file": "src/styles/pages.css",
+      "line": 925,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-pill-radius|979|border-radius: 999px",
+      "file": "src/styles/pages.css",
+      "line": 979,
+      "rule": "forbidden-pill-radius",
+      "snippet": "border-radius: 999px"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|1003|rgba(255, 247, 237, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 1003,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(255, 247, 237, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|1003|rgba(255, 251, 244, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 1003,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(255, 251, 244, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|1007|rgba(239, 246, 255, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 1007,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 246, 255, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|1007|rgba(246, 250, 255, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 1007,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(246, 250, 255, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|1037|rgba(0, 126, 176, 0.08)",
+      "file": "src/styles/pages.css",
+      "line": 1037,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.08)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|398|rgba(239, 68, 68, 0.35)",
+      "file": "src/styles/pages.css",
+      "line": 398,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.35)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|435|rgba(0, 126, 176, 0.15)",
+      "file": "src/styles/pages.css",
+      "line": 435,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.15)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|687|rgba(5, 24, 43, 0.14)",
+      "file": "src/styles/pages.css",
+      "line": 687,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(5, 24, 43, 0.14)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|728|rgba(16, 185, 129, 0.18)",
+      "file": "src/styles/pages.css",
+      "line": 728,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(16, 185, 129, 0.18)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|732|rgba(239, 68, 68, 0.18)",
+      "file": "src/styles/pages.css",
+      "line": 732,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.18)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|736|rgba(90, 200, 250, 0.20)",
+      "file": "src/styles/pages.css",
+      "line": 736,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(90, 200, 250, 0.20)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|768|rgba(222, 230, 239, 0.94)",
+      "file": "src/styles/pages.css",
+      "line": 768,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(222, 230, 239, 0.94)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|771|rgba(10, 35, 61, 0.08)",
+      "file": "src/styles/pages.css",
+      "line": 771,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(10, 35, 61, 0.08)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|780|rgba(10, 35, 61, 0.12)",
+      "file": "src/styles/pages.css",
+      "line": 780,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(10, 35, 61, 0.12)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|787|rgba(0, 126, 176, 0.07)",
+      "file": "src/styles/pages.css",
+      "line": 787,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.07)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|795|rgba(0, 126, 176, 0.18)",
+      "file": "src/styles/pages.css",
+      "line": 795,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.18)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|795|rgba(0, 59, 115, 0.14)",
+      "file": "src/styles/pages.css",
+      "line": 795,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 59, 115, 0.14)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|824|rgba(222, 230, 239, 0.94)",
+      "file": "src/styles/pages.css",
+      "line": 824,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(222, 230, 239, 0.94)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|827|rgba(10, 35, 61, 0.08)",
+      "file": "src/styles/pages.css",
+      "line": 827,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(10, 35, 61, 0.08)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|850|rgba(0, 126, 176, 0.06)",
+      "file": "src/styles/pages.css",
+      "line": 850,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.06)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|870|rgba(16, 185, 129, 0.06)",
+      "file": "src/styles/pages.css",
+      "line": 870,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(16, 185, 129, 0.06)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|870|rgba(16, 185, 129, 0.16)",
+      "file": "src/styles/pages.css",
+      "line": 870,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(16, 185, 129, 0.16)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|874|rgba(239, 68, 68, 0.06)",
+      "file": "src/styles/pages.css",
+      "line": 874,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.06)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|874|rgba(239, 68, 68, 0.14)",
+      "file": "src/styles/pages.css",
+      "line": 874,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.14)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|878|rgba(245, 158, 11, 0.06)",
+      "file": "src/styles/pages.css",
+      "line": 878,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(245, 158, 11, 0.06)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|878|rgba(245, 158, 11, 0.16)",
+      "file": "src/styles/pages.css",
+      "line": 878,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(245, 158, 11, 0.16)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|882|rgba(0, 126, 176, 0.06)",
+      "file": "src/styles/pages.css",
+      "line": 882,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.06)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|882|rgba(0, 126, 176, 0.18)",
+      "file": "src/styles/pages.css",
+      "line": 882,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.18)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|886|rgba(17, 24, 39, 0.16)",
+      "file": "src/styles/pages.css",
+      "line": 886,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(17, 24, 39, 0.16)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|886|rgba(239, 68, 68, 0.08)",
+      "file": "src/styles/pages.css",
+      "line": 886,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.08)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|933|rgba(16, 185, 129, 0.12)",
+      "file": "src/styles/pages.css",
+      "line": 933,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(16, 185, 129, 0.12)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|938|rgba(239, 68, 68, 0.10)",
+      "file": "src/styles/pages.css",
+      "line": 938,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(239, 68, 68, 0.10)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|968|rgba(226, 233, 241, 0.9)",
+      "file": "src/styles/pages.css",
+      "line": 968,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(226, 233, 241, 0.9)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|972|rgba(240, 247, 252, 0.72)",
+      "file": "src/styles/pages.css",
+      "line": 972,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(240, 247, 252, 0.72)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|980|rgba(0, 126, 176, 0.10)",
+      "file": "src/styles/pages.css",
+      "line": 980,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(0, 126, 176, 0.10)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|998|rgba(223, 229, 238, 0.95)",
+      "file": "src/styles/pages.css",
+      "line": 998,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(223, 229, 238, 0.95)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|999|rgba(244, 248, 252, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 999,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(244, 248, 252, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|forbidden-rgb-color|999|rgba(249, 251, 254, 0.96)",
+      "file": "src/styles/pages.css",
+      "line": 999,
+      "rule": "forbidden-rgb-color",
+      "snippet": "rgba(249, 251, 254, 0.96)"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1048|padding: 20px;",
+      "file": "src/styles/pages.css",
+      "line": 1048,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 20px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1062|padding: 14px;",
+      "file": "src/styles/pages.css",
+      "line": 1062,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1073|padding: 22px 18px;",
+      "file": "src/styles/pages.css",
+      "line": 1073,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 22px 18px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1323|gap: 2px;",
+      "file": "src/styles/pages.css",
+      "line": 1323,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 2px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1356|gap: 2px;",
+      "file": "src/styles/pages.css",
+      "line": 1356,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 2px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1388|margin-bottom: 2px;",
+      "file": "src/styles/pages.css",
+      "line": 1388,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 2px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1440|padding: 3px 10px;",
+      "file": "src/styles/pages.css",
+      "line": 1440,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 3px 10px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1488|gap: 2px;",
+      "file": "src/styles/pages.css",
+      "line": 1488,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 2px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1524|padding: 2px var(--space-sm);",
+      "file": "src/styles/pages.css",
+      "line": 1524,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px var(--space-sm);"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1558|padding: 2px 10px;",
+      "file": "src/styles/pages.css",
+      "line": 1558,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 2px 10px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1697|margin-bottom: 2px;",
+      "file": "src/styles/pages.css",
+      "line": 1697,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-bottom: 2px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|1782|padding: 3px 0;",
+      "file": "src/styles/pages.css",
+      "line": 1782,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 3px 0;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|570|padding: 28px;",
+      "file": "src/styles/pages.css",
+      "line": 570,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 28px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|585|padding: 28px;",
+      "file": "src/styles/pages.css",
+      "line": 585,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 28px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|610|gap: 20px;",
+      "file": "src/styles/pages.css",
+      "line": 610,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 20px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|621|padding: 6px 12px;",
+      "file": "src/styles/pages.css",
+      "line": 621,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 6px 12px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|640|margin: 14px 0 0;",
+      "file": "src/styles/pages.css",
+      "line": 640,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 14px 0 0;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|654|padding: 6px;",
+      "file": "src/styles/pages.css",
+      "line": 654,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 6px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|672|padding: 10px 14px;",
+      "file": "src/styles/pages.css",
+      "line": 672,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|695|padding: 10px 14px;",
+      "file": "src/styles/pages.css",
+      "line": 695,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 10px 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|711|gap: 14px;",
+      "file": "src/styles/pages.css",
+      "line": 711,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|712|margin-top: 22px;",
+      "file": "src/styles/pages.css",
+      "line": 712,
+      "rule": "off-grid-spacing",
+      "snippet": "margin-top: 22px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|720|padding: 18px 20px;",
+      "file": "src/styles/pages.css",
+      "line": 720,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 18px 20px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|756|gap: 18px;",
+      "file": "src/styles/pages.css",
+      "line": 756,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|766|gap: 14px;",
+      "file": "src/styles/pages.css",
+      "line": 766,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|800|margin: 0 0 6px;",
+      "file": "src/styles/pages.css",
+      "line": 800,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 6px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|835|gap: 18px;",
+      "file": "src/styles/pages.css",
+      "line": 835,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 18px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|843|padding: 22px;",
+      "file": "src/styles/pages.css",
+      "line": 843,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 22px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|898|margin: 0 0 14px;",
+      "file": "src/styles/pages.css",
+      "line": 898,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|907|margin: 0 0 10px;",
+      "file": "src/styles/pages.css",
+      "line": 907,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 10px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|924|padding: 5px 10px;",
+      "file": "src/styles/pages.css",
+      "line": 924,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 5px 10px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|945|margin: 0 0 18px;",
+      "file": "src/styles/pages.css",
+      "line": 945,
+      "rule": "off-grid-spacing",
+      "snippet": "margin: 0 0 18px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|956|padding: 14px 16px;",
+      "file": "src/styles/pages.css",
+      "line": 956,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|967|padding: 14px 16px;",
+      "file": "src/styles/pages.css",
+      "line": 967,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 14px 16px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|978|padding: 6px 10px;",
+      "file": "src/styles/pages.css",
+      "line": 978,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 6px 10px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|992|gap: 14px;",
+      "file": "src/styles/pages.css",
+      "line": 992,
+      "rule": "off-grid-spacing",
+      "snippet": "gap: 14px;"
+    },
+    {
+      "key": "src/styles/pages.css|off-grid-spacing|996|padding: 16px 18px;",
+      "file": "src/styles/pages.css",
+      "line": 996,
+      "rule": "off-grid-spacing",
+      "snippet": "padding: 16px 18px;"
+    },
+    {
+      "key": "src/styles/public-site.css|forbidden-effect|234|box-shadow:",
+      "file": "src/styles/public-site.css",
+      "line": 234,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/public-site.css|forbidden-effect|427|box-shadow:",
+      "file": "src/styles/public-site.css",
+      "line": 427,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/public-site.css|forbidden-effect|428|backdrop-filter:",
+      "file": "src/styles/public-site.css",
+      "line": 428,
+      "rule": "forbidden-effect",
+      "snippet": "backdrop-filter:"
+    },
+    {
+      "key": "src/styles/public-site.css|forbidden-effect|498|box-shadow:",
+      "file": "src/styles/public-site.css",
+      "line": 498,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    },
+    {
+      "key": "src/styles/public-site.css|forbidden-effect|533|box-shadow:",
+      "file": "src/styles/public-site.css",
+      "line": 533,
+      "rule": "forbidden-effect",
+      "snippet": "box-shadow:"
+    }
+  ]
+}

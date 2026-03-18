@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { countries } from '../../utils/countries';
+import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import ATCLogo from '../../components/branding/ATCLogo';
 
 const Register = () => {
@@ -19,7 +19,7 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const selectedCountry = countries.find(c => c.code === country);
+  const selectedCountry = countryDropdownOptions.find(c => c.code === country);
 
   // Step 1: Email validation
   const handleEmailSubmit = (e) => {
@@ -175,9 +175,9 @@ const Register = () => {
                 onChange={(e) => setCountry(e.target.value)}
                 className="country-select"
               >
-                {countries.map((c) => (
+                {countryDropdownOptions.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.flag} {c.name} ({c.dialCode})
+                    {c.flag ? `${c.flag} ` : ''}{c.name}{c.dialCode ? ` (${c.dialCode})` : ''}
                   </option>
                 ))}
               </select>

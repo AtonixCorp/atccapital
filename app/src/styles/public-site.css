@@ -1,0 +1,624 @@
+/* =============================================================================
+   ATC CAPITAL — PUBLIC SITE FOUNDATION
+   Shared institutional styling for public marketing pages.
+   ============================================================================= */
+
+.landing-page,
+.product-page,
+.features-page,
+.pricing-page,
+.about-page,
+.support-page,
+.help-center-page,
+.contact-page,
+.privacy-page,
+.global-tax-page,
+.cli-docs-page,
+.deployment-page {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.product-page .container,
+.features-page .container,
+.pricing-page .container,
+.about-page .container,
+.support-page .container,
+.help-center-page .container,
+.contact-page .container,
+.privacy-page .container,
+.cli-docs-page .container,
+.deployment-shell,
+.tax-hero-content,
+.tax-search-container,
+.tax-status-banner,
+.tax-content-wrapper {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: var(--space-xl);
+  padding-right: var(--space-xl);
+  box-sizing: border-box;
+}
+
+.product-page .product-hero,
+.features-page .features-hero,
+.pricing-page .pricing-hero,
+.about-page .about-hero,
+.support-page .support-hero,
+.help-center-page .help-hero,
+.contact-page .contact-hero,
+.privacy-page .privacy-hero,
+.cli-docs-page .cli-docs-hero,
+.deployment-page .deployment-hero,
+.global-tax-page .tax-hero {
+  background: var(--color-background);
+  border-bottom: 1px solid var(--border-color-default);
+  padding-top: var(--space-4xl);
+  padding-bottom: var(--space-4xl);
+}
+
+.about-page .about-hero-bg {
+  display: none;
+}
+
+.product-page .product-hero h1,
+.features-page .features-hero h1,
+.pricing-page .pricing-hero h1,
+.about-page .about-hero-inner h1,
+.support-page .support-hero h1,
+.help-center-page .help-hero h1,
+.contact-page .contact-hero h1,
+.privacy-page .privacy-hero h1,
+.cli-docs-page .cli-docs-hero h1,
+.deployment-page .deployment-hero h1,
+.global-tax-page .tax-hero-title,
+.landing-page .atc-hero-headline {
+  color: var(--color-text);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.product-page .product-hero p,
+.features-page .features-hero p,
+.pricing-page .pricing-hero p,
+.about-page .about-hero-sub,
+.support-page .support-hero p,
+.help-center-page .help-hero p,
+.contact-page .contact-hero p,
+.privacy-page .privacy-hero p,
+.cli-docs-page .cli-docs-hero p,
+.deployment-page .deployment-hero__lede,
+.global-tax-page .tax-hero-subtitle,
+.global-tax-page .tax-hero-description,
+.landing-page .atc-hero-sub,
+.landing-page .landing-deployment-promo__text,
+.about-page .about-section-sub,
+.about-page .solution-text p,
+.about-page .ux-text p,
+.about-page .future-sub,
+.about-page .future-closing,
+.about-page .about-cta-inner p,
+.support-page .section-subtitle,
+.help-center-page .contact-text > p,
+.help-center-page .faq-answer p,
+.pricing-page .plan-header p,
+.pricing-page .pricing-features .feature-item p,
+.pricing-page .faq-item p,
+.features-page .feature-content p,
+.features-page .showcase-item p,
+.product-page .product-card p,
+.cli-docs-page .cli-docs-card p,
+.deployment-page .deployment-section__header p:not(.deployment-eyebrow),
+.deployment-page .deployment-surface-card p,
+.deployment-page .deployment-env-card p,
+.deployment-page .deployment-contract-box p,
+.deployment-page .deployment-callout p,
+.deployment-page .deployment-health-card p,
+.global-tax-page .empty-panel p,
+.global-tax-page .country-region,
+.global-tax-page .value,
+.global-tax-page .label {
+  color: rgba(var(--color-text-rgb), 0.72);
+}
+
+.global-tax-page .tax-hero-subtitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-regular);
+}
+
+.about-page .about-eyebrow,
+.about-page .about-eyebrow-dark,
+.about-page .about-eyebrow-purple,
+.cli-docs-page .cli-docs-kicker,
+.deployment-page .deployment-eyebrow,
+.landing-page .section-eyebrow,
+.landing-page .landing-deployment-promo__eyebrow,
+.support-page .section-label,
+.global-tax-page .section-title,
+.global-tax-page .overview-label {
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.product-page .product-overview,
+.product-page .product-cta,
+.features-page .features-grid,
+.features-page .features-showcase,
+.features-page .features-cta,
+.pricing-page .pricing-plans,
+.pricing-page .pricing-features,
+.pricing-page .pricing-faq,
+.pricing-page .pricing-cta,
+.support-page .quick-help,
+.support-page .popular-topics,
+.support-page .contact-support,
+.support-page .status-section,
+.support-page .community-section,
+.help-center-page .quick-links,
+.help-center-page .faqs-section,
+.help-center-page .categories-section,
+.help-center-page .tutorials-section,
+.help-center-page .contact-section,
+.cli-docs-page .cli-docs-section,
+.deployment-page .deployment-section,
+.deployment-page .deployment-strip,
+.global-tax-page .tax-search-section,
+.global-tax-page .tax-content-wrapper,
+.about-page .about-problem-section,
+.about-page .about-solution-section,
+.about-page .about-pillars-section,
+.about-page .about-ux-section,
+.about-page .about-brand-section,
+.about-page .about-future-section,
+.about-page .about-cta-section,
+.contact-page .contact-form-section,
+.contact-page .offices-section,
+.contact-page .hours-section {
+  background: var(--color-background);
+  color: var(--color-text);
+  padding-top: var(--space-4xl);
+  padding-bottom: var(--space-4xl);
+  border-bottom: 1px solid var(--border-color-default);
+}
+
+.product-page .product-card,
+.features-page .feature-card,
+.features-page .showcase-item,
+.pricing-page .plan-card,
+.pricing-page .feature-item,
+.pricing-page .faq-item,
+.support-page .help-card,
+.support-page .topic-category,
+.support-page .contact-method,
+.support-page .status-content,
+.support-page .community-text,
+.support-page .community-stats,
+.help-center-page .category-card,
+.help-center-page .tutorial-card,
+.help-center-page .contact-option,
+.help-center-page .contact-image,
+.cli-docs-page .cli-docs-card,
+.deployment-page .deployment-status-card,
+.deployment-page .deployment-strip__card,
+.deployment-page .deployment-surface-card,
+.deployment-page .deployment-env-card,
+.deployment-page .deployment-contract-box,
+.deployment-page .deployment-health-card,
+.deployment-page .deployment-callout,
+.deployment-page .deployment-stack-table,
+.global-tax-page .tax-list-wrapper,
+.global-tax-page .tax-details-wrapper,
+.global-tax-page .section-card,
+.about-page .solution-text,
+.about-page .solution-cards,
+.about-page .about-pillar-card,
+.about-page .ux-text,
+.about-page .ux-feelings,
+.about-page .brand-voice-card,
+.about-page .brand-promise-card,
+.about-page .brand-taglines-card,
+.contact-page .contact-form,
+.contact-page .contact-method,
+.contact-page .office-card,
+.contact-page .hours-info,
+.contact-page .hours-schedule {
+  background: var(--color-background);
+  border: 1px solid rgba(var(--color-text-rgb), 0.08);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: none;
+}
+
+.product-page .product-card:hover,
+.features-page .feature-card:hover,
+.support-page .help-link:hover,
+.support-page .topic-category a:hover,
+.support-page .status-link:hover,
+.support-page .community-link:hover,
+.help-center-page .quick-link:hover,
+.help-center-page .article-list a:hover,
+.features-page .features-cta .btn-outline:hover,
+.pricing-page .plan-button.outline:hover,
+.product-page .btn-outline:hover,
+.deployment-page .deployment-btn:hover,
+.global-tax-page .tax-list-item:hover,
+.global-tax-page .summary-link:hover,
+.global-tax-page .reference-link:hover,
+.global-tax-page .primary-link:hover,
+.global-tax-page .secondary-link:hover,
+.about-page .btn-outline-hero:hover,
+.about-page .about-cta-buttons .btn-outline:hover {
+  transform: none;
+  text-decoration: none;
+}
+
+.product-page .product-icon,
+.features-page .feature-icon,
+.pricing-page .plan-icon,
+.support-page .help-icon,
+.support-page .contact-icon,
+.help-center-page .category-icon,
+.about-page .solution-chip-icon,
+.about-page .future-icon,
+.global-tax-page .empty-icon {
+  border: 1px solid rgba(var(--color-text-rgb), 0.12);
+  background: rgba(var(--color-text-rgb), 0.04);
+}
+
+.pricing-page .billing-toggle,
+.pricing-page .save-badge,
+.pricing-page .popular-badge,
+.global-tax-page .list-count,
+.global-tax-page .country-code-badge,
+.global-tax-page .region-badge,
+.cli-docs-page .cli-docs-kicker,
+.deployment-page .deployment-chip,
+.support-page .status-indicator,
+.about-page .ux-feeling-chip,
+.about-page .brand-value-tile,
+.about-page .future-item {
+  border-radius: var(--radius-lg);
+}
+
+.pricing-page .save-badge,
+.pricing-page .popular-badge,
+.cli-docs-page .cli-docs-kicker,
+.deployment-page .deployment-chip,
+.global-tax-page .country-code-badge,
+.support-page .status-indicator,
+.about-page .ux-feeling-chip,
+.about-page .future-item {
+  border: 1px solid rgba(var(--color-primary-rgb), 0.24);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-text);
+}
+
+.pricing-page .billing-toggle,
+.global-tax-page .region-badge,
+.global-tax-page .list-count,
+.about-page .brand-value-tile {
+  border: 1px solid rgba(var(--color-text-rgb), 0.12);
+  background: rgba(var(--color-text-rgb), 0.04);
+  color: var(--color-text);
+}
+
+.pricing-page .switch input:checked + .slider,
+.global-tax-page .tax-list-item.active,
+.deployment-page .deployment-status-card__live {
+  color: var(--color-primary);
+}
+
+.pricing-page .slider,
+.pricing-page .slider::before {
+  border-radius: var(--radius-lg);
+}
+
+.pricing-page .slider {
+  background: rgba(var(--color-text-rgb), 0.12);
+}
+
+.pricing-page .switch input:checked + .slider {
+  background: rgba(var(--color-primary-rgb), 0.2);
+}
+
+.product-page .btn-outline,
+.features-page .btn-outline,
+.pricing-page .btn-outline,
+.pricing-page .plan-button.outline,
+.support-page .contact-btn,
+.support-page .search-btn,
+.help-center-page .watch-btn,
+.help-center-page .contact-btn,
+.cli-docs-page .cli-docs-hero-links a,
+.deployment-page .deployment-btn--secondary,
+.deployment-page .deployment-btn--ghost,
+.about-page .btn-outline-hero,
+.about-page .about-cta-buttons .btn-outline,
+.landing-page .atc-hero-btn-secondary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: 1px solid var(--color-primary);
+}
+
+.landing-page .atc-hero-btn-primary,
+.pricing-page .plan-button.primary,
+.deployment-page .deployment-btn--primary,
+.deployment-page .deployment-btn--light,
+.product-page .btn-primary,
+.features-page .btn-primary,
+.pricing-page .btn-primary,
+.about-page .btn-primary,
+.landing-page .landing-deployment-promo__primary {
+  background: var(--color-primary);
+  color: var(--color-background);
+  border: 1px solid var(--color-primary);
+}
+
+.landing-page .landing-deployment-promo__secondary,
+.deployment-page .deployment-btn--secondary,
+.cli-docs-page .cli-docs-hero-links a,
+.landing-page .atc-hero-btn-secondary,
+.product-page .btn-outline,
+.features-page .btn-outline,
+.pricing-page .btn-outline,
+.pricing-page .plan-button.outline,
+.support-page .contact-btn,
+.support-page .search-btn,
+.help-center-page .watch-btn,
+.help-center-page .contact-btn,
+.about-page .btn-outline-hero,
+.about-page .about-cta-buttons .btn-outline {
+  min-height: 44px;
+  padding: 12px 24px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+}
+
+.landing-page .landing-deployment-promo__secondary:hover,
+.deployment-page .deployment-btn--secondary:hover,
+.cli-docs-page .cli-docs-hero-links a:hover,
+.landing-page .atc-hero-btn-secondary:hover,
+.product-page .btn-outline:hover,
+.features-page .btn-outline:hover,
+.pricing-page .btn-outline:hover,
+.pricing-page .plan-button.outline:hover,
+.support-page .contact-btn:hover,
+.support-page .search-btn:hover,
+.help-center-page .watch-btn:hover,
+.help-center-page .contact-btn:hover,
+.about-page .btn-outline-hero:hover,
+.about-page .about-cta-buttons .btn-outline:hover {
+  background: rgba(var(--color-primary-rgb), 0.92);
+  color: var(--color-white);
+  border-color: rgba(var(--color-primary-rgb), 0.92);
+}
+
+.product-page .hero-stats,
+.landing-page .tax-overview-grid,
+.global-tax-page .tax-overview-grid,
+.support-page .community-stats,
+.deployment-page .deployment-surface-grid,
+.deployment-page .deployment-env-grid,
+.deployment-page .deployment-strip__grid {
+  gap: var(--space-base);
+}
+
+.product-page .stat,
+.global-tax-page .tax-overview-card,
+.support-page .community-stats .stat {
+  background: var(--color-background);
+  border: 1px solid rgba(var(--color-text-rgb), 0.08);
+  border-radius: var(--radius-lg);
+  padding: var(--space-base);
+}
+
+.product-page .stat-number,
+.support-page .community-stats .stat-number,
+.deployment-page .deployment-status-card__metric,
+.pricing-page .amount,
+.landing-page .atc-card-balance {
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.product-page .stat-label,
+.support-page .community-stats .stat-label,
+.landing-page .atc-card-label,
+.landing-page .atc-activity-label,
+.global-tax-page .section-title {
+  color: rgba(var(--color-text-rgb), 0.64);
+}
+
+.cli-docs-page .cli-docs-card pre,
+.deployment-page .deployment-stack-table,
+.deployment-page .deployment-stack-table__row,
+.global-tax-page .tax-search-section,
+.help-center-page .image-placeholder,
+.help-center-page .tutorial-thumbnail,
+.features-page .showcase-image {
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.cli-docs-page .cli-docs-card pre,
+.help-center-page .tutorial-thumbnail,
+.help-center-page .image-placeholder,
+.features-page .showcase-image {
+  border: 1px solid rgba(var(--color-text-rgb), 0.12);
+  border-radius: var(--radius-lg);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(var(--color-text-rgb), 0.02),
+    rgba(var(--color-text-rgb), 0.02) 16px,
+    rgba(var(--color-background-rgb), 1) 16px,
+    rgba(var(--color-background-rgb), 1) 32px
+  );
+  color: var(--color-text);
+}
+
+.deployment-page .deployment-section--accent,
+.deployment-page .deployment-surface-card--primary,
+.deployment-page .deployment-callout,
+.about-page .about-future-section,
+.about-page .about-cta-section {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.deployment-page .deployment-eyebrow--inverse,
+.about-page .about-eyebrow--inverse,
+.about-page .future-inner h2,
+.about-page .future-sub,
+.about-page .future-closing,
+.about-page .about-cta-inner h2,
+.about-page .about-cta-inner h2 span,
+.about-page .about-cta-inner p {
+  color: var(--color-text);
+}
+
+.deployment-page .deployment-stack-table__row span,
+.deployment-page .deployment-strip__text,
+.deployment-page .deployment-status-card__subtext,
+.deployment-page .deployment-status-card__header,
+.deployment-page .deployment-callout__eyebrow,
+.deployment-page .deployment-health-card__eyebrow,
+.deployment-page .deployment-env-card__label {
+  color: rgba(var(--color-text-rgb), 0.64);
+}
+
+.deployment-page .deployment-btn,
+.pricing-page .plan-button,
+.support-page .search-btn,
+.help-center-page .watch-btn,
+.support-page .contact-btn,
+.help-center-page .contact-btn {
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.global-tax-page .tax-search-section {
+  background: rgba(var(--color-background-rgb), 0.98);
+}
+
+.global-tax-page .tax-search-input:focus,
+.global-tax-page .tax-region-select:focus,
+.support-page .search-input:focus,
+.help-center-page .search-input:focus,
+.support-page .ticket-form input:focus,
+.support-page .ticket-form select:focus,
+.support-page .ticket-form textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+.global-tax-page .tax-list-item,
+.help-center-page .faq-item,
+.help-center-page .contact-option,
+.support-page .topic-category,
+.support-page .community-link,
+.about-page .solution-chip,
+.about-page .ux-quality,
+.about-page .problem-row {
+  border-radius: var(--radius-lg);
+}
+
+.global-tax-page .tax-list-item.active,
+.global-tax-page .country-code,
+.global-tax-page .tax-status-banner,
+.help-center-page .quick-link:hover,
+.help-center-page .article-list a,
+.support-page .help-link,
+.support-page .topic-category a,
+.support-page .status-link,
+.support-page .community-link,
+.about-page .tagline-dash,
+.about-page .about-eyebrow {
+  color: var(--color-primary);
+}
+
+.global-tax-page .country-code-badge,
+.global-tax-page .tax-list-item.active,
+.about-page .problem-resolve-banner,
+.landing-page .landing-deployment-promo,
+.pricing-page .plan-card.popular {
+  border-color: rgba(var(--color-primary-rgb), 0.24);
+  background: rgba(var(--color-primary-rgb), 0.08);
+  box-shadow: none;
+}
+
+.pricing-page .plan-card.popular .plan-button.primary,
+.pricing-page .plan-card.popular .popular-badge {
+  background: var(--color-primary);
+  color: var(--color-background);
+}
+
+@media (max-width: 768px) {
+  .product-page .product-hero,
+  .features-page .features-hero,
+  .pricing-page .pricing-hero,
+  .about-page .about-hero,
+  .support-page .support-hero,
+  .help-center-page .help-hero,
+  .contact-page .contact-hero,
+  .privacy-page .privacy-hero,
+  .cli-docs-page .cli-docs-hero,
+  .deployment-page .deployment-hero,
+  .global-tax-page .tax-hero,
+  .product-page .product-overview,
+  .product-page .product-cta,
+  .features-page .features-grid,
+  .features-page .features-showcase,
+  .features-page .features-cta,
+  .pricing-page .pricing-plans,
+  .pricing-page .pricing-features,
+  .pricing-page .pricing-faq,
+  .pricing-page .pricing-cta,
+  .support-page .quick-help,
+  .support-page .popular-topics,
+  .support-page .contact-support,
+  .support-page .status-section,
+  .support-page .community-section,
+  .help-center-page .faqs-section,
+  .help-center-page .categories-section,
+  .help-center-page .tutorials-section,
+  .help-center-page .contact-section,
+  .cli-docs-page .cli-docs-section,
+  .deployment-page .deployment-section,
+  .about-page .about-problem-section,
+  .about-page .about-solution-section,
+  .about-page .about-pillars-section,
+  .about-page .about-ux-section,
+  .about-page .about-brand-section,
+  .about-page .about-future-section,
+  .about-page .about-cta-section,
+  .contact-page .contact-form-section,
+  .contact-page .offices-section,
+  .contact-page .hours-section {
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-2xl);
+  }
+
+  .product-page .container,
+  .features-page .container,
+  .pricing-page .container,
+  .about-page .container,
+  .support-page .container,
+  .help-center-page .container,
+  .contact-page .container,
+  .privacy-page .container,
+  .cli-docs-page .container,
+  .deployment-shell,
+  .tax-hero-content,
+  .tax-search-container,
+  .tax-status-banner,
+  .tax-content-wrapper {
+    padding-left: var(--space-base);
+    padding-right: var(--space-base);
+  }
+}

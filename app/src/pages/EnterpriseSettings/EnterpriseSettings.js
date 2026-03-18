@@ -1,64 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useEnterprise } from '../../context/EnterpriseContext';
+import { countryDropdownOptions, countryDropdownOptionsByName } from '../../utils/countryDropdowns';
 
-// Comprehensive list of countries served by Atonix Capital
-const COUNTRIES_SERVED = [
-  // Africa - West
-  { code: 'NG', name: 'Nigeria', region: 'West Africa', currency: 'NGN' },
-  { code: 'GH', name: 'Ghana', region: 'West Africa', currency: 'GHS' },
-  { code: 'CI', name: 'Côte d\'Ivoire', region: 'West Africa', currency: 'XOF' },
-  { code: 'SN', name: 'Senegal', region: 'West Africa', currency: 'XOF' },
-  { code: 'BJ', name: 'Benin', region: 'West Africa', currency: 'XOF' },
-  { code: 'TG', name: 'Togo', region: 'West Africa', currency: 'XOF' },
-  { code: 'LR', name: 'Liberia', region: 'West Africa', currency: 'LRD' },
-  { code: 'SL', name: 'Sierra Leone', region: 'West Africa', currency: 'SLL' },
-
-  // Africa - East
-  { code: 'KE', name: 'Kenya', region: 'East Africa', currency: 'KES' },
-  { code: 'TZ', name: 'Tanzania', region: 'East Africa', currency: 'TZS' },
-  { code: 'UG', name: 'Uganda', region: 'East Africa', currency: 'UGX' },
-  { code: 'ET', name: 'Ethiopia', region: 'East Africa', currency: 'ETB' },
-  { code: 'RW', name: 'Rwanda', region: 'East Africa', currency: 'RWF' },
-  { code: 'MZ', name: 'Mozambique', region: 'East Africa', currency: 'MZN' },
-
-  // Africa - Southern
-  { code: 'ZA', name: 'South Africa', region: 'Southern Africa', currency: 'ZAR' },
-  { code: 'BW', name: 'Botswana', region: 'Southern Africa', currency: 'BWP' },
-  { code: 'ZW', name: 'Zimbabwe', region: 'Southern Africa', currency: 'ZWL' },
-  { code: 'NA', name: 'Namibia', region: 'Southern Africa', currency: 'NAD' },
-  { code: 'MW', name: 'Malawi', region: 'Southern Africa', currency: 'MWK' },
-  { code: 'ZM', name: 'Zambia', region: 'Southern Africa', currency: 'ZMW' },
-
-  // Africa - Central
-  { code: 'CM', name: 'Cameroon', region: 'Central Africa', currency: 'XAF' },
-  { code: 'CG', name: 'Congo', region: 'Central Africa', currency: 'XAF' },
-  { code: 'GA', name: 'Gabon', region: 'Central Africa', currency: 'XAF' },
-
-  // Europe
-  { code: 'GB', name: 'United Kingdom', region: 'Europe', currency: 'GBP' },
-  { code: 'DE', name: 'Germany', region: 'Europe', currency: 'EUR' },
-  { code: 'FR', name: 'France', region: 'Europe', currency: 'EUR' },
-  { code: 'NL', name: 'Netherlands', region: 'Europe', currency: 'EUR' },
-  { code: 'BE', name: 'Belgium', region: 'Europe', currency: 'EUR' },
-  { code: 'IE', name: 'Ireland', region: 'Europe', currency: 'EUR' },
-  { code: 'PT', name: 'Portugal', region: 'Europe', currency: 'EUR' },
-  { code: 'ES', name: 'Spain', region: 'Europe', currency: 'EUR' },
-  { code: 'IT', name: 'Italy', region: 'Europe', currency: 'EUR' },
-  { code: 'SE', name: 'Sweden', region: 'Europe', currency: 'SEK' },
-  { code: 'CH', name: 'Switzerland', region: 'Europe', currency: 'CHF' },
-  { code: 'LU', name: 'Luxembourg', region: 'Europe', currency: 'EUR' },
-
-  // North America
-  { code: 'US', name: 'United States', region: 'North America', currency: 'USD' },
-  { code: 'CA', name: 'Canada', region: 'North America', currency: 'CAD' },
-
-  // Asia Pacific
-  { code: 'SG', name: 'Singapore', region: 'Asia Pacific', currency: 'SGD' },
-  { code: 'HK', name: 'Hong Kong', region: 'Asia Pacific', currency: 'HKD' },
-  { code: 'AE', name: 'United Arab Emirates', region: 'Asia Pacific', currency: 'AED' },
-  { code: 'IN', name: 'India', region: 'Asia Pacific', currency: 'INR' },
-  { code: 'AU', name: 'Australia', region: 'Asia Pacific', currency: 'AUD' },
-];
+const COUNTRIES_SERVED = countryDropdownOptions;
 
 const CURRENCIES = [
   { code: 'USD', name: 'US Dollar (USD)' },
@@ -141,9 +85,9 @@ const EnterpriseSettings = () => {
 
     // If country is changed, automatically set the currency
     if (field === 'orgCountry') {
-      const selectedCountry = COUNTRIES_SERVED.find(c => c.name === value);
+      const selectedCountry = countryDropdownOptionsByName.get(value);
       if (selectedCountry) {
-        updates.currency = selectedCountry.currency;
+        updates.currency = selectedCountry.currency?.code || selectedCountry.currency || 'USD';
       }
     }
 
@@ -325,48 +269,13 @@ const EnterpriseSettings = () => {
                       onChange={(e) => handleOrgSettingChange('orgCountry', e.target.value)}
                     >
                       <option value="">-- Select Country --</option>
-                      {/* Africa - West */}
-                      <optgroup label="Africa - West">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'West Africa').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* Africa - East */}
-                      <optgroup label="Africa - East">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'East Africa').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* Africa - Southern */}
-                      <optgroup label="Africa - Southern">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'Southern Africa').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* Africa - Central */}
-                      <optgroup label="Africa - Central">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'Central Africa').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* Europe */}
-                      <optgroup label="Europe">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'Europe').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* North America */}
-                      <optgroup label="North America">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'North America').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
-                      {/* Asia Pacific */}
-                      <optgroup label="Asia Pacific">
-                        {COUNTRIES_SERVED.filter(c => c.region === 'Asia Pacific').map(country => (
-                          <option key={country.code} value={country.name}>{country.name}</option>
-                        ))}
-                      </optgroup>
+                      {['Africa', 'Americas', 'Asia', 'Europe', 'Oceania'].map((region) => (
+                        <optgroup key={region} label={region}>
+                          {COUNTRIES_SERVED.filter((country) => country.region === region).map((country) => (
+                            <option key={country.code} value={country.name}>{country.name}</option>
+                          ))}
+                        </optgroup>
+                      ))}
                     </select>
                   </div>
                   <div className="form-group">

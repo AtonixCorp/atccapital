@@ -2,20 +2,8 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useLanguage, LANGUAGE_LIST } from '../../context/LanguageContext';
 import ATCLogo from '../branding/ATCLogo';
+import { countryDropdownOptions } from '../../utils/countryDropdowns';
 import './Header.css';
-
-const COUNTRIES = [
-  { code: 'US', name: 'United States' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'AE', name: 'United Arab Emirates' },
-  { code: 'SG', name: 'Singapore' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'IN', name: 'India' },
-];
 
 const NAV_ITEMS = [
   { label: 'Home',       to: '/' },
@@ -30,7 +18,8 @@ const NAV_ITEMS = [
 
 const Header = () => {
   const { language, setLanguage } = useLanguage();
-  const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
+  const defaultCountry = countryDropdownOptions.find((country) => country.code === 'US') || countryDropdownOptions[0];
+  const [selectedCountry, setSelectedCountry] = useState(defaultCountry);
   const [countryOpen,  setCountryOpen]  = useState(false);
   const [mobileOpen,   setMobileOpen]   = useState(false);
 
@@ -61,7 +50,7 @@ const Header = () => {
 
             {countryOpen && (
               <div className="atc-country-dropdown" role="listbox">
-                {COUNTRIES.map(c => (
+                {countryDropdownOptions.map(c => (
                   <button
                     key={c.code}
                     role="option"

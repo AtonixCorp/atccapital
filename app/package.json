@@ -26,6 +26,8 @@
     "prestart": "node scripts/check-node-version.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "standards:check": "node scripts/enforce-atc-public-standards.js",
+    "standards:baseline": "node scripts/enforce-atc-public-standards.js --write-baseline",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

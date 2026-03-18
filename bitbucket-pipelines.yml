@@ -34,6 +34,7 @@ definitions:
         script:
           - cd app
           - npm ci
+          - npm run standards:check
           - CI=true npm test -- --watch=false --passWithNoTests
           - npm run build
 
