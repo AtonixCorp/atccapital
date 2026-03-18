@@ -1,5 +1,5 @@
 /**
- * Atonix Capital - AI-Powered Validation Service
+ * ATC Capital - AI-Powered Validation Service
  *
  * Provides intelligent validation, anomaly detection, and warnings
  * to prevent user errors and maintain data integrity.

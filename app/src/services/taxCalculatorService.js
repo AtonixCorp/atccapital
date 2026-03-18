@@ -1,4 +1,4 @@
-// Tax Calculator Service for Atonix Capital
+// Tax Calculator Service for ATC Capital
 // Comprehensive global tax rates database with AI-powered validation
 // Specification-compliant with modular, future-proof architecture
 

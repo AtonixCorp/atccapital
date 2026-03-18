@@ -39,19 +39,19 @@ const Contact = () => {
       city: 'New York',
       address: '123 Financial District, New York, NY 10004',
       phone: '+1 (555) 123-4567',
-      email: 'ny@atonixcapital.com'
+      email: 'ny@atccapital.com'
     },
     {
       city: 'London',
       address: '45 Cannon Street, London EC4N 5AE, UK',
       phone: '+44 20 7123 4567',
-      email: 'london@atonixcapital.com'
+      email: 'london@atccapital.com'
     },
     {
       city: 'Singapore',
       address: '1 Raffles Place, #20-01, Singapore 048616',
       phone: '+65 6789 0123',
-      email: 'singapore@atonixcapital.com'
+      email: 'singapore@atccapital.com'
     }
   ];
 
@@ -65,7 +65,7 @@ const Contact = () => {
     {
       title: 'Email Support',
       description: 'Send us a detailed message',
-      contact: 'support@atonixcapital.com',
+      contact: 'support@atccapital.com',
       availability: '24/7 Response within 24 hours'
     },
     {

@@ -1,4 +1,4 @@
-# Atonix Capital App
+# ATC Capital App
 
 A modern React-based personal finance management application with expense tracking, budgeting, income management, and analytics.
 

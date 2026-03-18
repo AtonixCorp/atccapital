@@ -106,7 +106,7 @@ const Privacy = () => {
         <div className="container">
           <div className="overview-content">
             <h2>Privacy Overview</h2>
-            <p>At Atonix Capital, we are committed to protecting your privacy and ensuring the security
+            <p>At ATC Capital, we are committed to protecting your privacy and ensuring the security
               of your personal and financial information. This privacy policy explains how we collect,
               use, and safeguard your data when you use our platform.
             </p>
@@ -182,11 +182,11 @@ const Privacy = () => {
               <div className="contact-methods">
                 <div className="contact-method">
                   <h4>Data Protection Officer</h4>
-                  <p>privacy@atonixcapital.com</p>
+                  <p>privacy@atccapital.com</p>
                 </div>
                 <div className="contact-method">
                   <h4>General Privacy Inquiries</h4>
-                  <p>support@atonixcapital.com</p>
+                  <p>support@atccapital.com</p>
                 </div>
               </div>
             </div>
@@ -203,7 +203,7 @@ const Privacy = () => {
         <div className="container">
           <h2>Regulatory Compliance</h2>
           <div className="compliance-content">
-            <p>Atonix Capital maintains compliance with major global privacy and data protection regulations:
+            <p>ATC Capital maintains compliance with major global privacy and data protection regulations:
             </p>
             <div className="compliance-grid">
               <div className="compliance-item">

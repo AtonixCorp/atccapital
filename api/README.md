@@ -234,7 +234,7 @@ curl http://localhost:8000/api/tax/countries/
 
 ## License
 
-© 2025 Atonix Capital. All rights reserved.
+© 2025 ATC Capital. All rights reserved.
 
 ## Support
 
